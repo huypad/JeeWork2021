@@ -32,7 +32,6 @@ namespace JeeWork_Core2021.Controllers.Wework
     /// </summary>
     public class WidgetsController : ControllerBase
     {
-        private readonly IHostingEnvironment _hostingEnvironment;
         private JeeWorkConfig _config;
         public List<AccUsernameModel> DataAccount;
         private IConnectionCache ConnectionCache;
@@ -43,14 +42,13 @@ namespace JeeWork_Core2021.Controllers.Wework
         static string sql_dangthuchien = "((w.deadline >= GETUTCDATE() and deadline is not null) or deadline is null ) and w.end_date is null";
         static string sqlhoanthanhdunghan = " w.end_date is not null and (w.deadline >= w.end_date or w.deadline is null) ";
         static string sqlhoanthanhquahan = " w.end_date is not null and w.deadline < w.end_date";
-        static string sqlhoanthanh = " w.end_date is not null ";
+        //static string sqlhoanthanh = " w.end_date is not null ";
         // kiểm tra điều kiện hoành thành
         string queryhoanthanh = " and w.end_date is not null ";
         string querydangthuchien = " and w.end_date is null ";
 
-        public WidgetsController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration, ILogger<WidgetsController> logger)
+        public WidgetsController(IOptions<JeeWorkConfig> config, IConnectionCache _cache, IConfiguration configuration, ILogger<WidgetsController> logger)
         {
-            _hostingEnvironment = hostingEnvironment;
             _config = config.Value;
             ConnectionCache = _cache;
             _configuration = configuration;

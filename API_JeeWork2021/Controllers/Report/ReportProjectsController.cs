@@ -34,7 +34,6 @@ namespace JeeWork_Core2021.Controllers.Wework
     // [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class ReportByProjectController : ControllerBase
     {
-        private readonly IHostingEnvironment _hostingEnvironment;
         private JeeWorkConfig _config;
         public static string excel_member;
         public static string excel_project;
@@ -51,9 +50,8 @@ namespace JeeWork_Core2021.Controllers.Wework
         // kiểm tra điều kiện hoàn thành
         string queryhoanthanh = " and w.end_date is not null ";
         string querydangthuchien = " and w.end_date is null ";
-        public ReportByProjectController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration, ILogger<ReportByProjectController> logger)
+        public ReportByProjectController(IOptions<JeeWorkConfig> config, IConnectionCache _cache, IConfiguration configuration, ILogger<ReportByProjectController> logger)
         {
-            _hostingEnvironment = hostingEnvironment;
             _config = config.Value;
             ConnectionCache = _cache;
             _configuration = configuration;

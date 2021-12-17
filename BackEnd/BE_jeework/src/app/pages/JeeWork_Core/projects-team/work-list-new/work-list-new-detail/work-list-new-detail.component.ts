@@ -268,52 +268,51 @@ export class WorkListNewDetailComponent implements OnInit {
     }
 
 
-    KiemTraThayDoiCongViec(item, key, closeTask = false) {
-        if (!this.CheckClosedTask() && !closeTask) {
-            this.layoutUtilsService.showError('Công việc đã đóng');
-            return false;
-        }
-        if (this.IsAdmin()) {
-            return true;
-        } else if (item.CreatedBy == this.UserID) {
-            return true;
-        } else {
-            if (item.Users) {
-                const index = item.Users.findIndex(x => x.id_nv == this.UserID);
-                if (index >= 0) {
-                    return true;
-                }
-            }
-        };
-        var txtError = '';
-        switch (key) {
-            case 'assign':
-                txtError = 'Bạn không có quyền thay đổi người làm của công việc này';
-                break;
-            case 'status':
-                txtError = 'Bạn không có quyền thay đổi trạng thái của công việc này';
-                break;
-            case 'estimates':
-                txtError = 'Bạn không có quyền thay đổi thời gian làm của công việc này';
-                break;
-            case 'checklist':
-                txtError = 'Bạn không có quyền chỉnh sửa checklist của công việc này';
-                break;
-            case 'title':
-                txtError = 'Bạn không có quyền đổi tên của công việc này';
-                break;
-            case 'description':
-                txtError = 'Bạn không có quyền đổi mô tả của công việc này';
-                break;
-            default:
-                txtError = 'Bạn không có quyền chỉnh sửa công việc này';
-                break;
-        }
-        this.layoutUtilsService.showError(txtError);
-        this.disabledBtn = false;
-        return false;
-
-    }
+    // KiemTraThayDoiCongViec(item, key, closeTask = false) {
+    //     if (!this.CheckClosedTask() && !closeTask) {
+    //         this.layoutUtilsService.showError('Công việc đã đóng');
+    //         return false;
+    //     }
+    //     if (this.IsAdmin()) {
+    //         return true;
+    //     } else if (item.CreatedBy == this.UserID) {
+    //         return true;
+    //     } else {
+    //         if (item.Users) {
+    //             const index = item.Users.findIndex(x => x.id_nv == this.UserID);
+    //             if (index >= 0) {
+    //                 return true;
+    //             }
+    //         }
+    //     };
+    //     var txtError = '';
+    //     switch (key) {
+    //         case 'assign':
+    //             txtError = 'Bạn không có quyền thay đổi người làm của công việc này';
+    //             break;
+    //         case 'status':
+    //             txtError = 'Bạn không có quyền thay đổi trạng thái của công việc này';
+    //             break;
+    //         case 'estimates':
+    //             txtError = 'Bạn không có quyền thay đổi thời gian làm của công việc này';
+    //             break;
+    //         case 'checklist':
+    //             txtError = 'Bạn không có quyền chỉnh sửa checklist của công việc này';
+    //             break;
+    //         case 'title':
+    //             txtError = 'Bạn không có quyền đổi tên của công việc này';
+    //             break;
+    //         case 'description':
+    //             txtError = 'Bạn không có quyền đổi mô tả của công việc này';
+    //             break;
+    //         default:
+    //             txtError = 'Bạn không có quyền chỉnh sửa công việc này';
+    //             break;
+    //     }
+    //     this.layoutUtilsService.showError(txtError);
+    //     this.disabledBtn = false;
+    //     return false;
+    // }
 
     IsCheck() {
         var item = this.item;
@@ -541,10 +540,10 @@ export class WorkListNewDetailComponent implements OnInit {
     }
 
     ClosedTask(value) {
-        if (!this.KiemTraThayDoiCongViec(this.item, 'closetask', true)) {
-            this.item.closed = !value;
-            return;
-        }
+        // if (!this.KiemTraThayDoiCongViec(this.item, 'closetask', true)) {
+        //     this.item.closed = !value;
+        //     return;
+        // }
         this.projectsTeamService.ClosedTask(this.item.id_row, value).subscribe((res) => {
             this.LoadData();
             this.SendMessage(true);
@@ -728,9 +727,9 @@ export class WorkListNewDetailComponent implements OnInit {
     }
 
     NextStatus(type) {
-        if (!this.KiemTraThayDoiCongViec(this.item, 'status')) {
-            return;
-        }
+        // if (!this.KiemTraThayDoiCongViec(this.item, 'status')) {
+        //     return;
+        // }
         const item = new UpdateWorkModel();
         item.id_row = this.item.id_row;
         item.key = 'status';
@@ -1092,9 +1091,9 @@ export class WorkListNewDetailComponent implements OnInit {
     }
 
     UpdateByKey(id_log_action: string, key: string, IsQuick: boolean) {
-        if (!this.KiemTraThayDoiCongViec(this.item, id_log_action == '0' ? 'checklist' : key)) {
-            return;
-        }
+        // if (!this.KiemTraThayDoiCongViec(this.item, id_log_action == '0' ? 'checklist' : key)) {
+        //     return;
+        // }
         this.Get_ValueByKey(id_log_action);
         const model = new UpdateByKeyModel();
         if (IsQuick) {
@@ -1176,10 +1175,10 @@ export class WorkListNewDetailComponent implements OnInit {
         }
         if (ele.value.toString().trim() != this.item.title.toString().trim()) {
 
-            if (!this.KiemTraThayDoiCongViec(this.item, 'title')) {
-                ele.value = this.item.title;
-                return;
-            }
+            // if (!this.KiemTraThayDoiCongViec(this.item, 'title')) {
+            //     ele.value = this.item.title;
+            //     return;
+            // }
 
             this.item.title = ele.value;
             this.UpdateByKeyNew(this.item, 'title', this.item.title);
@@ -1199,9 +1198,9 @@ export class WorkListNewDetailComponent implements OnInit {
         this.chinhsuamota = !this.chinhsuamota;
     }
     UpdateByKeyNew(task, key, value) {
-        if (!this.KiemTraThayDoiCongViec(task, key)) {
-            return;
-        }
+        // if (!this.KiemTraThayDoiCongViec(task, key)) {
+        //     return;
+        // }
         const item = new UpdateWorkModel();
         item.id_row = task.id_row;
         item.key = key;
@@ -1748,9 +1747,9 @@ export class WorkListNewDetailComponent implements OnInit {
     }
 
     RemoveTag(tag) {
-        if (!this.KiemTraThayDoiCongViec(this.item, 'tags')) {
-            return;
-        }
+        // if (!this.KiemTraThayDoiCongViec(this.item, 'tags')) {
+        //     return;
+        // }
         const model = new UpdateWorkModel();
         model.id_row = this.item.id_row;
         model.key = 'Tags';
@@ -1761,16 +1760,7 @@ export class WorkListNewDetailComponent implements OnInit {
                 this.SendMessage(true);
                 this.changeDetectorRefs.detectChanges();
             } else {
-                this.layoutUtilsService.showActionNotification(
-                    res.error.message,
-                    MessageType.Read,
-                    9999999999,
-                    true,
-                    false,
-                    3000,
-                    'top',
-                    0
-                );
+                this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Read, 9999999999, true, false, 3000, 'top', 0);
             }
         });
         this.changeDetectorRefs.detectChanges();

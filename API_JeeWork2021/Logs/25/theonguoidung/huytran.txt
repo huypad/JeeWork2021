@@ -111,3 +111,6 @@
 16/11/2021 09:54:36 - Xóa dữ liệu attachment (60536)  
 16/11/2021 09:54:42 - Thêm mới file 0988712722 vào: loại :4  
 23/11/2021 03:46:29 - Thêm mới dữ liệu công việc: title=Kế hoạch phỏng vấn, id_project_team=23404
+16/12/2021 04:26:24 - Thêm mới dữ liệu công việc: title=Tạo test, id_project_team=25631
+16/12/2021 04:26:56 - Thêm mới dữ liệu công việc: title=Task 1, id_project_team=25631
+17/12/2021 03:21:29 - Update user: ID27779 - admin = True

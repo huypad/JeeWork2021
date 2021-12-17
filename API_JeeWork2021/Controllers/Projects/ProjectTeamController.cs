@@ -1095,7 +1095,6 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                     if (data.Users.Where(x => x.admin).Count() == 0)
                         strRe += (strRe == "" ? "" : ",") + "người quản trị";
                 }
-
                 if (strRe != "")
                     return JsonResultCommon.BatBuoc(strRe);
                 string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
@@ -3070,7 +3069,6 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
         [HttpGet]
         public object ListRole(long id_project_team)
         {
-
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();

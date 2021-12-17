@@ -26,14 +26,12 @@ namespace JeeWork_Core2021.Controllers.Wework
     // [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class FilterWorkController : ControllerBase
     {
-        private readonly IHostingEnvironment _hostingEnvironment;
         private JeeWorkConfig _config;
         private IConnectionCache ConnectionCache;
         private IConfiguration _configuration;
         private readonly ILogger<FilterWorkController> _logger;
-        public FilterWorkController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration, ILogger<FilterWorkController> logger)
+        public FilterWorkController(IOptions<JeeWorkConfig> config, IConnectionCache _cache, IConfiguration configuration, ILogger<FilterWorkController> logger)
         {
-            _hostingEnvironment = hostingEnvironment;
             _config = config.Value;
             ConnectionCache = _cache;
             _configuration = configuration;
@@ -47,7 +45,6 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object List()
         {
-           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();

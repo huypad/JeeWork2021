@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Hosting;
 using JeeWork_Core2021.Models;
 using Microsoft.Extensions.Options;
-using Microsoft.AspNetCore.Authorization;
 using System.Globalization;
 using System.Text;
 using DPSinfra.ConnectionCache;
@@ -26,11 +25,9 @@ using Google.Apis.Auth.OAuth2;
 using System.IO;
 using Google.Apis.Services;
 using Google.Apis.Calendar.v3.Data;
-using Google.Apis.Util.Store;
 using Microsoft.AspNetCore.Http;
 using DPSinfra.Logger;
 using Newtonsoft.Json;
-using System.Collections.Specialized;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -2318,7 +2315,7 @@ where Disabled=0 and object_type in (1,11) and object_id=" + id;
                     {
                         id_project_team = long.Parse(dt_infowork.Rows[0]["id_project_team"].ToString());
                     }
-                    bool istaskuser = Common.CheckViewTaskUser(id_project_team.ToString(), loginData.UserID, id, loginData, cnn, ConnectionString);
+                    bool istaskuser = Common.CheckIsViewTask(id_project_team.ToString(), loginData.UserID, id, loginData, cnn, ConnectionString);
                     if (!istaskuser)
                     {
                         return JsonResultCommon.Custom("Bạn không có quyền xem công việc này");
@@ -2967,7 +2964,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     }
                     Common comm = new Common(ConnectionString);
                     // quyền 1 : tạo mới công việc
-                    bool rs = Common.CheckPermitUpdate(data.id_project_team.ToString(), 1, loginData, cnn, ConnectionString);
+                    bool rs = Common.CheckIsUpdatedTask(data.id_project_team.ToString(), 1, loginData, cnn, ConnectionString);
                     if (!rs)
                     {
                         return JsonResultCommon.Custom("Bạn không có quyền tạo mới công việc");
@@ -3911,7 +3908,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     {
                         return JsonResultCommon.Custom("Công việc đã đóng không thể cập nhật");
                     }
-                    bool istaskuser = Common.CheckViewTaskUser(old.Rows[0]["id_project_team"].ToString(), loginData.UserID, data.id_row, loginData, cnn, ConnectionString);
+                    bool istaskuser = Common.CheckIsViewTask(old.Rows[0]["id_project_team"].ToString(), loginData.UserID, data.id_row, loginData, cnn, ConnectionString);
                     var txterror = "Bạn không có quyền cập nhật công việc này";
                     if (!istaskuser)
                     {
@@ -3925,7 +3922,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                         dt_role = cnn.CreateDataTable(sql_role);
                         if (dt_role.Rows.Count > 0)
                         {
-                            bool rs = Common.CheckPermitUpdate(old.Rows[0]["id_project_team"].ToString(), data.id_role, loginData, cnn, ConnectionString);
+                            bool rs = Common.CheckIsUpdatedTask(old.Rows[0]["id_project_team"].ToString(), data.id_role, loginData, cnn, ConnectionString);
                             if (!rs)
                             {
                                 return JsonResultCommon.Custom("Bạn không có quyền " + dt_role.Rows[0]["title"].ToString());
@@ -4934,7 +4931,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     DataTable old = cnn.CreateDataTable(s, "(where)", sqlcondQ);
                     if (old == null || old.Rows.Count == 0)
                         return JsonResultCommon.KhongTonTai("Công việc");
-                    bool _delete = Common.CheckPermitUpdate(old.Rows[0]["id_project_team"].ToString(), 13, loginData, cnn, ConnectionString);
+                    bool _delete = Common.CheckIsUpdatedTask(old.Rows[0]["id_project_team"].ToString(), 13, loginData, cnn, ConnectionString);
                     if (!_delete)
                         return JsonResultCommon.Custom("Bạn không có quyền xóa công việc");
                     if (Common.IsTaskClosed(id, cnn))
@@ -5637,7 +5634,7 @@ where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { query.fil
                     DataTable old = cnn.CreateDataTable(s, "(where)", sqlcond);
                     if (old == null || old.Rows.Count == 0)
                         return JsonResultCommon.KhongTonTai("Công việc");
-                    bool checkrole = Common.CheckPermitUpdate(old.Rows[0]["id_project_team"].ToString(), 22, loginData, cnn, ConnectionString);
+                    bool checkrole = Common.CheckIsUpdatedTask(old.Rows[0]["id_project_team"].ToString(), 22, loginData, cnn, ConnectionString);
                     if (!checkrole)
                         return JsonResultCommon.Custom("Bạn không có quyền đóng/mở công việc");
                     if (old.Rows[0]["closed"] != DBNull.Value && (bool)old.Rows[0]["closed"] == closed)

@@ -27,16 +27,14 @@ namespace JeeWork_Core2021.Controllers.Wework
     // [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class PersonalController : ControllerBase
     {
-        private readonly IHostingEnvironment _hostingEnvironment;
         private JeeWorkConfig _config;
         public List<AccUsernameModel> DataAccount;
         private IConnectionCache ConnectionCache;
         private IConfiguration _configuration;
         private readonly ILogger<PersonalController> _logger;
 
-        public PersonalController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration, ILogger<PersonalController> logger)
+        public PersonalController(IOptions<JeeWorkConfig> config, IConnectionCache _cache, IConfiguration configuration, ILogger<PersonalController> logger)
         {
-            _hostingEnvironment = hostingEnvironment;
             _config = config.Value;
             ConnectionCache = _cache;
             _configuration = configuration;

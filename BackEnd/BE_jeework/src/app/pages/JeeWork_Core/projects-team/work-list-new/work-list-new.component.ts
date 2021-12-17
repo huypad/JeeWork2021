@@ -545,7 +545,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
       (err) => this.layoutUtilsService.OffWaitingDiv()
     );
   }
-  ReloadTask() {
+  ReloadTask(item: UpdateWorkModel) {
     const queryParams = new QueryParamsModelNew(
       this.filterConfiguration(),
       "",
@@ -561,8 +561,8 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         if (res && res.status === 1) {
           this.listStatus = res.data;
           var itemPush = [];
-          debugger
           this.listStatus.forEach((element) => {
+            debugger
             itemPush = itemPush.concat(element.datawork);
           });
           this.ListTasks = itemPush;
@@ -1300,15 +1300,23 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   }
 
   // Assign
-  ItemSelected(val: any, task, remove = false) {
+  Selected_Assign(val: any, task, remove = false) {
     // chọn item
-    debugger
     if (remove) {
       val.id_nv = val.userid;
     }
     this.UpdateByKey(task, "assign", val.id_nv, false);
+    // push
+    // this.ListTasks.concat(task);
+    // this.ListTasks.forEach(list => {
+    //   if (task.id_row == list.id_row) {
+    //     debugger
+    //     list.Users[0] = task.Users[0];
+    //   }
+    // });
+    // this.ListTasks.splice(this.ListTasks.indexOf(task));
+    this.changeDetectorRefs.detectChanges();
   }
-
   LoadListAccount() {
     const filter: any = {};
     filter.id_project_team = this.ID_Project;
@@ -1447,7 +1455,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     this._service.InsertTask(val).subscribe((res) => {
       if (res && res.status == 1) {
         // this.LoadData();
-        this.ReloadTask();
+        this.ReloadTask(val);
         // setTimeout(() => {
         this.newtask = x;
         this.AddnewTask(val.status, true);
@@ -1559,18 +1567,18 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     item.id_row = task.id_row;
     item.key = key;
     item.value = value;
-    debugger
     if (task.userId > 0) {
       item.IsStaff = true;
     }
     this._service._UpdateByKey(item).subscribe((res) => {
       if (res && res.status == 1) {
         // this.LoadData();
+      this.ReloadTask(item);
       } else {
 
         this.layoutUtilsService.showError(res.error.message);
       }
-      this.ReloadTask();
+      this.ReloadTask(item);
     });
   }
 

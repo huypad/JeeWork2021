@@ -24,12 +24,10 @@ namespace JeeWork_Core2021.Controllers.Wework
         public List<AccUsernameModel> DataAccount;
         private IConnectionCache ConnectionCache;
         private IConfiguration _configuration;
-        private readonly IHostingEnvironment _hostingEnvironment;
         private readonly ILogger<MenuController> _logger;
-        public MenuController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration, ILogger<MenuController> logger)
+        public MenuController(IOptions<JeeWorkConfig> config, IConnectionCache _cache, IConfiguration configuration, ILogger<MenuController> logger)
         {
             ConnectionCache = _cache;
-            _hostingEnvironment = hostingEnvironment;
             _config = config.Value;
             _configuration = configuration;
             _logger = logger;

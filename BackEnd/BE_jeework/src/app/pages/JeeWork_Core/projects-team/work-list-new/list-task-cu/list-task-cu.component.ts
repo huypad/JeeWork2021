@@ -237,57 +237,6 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
             this.subscription.unsubscribe();
         }
     }
-    // LoadWork() {
-    //     this.clearList();
-    //     const queryParams = new QueryParamsModelNew(
-    //         this.filterConfiguration(),
-    //         '',
-    //         '',
-    //         0,
-    //         50,
-    //         true
-    //     );
-    //     this.DanhSachCongViec = [];
-    //     if (!this.getMystaff) {
-    //         if (this.selectedTab === 2) {
-    //             this.layoutUtilsService.showWaitingTask();
-    //             this._service.ListByFilter(queryParams).subscribe(res => {
-    //                 this.layoutUtilsService.OffWaitingTask();
-    //                 if (res && res.status === 1) {
-    //                     this.DanhSachCongViec = res.data;
-    //                     this.filterDanhSach();
-    //                     this.changeDetectorRefs.detectChanges();
-    //                 }
-    //             }, (err) => {
-    //                 this.layoutUtilsService.OffWaitingTask();
-    //             });
-    //         } else {
-    //             this.layoutUtilsService.showWaitingTask();
-    //             this._service.ListByUserCU(queryParams).subscribe(res => {
-    //                 this.layoutUtilsService.OffWaitingTask();
-    //                 if (res && res.status === 1) {
-    //                     this.DanhSachCongViec = res.data;
-    //                     this.filterDanhSach();
-    //                     this.changeDetectorRefs.detectChanges();
-    //                 }
-    //             }, (err) => {
-    //                 this.layoutUtilsService.OffWaitingTask();
-    //             });
-    //         }
-    //     } else {
-    //         this.layoutUtilsService.showWaitingTask();
-    //         this._service.ListByManageCU(queryParams).subscribe(res => {
-    //             this.layoutUtilsService.OffWaitingTask();
-    //             if (res && res.status === 1) {
-    //                 this.DanhSachCongViec = res.data;
-    //                 this.filterDanhSach();
-    //                 this.changeDetectorRefs.detectChanges();
-    //             }
-    //         }, (err) => {
-    //             this.layoutUtilsService.OffWaitingTask();
-    //         });
-    //     }
-    // }
     LoadTask() {
         this.clearList();
         const queryParams = new QueryParamsModelNew(

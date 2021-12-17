@@ -26,16 +26,14 @@ namespace JeeWork_Core2021.Controllers.Wework
     // [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class MilestoneController : ControllerBase
     {
-        private readonly IHostingEnvironment _hostingEnvironment;
         private JeeWorkConfig _config;
         public List<AccUsernameModel> DataAccount;
         private IConnectionCache ConnectionCache;
         private IConfiguration _configuration;
         private readonly ILogger<MilestoneController> _logger;
 
-        public MilestoneController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration, ILogger<MilestoneController> logger)
+        public MilestoneController(IOptions<JeeWorkConfig> config, IConnectionCache _cache, IConfiguration configuration, ILogger<MilestoneController> logger)
         {
-            _hostingEnvironment = hostingEnvironment;
             _config = config.Value;
             ConnectionCache = _cache;
             _configuration = configuration;
@@ -45,7 +43,6 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object List([FromQuery] QueryParams query)
         {
-           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -197,7 +194,6 @@ left join (select count(*) as tong, COUNT(CASE WHEN w.status=2 THEN 1 END) as ht
         [HttpGet]
         public object Detail(long id)
         {
-           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -431,9 +427,8 @@ where w.disabled=0 and id_milestone = " + id;
         /// <returns></returns>
         [Route("Insert")]
         [HttpPost]
-        public async Task<object> Insert(MilestoneModel data)
+        public Task<BaseModel<object>> Insert([FromBody] MilestoneModel data)
         {
-           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -497,7 +492,7 @@ where w.disabled=0 and id_milestone = " + id;
         /// <returns></returns>
         [Route("Update")]
         [HttpPost]
-        public async Task<BaseModel<object>> Update(MilestoneModel data)
+        public Task<BaseModel<object>> Update(MilestoneModel data)
         {
            
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
@@ -575,7 +570,6 @@ where w.disabled=0 and id_milestone = " + id;
         [HttpGet]
         public BaseModel<object> Delete(long id)
         {
-           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();

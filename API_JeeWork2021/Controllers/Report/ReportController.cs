@@ -35,7 +35,6 @@ namespace JeeWork_Core2021.Controllers.Wework
     // [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class ReportController : ControllerBase
     {
-        private readonly IHostingEnvironment _hostingEnvironment;
         public static JeeWorkConfig _config;
         public static string excel_member;
         public static string excel_project;
@@ -52,15 +51,13 @@ namespace JeeWork_Core2021.Controllers.Wework
         // kiểm tra điều kiện hoàn thành
         string queryhoanthanh = " and w.end_date is not null ";
         string querydangthuchien = " and w.end_date is null ";
-        public ReportController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration, ILogger<ReportController> logger)
+        public ReportController(IOptions<JeeWorkConfig> config, IConnectionCache _cache, IConfiguration configuration, ILogger<ReportController> logger)
         {
-            _hostingEnvironment = hostingEnvironment;
             _config = config.Value;
             ConnectionCache = _cache;
             _configuration = configuration;
             _logger = logger;
         }
-
         /// <summary>
         /// Overview
         /// </summary>
@@ -70,7 +67,6 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object Overview([FromQuery] QueryParams query)
         {
-
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();

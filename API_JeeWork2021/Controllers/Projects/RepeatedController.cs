@@ -29,7 +29,6 @@ namespace JeeWork_Core2021.Controllers.Wework
     // [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class RepeatedController : ControllerBase
     {
-        private readonly IHostingEnvironment _hostingEnvironment;
         private JeeWorkConfig _config;
         public List<AccUsernameModel> DataAccount;
         private IConnectionCache ConnectionCache;
@@ -37,16 +36,14 @@ namespace JeeWork_Core2021.Controllers.Wework
         private INotifier _notifier;
         private readonly ILogger<RepeatedController> _logger;
 
-        public RepeatedController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration, INotifier notifier, ILogger<RepeatedController> logger)
+        public RepeatedController(IOptions<JeeWorkConfig> config, IConnectionCache _cache, IConfiguration configuration, INotifier notifier, ILogger<RepeatedController> logger)
         {
-            _hostingEnvironment = hostingEnvironment;
             _config = config.Value;
             ConnectionCache = _cache;
             _configuration = configuration;
             _notifier = notifier;
             _logger = logger;
         }
-        APIModel.Models.Notify Knoti;
         /// <summary>
         /// 
         /// </summary>

@@ -662,7 +662,7 @@
                                                                                             style="justify-content: flex-end;">
                                                                                             <i class="far fa-times-circle url view-hover text-dark bg-white"
                                                                                                 style="position: absolute;top:0;right:0;border-radius: 50%;font-size: 10pt;"
-                                                                                                (click)="ItemSelected(us,node,true)"></i>
+                                                                                                (click)="Selected_Assign(us,node,true)"></i>
                                                                                             <ng-container>
                                                                                                 <kt-avatar-user
                                                                                                     (click)="clickmenu.click()"
@@ -695,7 +695,7 @@
                                                                                                         class="position-relative">
                                                                                                         <i class="fas fa-times scale-hover-01 url"
                                                                                                             style="position: absolute;top:0;right:0"
-                                                                                                            (click)="ItemSelected(user,node,true)"></i>
+                                                                                                            (click)="Selected_Assign(user,node,true)"></i>
                                                                                                         <div class="row"
                                                                                                             (click)="clickmenu.click()">
                                                                                                             <kt-avatar-user
@@ -766,7 +766,7 @@
                                                                                         <kt-choose-users
                                                                                             [options]="options_assign"
                                                                                             (IsSearch)="stopPropagation($event)"
-                                                                                            (ItemSelected)="ItemSelected($event,node)">
+                                                                                            (ItemSelected)="Selected_Assign($event,node)">
                                                                                         </kt-choose-users>
                                                                                     </div>
                                                                                     <div class="border-top url -hover"

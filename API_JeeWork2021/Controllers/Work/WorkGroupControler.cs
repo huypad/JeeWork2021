@@ -25,19 +25,16 @@ namespace JeeWork_Core2021.Controllers.Wework
     [ApiController]
     [Route("api/work-group")]
     [EnableCors("JeeWorkPolicy")]
-    //[CusAuthorize(Roles = "3400")]
     public class WorkGroupController : ControllerBase
     {
-        private readonly IHostingEnvironment _hostingEnvironment;
         private JeeWorkConfig _config;
         private IConnectionCache ConnectionCache;
         public List<AccUsernameModel> DataAccount;
         private IConfiguration _configuration;
         private readonly ILogger<WorkGroupController> _logger;
 
-        public WorkGroupController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration, ILogger<WorkGroupController> logger)
+        public WorkGroupController(IOptions<JeeWorkConfig> config, IConnectionCache _cache, IConfiguration configuration, ILogger<WorkGroupController> logger)
         {
-            _hostingEnvironment = hostingEnvironment;
             _config = config.Value;
             ConnectionCache = _cache;
             _configuration = configuration;

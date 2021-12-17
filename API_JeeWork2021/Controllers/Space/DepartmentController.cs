@@ -31,7 +31,6 @@ namespace JeeWork_Core2021.Controllers.Wework
     // [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class DepartmentController : ControllerBase
     {
-        private readonly IHostingEnvironment _hostingEnvironment;
         private JeeWorkConfig _config;
         public List<AccUsernameModel> DataAccount;
         private IConnectionCache ConnectionCache;
@@ -39,9 +38,8 @@ namespace JeeWork_Core2021.Controllers.Wework
         private readonly ILogger<DepartmentController> _logger;
         private INotifier _notifier;
 
-        public DepartmentController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration, ILogger<DepartmentController> logger, INotifier notifier)
+        public DepartmentController(IOptions<JeeWorkConfig> config, IConnectionCache _cache, IConfiguration configuration, ILogger<DepartmentController> logger, INotifier notifier)
         {
-            _hostingEnvironment = hostingEnvironment;
             _config = config.Value;
             ConnectionCache = _cache;
             _configuration = configuration;

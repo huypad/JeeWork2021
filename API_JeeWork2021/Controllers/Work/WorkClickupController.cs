@@ -59,7 +59,6 @@ namespace JeeWork_Core2021.Controllers.Wework
             _logger = logger;
             _producer = producer;
         }
-        APIModel.Models.Notify Knoti;
         /// <summary>
         /// Trang danh sách công việc chính
         /// </summary>
@@ -67,7 +66,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         /// <returns></returns>
         [Route("list-work")]
         [HttpGet]
-        public async Task<object> ListWorkClickUp([FromQuery] QueryParams query)
+        public object ListWorkClickUp([FromBody] QueryParams query)
         {
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
@@ -104,7 +103,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         /// <returns></returns>
         [Route("list-task")]
         [HttpGet]
-        public async Task<object> ListTask([FromQuery] QueryParams query)
+        public object ListTask([FromQuery] QueryParams query)
         {
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
@@ -141,7 +140,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         /// <returns></returns>
         [Route("work-filter")]
         [HttpGet]
-        public async Task<object> WorkFilter([FromQuery] QueryParams query)
+        public object WorkFilter([FromQuery] QueryParams query)
         {
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
@@ -779,7 +778,6 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object LogDetail(long id)
         {
-
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1437,7 +1435,7 @@ where disabled = 0 and u.id_user in ({listID}) and id_project_team = @id";
         /// <returns></returns>
         [Route("update_new-field")]
         [HttpPost]
-        public async Task<BaseModel<object>> UpdateNewField(UpdateWorkModel data)
+        public object UpdateNewField(UpdateWorkModel data)
         {
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
@@ -1673,7 +1671,7 @@ where disabled = 0 and u.id_user in ({listID}) and id_project_team = @id";
         /// <returns></returns>
         [Route("ExportExcel")]
         [HttpGet]
-        public async Task<IActionResult> ExportExcel([FromQuery] QueryParams query)
+        public object Task<IActionResult> ExportExcel([FromQuery] QueryParams query)
         {
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
@@ -2220,23 +2218,12 @@ where Disabled=0 and object_type in (1,11) and object_id=" + id;
                 return JsonResultCommon.DangNhap();
             try
             {
+                bool isview = false;
                 string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
                 string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
-                    if (!JeeWorkLiteController.CheckCustomerID(id, "we_work", loginData, cnn))
-                    {
-                        return JsonResultCommon.Custom("Công việc không tồn tại");
-                    }
-                    #region Lấy dữ liệu account từ JeeAccount
-                    DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
-                    if (DataAccount == null)
-                        return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
-                    string error = "";
-                    string listID = JeeWorkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
-                    if (error != "")
-                        return JsonResultCommon.Custom(error);
-                    #endregion
+                    long id_project_team = 0;
                     string sql = $@"";
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlq = @$"select distinct w.id_row,w.title,w.description
@@ -2281,7 +2268,38 @@ where Disabled=0 and object_type in (1,11) and object_id=" + id;
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     if (ds.Tables[0] == null || ds.Tables[0].Rows.Count == 0)
-                        return JsonResultCommon.KhongTonTai();
+                        return JsonResultCommon.KhongTonTai("Công việc");
+                    id_project_team = long.Parse(ds.Tables[0].Rows[0]["id_project_team"].ToString());
+                    if (!JeeWorkLiteController.CheckCustomerID(id, "we_work", loginData, cnn))
+                    {
+                        return JsonResultCommon.Custom("Công việc không tồn tại");
+                    }
+                    int id_role = 3; // quyền xem công việc của người khác
+                    DataTable dt_role = new DataTable();
+                    string sql_role = "";
+                    sql_role = "select * from we_role where disabled = 0 and id_row = " + id_role;
+                    dt_role = cnn.CreateDataTable(sql_role);
+                    if (dt_role.Rows.Count > 0)
+                    {
+                        isview = Common.CheckIsUpdatedTask(id_project_team.ToString(), id_role, loginData, cnn, ConnectionString);
+                        if (!isview)
+                        {
+                            isview = Common.CheckIsViewTask(id_project_team.ToString(), loginData.UserID, id, loginData, cnn, ConnectionString);
+                            if (!isview)
+                            {
+                                return JsonResultCommon.Custom("Bạn không có quyền " + dt_role.Rows[0]["title"].ToString());
+                            }
+                        }
+                    }
+                    #region Lấy dữ liệu account từ JeeAccount
+                    DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                    if (DataAccount == null)
+                        return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
+                    string error = "";
+                    string listID = JeeWorkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
+                    if (error != "")
+                        return JsonResultCommon.Custom(error);
+                    #endregion
                     #region Map info account từ JeeAccount
                     ds.Tables[2].Columns.Add("hoten");
                     ds.Tables[2].Columns.Add("mobile");
@@ -2303,19 +2321,6 @@ where Disabled=0 and object_type in (1,11) and object_id=" + id;
                         }
                     }
                     #endregion
-                    long id_project_team = 0;
-                    DataTable dt_infowork = cnn.CreateDataTable("select title, id_project_team, status, start_date, deadline  " +
-                        "from we_work " +
-                        "where id_row = @id_row", new SqlConditions() { { "id_row", id } });
-                    if (dt_infowork.Rows.Count > 0)
-                    {
-                        id_project_team = long.Parse(dt_infowork.Rows[0]["id_project_team"].ToString());
-                    }
-                    bool istaskuser = Common.CheckViewTaskUser(id_project_team.ToString(), loginData.UserID, id, loginData, cnn, ConnectionString);
-                    if (!istaskuser)
-                    {
-                        return JsonResultCommon.Custom("Bạn không có quyền xem công việc này");
-                    }
                     SqlConditions cond = new SqlConditions();
                     cond.Add("disabled", 0);
                     cond.Add("id_row", id_project_team);
@@ -2354,6 +2359,7 @@ where Disabled=0 and object_type in (1,11) and object_id=" + id;
                                     result = r["result"],
                                     estimates = r["estimates"],
                                     closed = r["closed"],
+                                    isviewtask = isview,
                                     num_comment = r["num_comment"],
                                     closed_work_date = r["closed_work_date"],
                                     closed_work_by = r["closed_work_by"],
@@ -2936,7 +2942,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
         /// <returns></returns>
         [Route("Insert")]
         [HttpPost]
-        public async Task<object> Insert(WorkModel data)
+        public object Insert(WorkModel data)
         {
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
@@ -2960,7 +2966,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     }
                     Common comm = new Common(ConnectionString);
                     // quyền 1 : tạo mới công việc
-                    bool rs = Common.CheckPermitUpdate(data.id_project_team.ToString(), 1, loginData, cnn, ConnectionString);
+                    bool rs = Common.CheckIsUpdatedTask(data.id_project_team.ToString(), 1, loginData, cnn, ConnectionString);
                     if (!rs)
                     {
                         return JsonResultCommon.Custom("Bạn không có quyền tạo mới công việc");
@@ -3206,8 +3212,8 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                             //{
                             //    user_assign = info.FullName;
                             //}
-                            user_assign = dtwork.Rows[0]["project_team"].ToString() + " (Phòng ban: " + dtwork.Rows[0]["department"].ToString()+")";
-                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$forme$", " trong dự án: "+ user_assign+"");
+                            user_assign = dtwork.Rows[0]["project_team"].ToString() + " (Phòng ban: " + dtwork.Rows[0]["department"].ToString() + ")";
+                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$forme$", " trong dự án: " + user_assign + "");
                             if (info is not null)
                             {
                                 bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
@@ -3991,21 +3997,14 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     {
                         return JsonResultCommon.Custom("Công việc đã đóng không thể cập nhật");
                     }
-                    bool istaskuser = Common.CheckViewTaskUser(old.Rows[0]["id_project_team"].ToString(), loginData.UserID, data.id_row, loginData, cnn, ConnectionString);
-                    var txterror = "Bạn không có quyền cập nhật công việc này";
-                    if (!istaskuser)
-                    {
-                        return JsonResultCommon.Custom(txterror);
-                    }
                     if (data.id_role > 0)
                     {
                         DataTable dt_role = new DataTable();
-                        string sql_role = "";
-                        sql_role = "select * from we_role where disabled = 0 and id_row = " + data.id_role;
+                        string sql_role = "select * from we_role where disabled = 0 and id_row = " + data.id_role;
                         dt_role = cnn.CreateDataTable(sql_role);
                         if (dt_role.Rows.Count > 0)
                         {
-                            bool rs = Common.CheckPermitUpdate(old.Rows[0]["id_project_team"].ToString(), data.id_role, loginData, cnn, ConnectionString);
+                            bool rs = Common.CheckIsUpdatedTask(old.Rows[0]["id_project_team"].ToString(), data.id_role, loginData, cnn, ConnectionString);
                             if (!rs)
                             {
                                 return JsonResultCommon.Custom("Bạn không có quyền " + dt_role.Rows[0]["title"].ToString());
@@ -4028,7 +4027,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     {
                         danhsachU = dt_user1.AsEnumerable().Select(x => long.Parse(x["id_nv"].ToString())).ToList();
                     }
-                    string sql_status = "select id_row, IsDeadline, IsToDo, IsFinal,IsDefault " +
+                    string sql_status = "select id_row, isdeadline, istodo, isfinal, isdefault " +
                     "from we_status where disabled = 0 and id_project_team = @id_project_team";
                     DataTable dt_StatusID = new DataTable();
                     dt_StatusID = cnn.CreateDataTable(sql_status, new SqlConditions() { { "id_project_team", id_project_team.ToString() } });
@@ -5040,7 +5039,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     DataTable old = cnn.CreateDataTable(s, "(where)", sqlcondQ);
                     if (old == null || old.Rows.Count == 0)
                         return JsonResultCommon.KhongTonTai("Công việc");
-                    bool _delete = Common.CheckPermitUpdate(old.Rows[0]["id_project_team"].ToString(), 13, loginData, cnn, ConnectionString);
+                    bool _delete = Common.CheckIsUpdatedTask(old.Rows[0]["id_project_team"].ToString(), 13, loginData, cnn, ConnectionString);
                     if (!_delete)
                         return JsonResultCommon.Custom("Bạn không có quyền xóa công việc");
                     if (Common.IsTaskClosed(id, cnn))
@@ -5743,7 +5742,7 @@ where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { query.fil
                     DataTable old = cnn.CreateDataTable(s, "(where)", sqlcond);
                     if (old == null || old.Rows.Count == 0)
                         return JsonResultCommon.KhongTonTai("Công việc");
-                    bool checkrole = Common.CheckPermitUpdate(old.Rows[0]["id_project_team"].ToString(), 22, loginData, cnn, ConnectionString);
+                    bool checkrole = Common.CheckIsUpdatedTask(old.Rows[0]["id_project_team"].ToString(), 22, loginData, cnn, ConnectionString);
                     if (!checkrole)
                         return JsonResultCommon.Custom("Bạn không có quyền đóng/mở công việc");
                     if (old.Rows[0]["closed"] != DBNull.Value && (bool)old.Rows[0]["closed"] == closed)

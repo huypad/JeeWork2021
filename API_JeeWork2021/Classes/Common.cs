@@ -807,7 +807,7 @@ namespace JeeWork_Core2021.Classes
             }
             return false;
         }
-        public static bool CheckPermitUpdate(string id_project_team, long id_role, UserJWT loginData, DpsConnection cnn, string ConnectionString)
+        public static bool CheckIsUpdatedTask(string id_project_team, long id_role, UserJWT loginData, DpsConnection cnn, string ConnectionString)
         {
             // Kiểm tra các role admin của tk đăng nhập
             if (CheckRoleByProject(id_project_team, loginData, cnn, ConnectionString))
@@ -824,24 +824,24 @@ namespace JeeWork_Core2021.Classes
             if (dt.Rows.Count > 0) return true;
             return false;
         }
-        public static bool CheckViewTaskUser(string id_project_team, long id_user, long id_work, UserJWT loginData, DpsConnection cnn, string ConnectionString)
+        public static bool CheckIsViewTask(string id_project_team, long id_user, long id_work, UserJWT loginData, DpsConnection cnn, string ConnectionString)
         {
-            if (IsAdminTeam(id_project_team, loginData, cnn, ConnectionString))
+            if (!IsAdminTeam(id_project_team, loginData, cnn, ConnectionString))
             {
-                return true;
-            }
-            // kiểm tra công việc đó của mình hay không
-            SqlConditions conds = new SqlConditions();
-            conds.Add("userid", id_user);
-            conds.Add("id_work", id_work);
-            string sql = "select * from v_wework_new where id_row = @id_work and (createdby = @userid or id_nv = @userid)";
-            DataTable dt = cnn.CreateDataTable(sql, conds);
-            string sql_follower = "";
-            sql_follower = "select* from we_work_user where id_user = " + id_user + " and loai = 2 and disabled = 0 and id_work =" + id_work;
-            DataTable dt_follower = cnn.CreateDataTable(sql_follower);
-            if (dt.Rows.Count > 0 || dt_follower.Rows.Count > 0)
-            {
-                return true;
+                SqlConditions conds = new SqlConditions();
+                conds.Add("userid", id_user);
+                conds.Add("id_work", id_work);
+                // Công việc tôi tạo hoặc giao cho tôi
+                string sql = "select * from v_wework_new where id_row = @id_work and (createdby = @userid or id_nv = @userid)";
+                DataTable dt = cnn.CreateDataTable(sql, conds);
+                string sql_follower = "";
+                // Công việc tôi theo dõi
+                sql_follower = "select* from we_work_user where id_user = " + id_user + " and loai = 2 and disabled = 0 and id_work =" + id_work;
+                DataTable dt_follower = cnn.CreateDataTable(sql_follower);
+                if (dt.Rows.Count > 0 || dt_follower.Rows.Count > 0)
+                {
+                    return true;
+                }
             }
             return false;
         }

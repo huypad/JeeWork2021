@@ -30,7 +30,6 @@ namespace JeeWork_Core2021.Controllers.Wework
     /// </summary>
     public class WUserController : ControllerBase
     {
-        private readonly IHostingEnvironment _hostingEnvironment;
         private JeeWorkConfig _config;
         public List<AccUsernameModel> DataAccount;
         private IConnectionCache ConnectionCache;
@@ -38,9 +37,8 @@ namespace JeeWork_Core2021.Controllers.Wework
         private IProducer _producer;
         private readonly ILogger<WUserController> _logger;
 
-        public WUserController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration, ILogger<WUserController> logger, IProducer producer)
+        public WUserController(IOptions<JeeWorkConfig> config, IConnectionCache _cache, IConfiguration configuration, ILogger<WUserController> logger, IProducer producer)
         {
-            _hostingEnvironment = hostingEnvironment;
             _config = config.Value;
             ConnectionCache = _cache;
             _configuration = configuration;

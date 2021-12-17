@@ -26,15 +26,13 @@ namespace JeeWork_Core2021.Controllers.Wework
     // [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class AuthorizeControler : ControllerBase
     {
-        private readonly IHostingEnvironment _hostingEnvironment;
         private JeeWorkConfig _config;
         private IConnectionCache ConnectionCache;
         private IConfiguration _configuration;
         private readonly ILogger<AuthorizeControler> _logger;
 
-        public AuthorizeControler(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration, ILogger<AuthorizeControler> logger)
+        public AuthorizeControler(IOptions<JeeWorkConfig> config, IConnectionCache _cache, IConfiguration configuration, ILogger<AuthorizeControler> logger)
         {
-            _hostingEnvironment = hostingEnvironment;
             _config = config.Value; 
             ConnectionCache = _cache;
             _configuration = configuration;
