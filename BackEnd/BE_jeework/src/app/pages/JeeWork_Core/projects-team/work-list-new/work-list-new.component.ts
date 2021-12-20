@@ -1516,26 +1516,11 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     return false;
   }
 
-  UpdateStatus(task, status) {
-    if (+task.status == +status.id_row) {
+  UpdateStatus(node, status) {
+    if (+node.status == +status.id_row) {
       return;
     }
-    // if (this.IsAdmin()) {
-    //   this.UpdateByKey(task, "status", status.id_row);
-    // } else {
-    //   if (status.Follower) {
-    //     if (status.Follower == this.UserID) {
-    //       this.UpdateByKey(task, "status", status.id_row);
-    //     } else {
-    //       this.layoutUtilsService.showError(
-    //         "Không có quyền thay đổi trạng thái"
-    //       );
-    //     }
-    //   } else {
-    //     this.UpdateByKey(task, "status", status.id_row);
-    //   }
-    // }
-    this.UpdateByKey(task, "status", status.id_row);
+    this.UpdateByKey(node, "status", status.id_row);
   }
 
   CreateEvent(node) {
@@ -1558,16 +1543,25 @@ export class WorkListNewComponent implements OnInit, OnChanges {
       }
     });
   }
-
-  UpdateByKey(task, key, value, isReloadData = true) {
-    if (!this.KiemTraThayDoiCongViec(task, key)) {
-      return;
-    }
+	emit() {
+		let _data = [];
+		for (var i = 0; i < this.ListTasks.length; i++) {
+			let x = this.ListTasks[i];
+			if (x.IdRow == 0)
+				_data.push(x);
+		}
+		// _data = _data.concat(this.dataResult_Deleted);
+		// this.DataChange.emit(_data);
+	}
+  UpdateByKey(node, key, value, isReloadData = true) {
+    // if (!this.KiemTraThayDoiCongViec(+, key)) {
+    //   return;
+    // }
     const item = new UpdateWorkModel();
-    item.id_row = task.id_row;
+    item.id_row = node.id_row;
     item.key = key;
     item.value = value;
-    if (task.userId > 0) {
+    if (node.userId > 0) {
       item.IsStaff = true;
     }
     this._service._UpdateByKey(item).subscribe((res) => {

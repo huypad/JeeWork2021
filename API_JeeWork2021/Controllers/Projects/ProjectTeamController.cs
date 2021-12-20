@@ -3886,6 +3886,9 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                 case 36:
                     TitleLanguageKey = "ww_xoakhoiduan";
                     break;
+                case 42:
+                    TitleLanguageKey = "ww_xoakhoiduan";
+                    break;
                 default:
                     break;
             }

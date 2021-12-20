@@ -34,7 +34,7 @@ namespace JeeWork_Core2021.Models
         public long customerid { get; set; }
         public List<TemplateStatusModel> Status { get; set; }
     }
-        public class UpdateQuickModel
+     public class UpdateQuickModel
     {
         public long id_row { get; set; }
         public string columname { get; set; } // color, title, statusname
@@ -47,7 +47,7 @@ namespace JeeWork_Core2021.Models
     {
         public long id_row { get; set; } //
         public string title { get; set; } //
-        public string description { get; set; }
+        public string description { get; set; } = "";
         public long templateid { get; set; } //
         public long customerid { get; set; } //
         public long types { get; set; } // 1 - space, 2 - folder, 3 - list (Project)
@@ -72,7 +72,32 @@ namespace JeeWork_Core2021.Models
         public string sample_id { get; set; } // Link với table we_sample_data để lấy bộ dữ liệu mẫu tương ứng với template (áp dụng is_template_center = 1)
         public string save_as_id { get; set; } // Dùng để lưu ngược lại từ space/folder/list về lại template, id link với các table phụ thuộc vào types
         public long id_reference { get; set; } // levels = 1,2 lấy id_row trong we_department, level = 3 we_project_team, level = 4 we_work
-
+        public long nodeid { get; set; } = 0; // WF NodeID > 0
+    }
+    public class HangThienModel
+    {
+        public long id_row { get; set; }
+        public string title { get; set; }
+        public long templateid { get; set; } = 0;
+        public long ParentID { get; set; } = 0; //2 - folder (Truyền ID Department chọn), 3 - list (Project) Truyền id_Folder chọn
+        public long levels { get; set; } = 1; // 1 - Beginner, 2 - Intermediate, 3 - Advanced
+        public string viewid { get; set; } = "0";
+        public string group_statusid { get; set; }
+        public long template_typeid { get; set; }
+        public string img_temp { get; set; }
+        public string field_id { get; set; } // truyền is new field, anh tự lấy trong DB
+        public bool is_customitems { get; set; }
+        public bool is_projectdates { get; set; }
+        public bool is_task { get; set; }
+        public bool is_views { get; set; }
+        public long share_with { get; set; } // 1 - Only Me, 2 - Everyone (including guests), 3 - All Members, 4 - Select people
+        public List<ListFieldModel> list_field_name { get; set; } = null;
+        public DateTime start_date { get; set; }
+        public DateTime end_date { get; set; }
+        public long nodeid { get; set; } = 0;
+        //be k truyền
+        public long customerid { get; set; } = 0;
+        public long types { get; set; }
     }
     public class ListFieldModel
     {

@@ -94,8 +94,8 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
     // view setting
     tasklocation = true;
     showsubtask = true;
-    showclosedtask = false;
-    showclosedsubtask = false;
+    showclosedtask = true;
+    showclosedsubtask = true;
     showtaskmutiple = true;
     showemptystatus = false;
     // viewTaskOrder = false;
@@ -557,8 +557,6 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
         }
         return '';
     }
-
-
     isItemFinal(id) {
         if (id === this.ItemFinal) {
             return true;
@@ -615,10 +613,6 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
             event.target.value = node.title;
             return;
         }
-        if (!this.KiemTraThayDoiCongViec(node, 'title', node.id_project_team)) {
-            event.target.value = node.title;
-            return;
-        }
         this.UpdateByKey(node, 'title', event.target.value.trim());
     }
     focusFunction(val) {
@@ -653,9 +647,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
             this.addNodeitem = 0;
         }
     }
-
     Themcot() {
-
         this.ListColumns.push({
             fieldname: 'cot' + this.cot,
             isbatbuoc: true,
@@ -668,7 +660,6 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
         this.cot++;
 
     }
-
     // Assign
     ItemSelected(val: any, task) { // chọn item
         debugger
@@ -678,13 +669,10 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
         this.UpdateByKey(task, 'assign', val.id_nv);
     }
 
-
-
     loadOptionprojectteam(node) {
         const id_project_team = node.id_project_team;
         this.LoadUserByProject(id_project_team);
     }
-
     LoadUserByProject(id_project_team) {
         const filter: any = {};
         debugger
@@ -737,7 +725,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
         });
     }
 
-    ViewDetai(item) {
+    OpenDetail(item) {
         this.router.navigate(['', { outlets: { auxName: 'aux/detail/' + item.id_row }, }]);
     }
     f_convertDate(v: any) {
@@ -849,9 +837,6 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
     }
 
     UpdateByKey(task, key, value) {
-        if (!this.KiemTraThayDoiCongViec(task, key, task.id_project_team)) {
-            return;
-        }
         const item = new UpdateWorkModel();
         item.id_row = task.id_row;
         item.key = key;
@@ -889,9 +874,6 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
     }
 
     updateDate(task, date, field) {
-        if (!this.KiemTraThayDoiCongViec(task, 'datetime', task.id_project_team)) {
-            return;
-        }
         if (date) {
             this.UpdateByKey(task, field, moment(date).format('MM/DD/YYYY HH:mm'));
         } else {
@@ -1190,57 +1172,4 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
             return true;
         }
     }
-
-    KiemTraThayDoiCongViec(item, key, idprojectteam) {
-
-        if (!this.CheckClosedTask(item)) {
-            this.layoutUtilsService.showError('Công việc đã đóng');
-            return false;
-        }
-        if (this.IsAdmin(idprojectteam)) {
-            return true;
-        } else if (item.createdby?.userid === this.UserID) {
-            return true;
-        } else {
-            if (item.User) {
-                const index = item.User.findIndex(x => x.id_nv === this.UserID);
-                if (index >= 0) {
-                    return true;
-                }
-            }
-        }
-        var txtError = '';
-        switch (key) {
-            case 'assign':
-                txtError = 'Bạn không có quyền thay đổi người làm của công việc này';
-                break;
-            case 'id_group':
-                txtError = 'Bạn không có quyền thay đổi nhóm công việc của công việc này';
-                break;
-            case 'status':
-                txtError = 'Bạn không có quyền thay đổi trạng thái của công việc này';
-                break;
-            case 'estimates':
-                txtError = 'Bạn không có quyền thay đổi thời gian làm của công việc này';
-                break;
-            case 'checklist':
-                txtError = 'Bạn không có quyền chỉnh sửa checklist của công việc này';
-                break;
-            case 'title':
-                txtError = 'Bạn không có quyền đổi tên của công việc này';
-                break;
-            case 'description':
-                txtError = 'Bạn không có quyền đổi mô tả của công việc này';
-                break;
-            default:
-                txtError = 'Bạn không có quyền chỉnh sửa công việc này';
-                break;
-        }
-        this.layoutUtilsService.showError(txtError);
-        return false;
-    }
-    // @HostListener('window:beforeunload', ['$event'])
-    // beforeunloadHandler(event) {
-    //     return false;
-    // }
 }

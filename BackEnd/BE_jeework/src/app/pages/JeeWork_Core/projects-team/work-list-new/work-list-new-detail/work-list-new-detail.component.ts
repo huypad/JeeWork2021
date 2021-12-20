@@ -1534,6 +1534,9 @@ export class WorkListNewDetailComponent implements OnInit {
             reader.readAsDataURL(evt.target.files[0]);
             let base64Str;
             setTimeout(() => {
+                debugger
+                console.log('size', file.size);
+                console.log('type', file.type);
                 base64Str = reader.result as String;
                 const metaIdx = base64Str?.indexOf(';base64,');
                 if (metaIdx != undefined) {
@@ -1551,6 +1554,7 @@ export class WorkListNewDetailComponent implements OnInit {
                     item.key = type == '1' ? 'Attachments' : 'Attachments_result';
                     item.values = new Array<FileUploadModel>(ct);
                     this.projectsTeamService._UpdateByKey(item).subscribe((res) => {
+                debugger
                         if (res && res.status == 1) {
                             this.LoadData();
                             this.SendMessage(true);

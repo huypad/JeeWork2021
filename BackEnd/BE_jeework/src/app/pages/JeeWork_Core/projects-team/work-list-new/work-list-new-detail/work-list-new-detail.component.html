@@ -670,7 +670,9 @@
                             <span translate="work.themtailieu"></span>
                         </a>
                         <input #csvInput hidden="true" type="file" onclick="this.value=null"
-                            (change)="save_file_Direct($event, '1')" />
+                            (change)="save_file_Direct($event, '1')" />&nbsp;
+                        <i matTooltip="Chấp nhận tất cả các định dạng, tối đa 20 MB" style="color: rgb(71, 71, 243);"
+                            class="las la-info-circle"></i>&nbsp;
                     </td>
                 </tr>
                 <tr>
@@ -723,7 +725,9 @@
                             <span translate="work.themtailieucapnhatketquacongviec"></span>
                         </a>
                         <input #resultInput hidden="true" type="file" onclick="this.value=null"
-                            (change)="save_file_Direct($event, '11')" />
+                            (change)="save_file_Direct($event, '11')" />&nbsp;
+                        <i matTooltip="Chấp nhận tất cả các định dạng, tối đa 20 MB" style="color: rgb(71, 71, 243);"
+                            class="las la-info-circle"></i>&nbsp;
                     </td>
                 </tr>
                 <tr>

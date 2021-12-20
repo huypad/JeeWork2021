@@ -122,13 +122,11 @@
             </div>
         </div>
     </div>
-
-
     <div class="kt-portlet-body pd-0 overflow-auto" style="background-color: #eeeeee;"
         [ngStyle]="{'height.px': getHeight()}">
         <div class="kt-form__filtration">
             <div class="form-group kt-form__group row">
-                <div style="padding: 25px;    flex-grow: 1;">
+                <div style="padding: 25px; flex-grow: 1;">
                     <ng-container *ngFor="let lstcongviec of filteredDanhSachCongViec | async ;trackBy: trackByFn">
                         <div class="cu-list-group" *ngIf="lstcongviec.data.length > 0 || showemptystatus">
                             <div class="cu-task-list">
@@ -227,7 +225,6 @@
                                                                             [ngStyle]="{'backgroundColor': status.color}">
                                                                         </div>
                                                                     </div>
-
                                                                     {{status.statusname}}
                                                                 </div>
                                                             </button>
@@ -253,7 +250,7 @@
                                                                         <span
                                                                             class=" cu-task-row-main__link-text-inner position-relative  url">
                                                                             <span class="-hover"
-                                                                                (click)="ViewDetai(node)">{{node.title}}</span>
+                                                                                (click)="OpenDetail(node)">{{node.title}}</span>
 
                                                                             <ng-container
                                                                                 *ngIf="node.Childs.length > 0">
@@ -640,7 +637,7 @@
                                                                     </button>
                                                                     <button mat-menu-item color="accent"
                                                                         *ngIf="CheckRoles(7,node.id_project_team)  && CheckClosedTask(node)"
-                                                                        (click)="ViewDetai(node)">
+                                                                        (click)="OpenDetail(node)">
                                                                         <i class="flaticon2-edit"
                                                                             style="color: royalblue;"></i>&nbsp;<span
                                                                             style="font-size: 9pt"
