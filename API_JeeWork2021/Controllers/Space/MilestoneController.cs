@@ -427,7 +427,7 @@ where w.disabled=0 and id_milestone = " + id;
         /// <returns></returns>
         [Route("Insert")]
         [HttpPost]
-        public Task<BaseModel<object>> Insert([FromBody] MilestoneModel data)
+        public async Task<BaseModel<object>> Insert([FromBody] MilestoneModel data)
         {
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
@@ -492,9 +492,8 @@ where w.disabled=0 and id_milestone = " + id;
         /// <returns></returns>
         [Route("Update")]
         [HttpPost]
-        public Task<BaseModel<object>> Update(MilestoneModel data)
+        public BaseModel<object> Update(MilestoneModel data)
         {
-           
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();

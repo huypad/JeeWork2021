@@ -369,7 +369,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         WeWorkRoles = role
                     };
                     objCustomData.fieldValue = datas;
-                    var dataJA = Common.UpdateCustomData(_configuration, _configuration.GetValue<string>("Host:JeeAccount_API"), objCustomData);
+                    var dataJA = Common.UpdateCustomData(HttpContext.Request.Headers, _configuration.GetValue<string>("Host:JeeAccount_API"), objCustomData);
                     if (dataJA == null)
                     {
                         cnn.RollbackTransaction();
@@ -452,7 +452,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     };
                     objCustomData.fieldValue = datas;
 
-                    var dataJA = Common.UpdateCustomData(_configuration, _configuration.GetValue<string>("Host:JeeAccount_API"), objCustomData);
+                    var dataJA = Common.UpdateCustomData(HttpContext.Request.Headers, _configuration.GetValue<string>("Host:JeeAccount_API"), objCustomData);
                     if (dataJA == null)
                     {
                         cnn.RollbackTransaction();
@@ -947,7 +947,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                             WeWorkRoles = role
                         };
                         objCustomData.fieldValue = datas;
-                        var dataJA = Common.UpdateCustomData(_configuration, _configuration.GetValue<string>("Host:JeeAccount_API"), objCustomData);
+                        var dataJA = Common.UpdateCustomData(HttpContext.Request.Headers, _configuration.GetValue<string>("Host:JeeAccount_API"), objCustomData);
                         if (dataJA == null)
                         {
                             cnn.RollbackTransaction();
@@ -985,7 +985,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                             objCustomData.fieldValue = datas;
                             if (!string.IsNullOrEmpty(objCustomData.userId))
                             {
-                                var dataJA = Common.UpdateCustomData(_configuration, _configuration.GetValue<string>("Host:JeeAccount_API"), objCustomData);
+                                var dataJA = Common.UpdateCustomData(HttpContext.Request.Headers, _configuration.GetValue<string>("Host:JeeAccount_API"), objCustomData);
                                 if (dataJA == null)
                                 {
                                     cnn.RollbackTransaction();

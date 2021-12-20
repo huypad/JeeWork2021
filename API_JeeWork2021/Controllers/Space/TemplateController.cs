@@ -33,14 +33,15 @@ namespace JeeWork_Core2021.Controllers.Wework
         private IConfiguration _configuration;
         private readonly ILogger<TemplateController> _logger;
         public List<AccUsernameModel> DataAccount;
-        public TemplateController(IOptions<JeeWorkConfig> config, IConnectionCache _cache, IConfiguration configuration, ILogger<TemplateController> logger)
+        private readonly IHostingEnvironment _hostingEnvironment;
+        public TemplateController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration, ILogger<TemplateController> logger)
         {
+            _hostingEnvironment = hostingEnvironment;
             _config = config.Value;
             ConnectionCache = _cache;
             _configuration = configuration;
             _logger = logger;
         }
-
         /// <summary>
         /// DS template theo khách hàng
         /// </summary>
@@ -134,8 +135,9 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (cnn.LastError != null || dt_template == null)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     string sql_status = "";
-                    sql_status = "select id_row, statusid, templateid, statusname, description, createddate,createdby,updatedby,updateddate" +
-                                ", type, isdefault, color, position, isfinal, isdeadline, istodo " +
+                    sql_status = "select id_row, statusid, templateid, statusname, description, createddate" +
+                        ", createdby,updatedby,updateddate" +
+                        ", type, isdefault, color, position, isfinal, isdeadline, istodo " +
                         "from we_template_status where disabled = 0 " +
                         "and templateid in (select id_row from we_template_customer " +
                         "where disabled = 0 and customerid = " + loginData.CustomerID + ") " +
@@ -214,8 +216,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                 string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
-                    string sql_update = @$"update we_template_customer set IsDefault = 1, UpdatedBy =  {loginData.UserID} ,UpdatedDate = GETUTCDATE() where CustomerID = {loginData.CustomerID} and Disabled = 0 and is_template_center = 0 and id_row = {id};
-                                                       update we_template_customer set IsDefault =  0,UpdatedBy = {loginData.UserID} ,UpdatedDate = GETUTCDATE() where CustomerID = {loginData.CustomerID} and Disabled = 0 and is_template_center = 0 and id_row <> {id}  and IsDefault = 1";
+                    string sql_update = @$"update we_template_customer set isdefault = 1, UpdatedBy =  {loginData.UserID} ,UpdatedDate = GETUTCDATE() where CustomerID = {loginData.CustomerID} and Disabled = 0 and is_template_center = 0 and id_row = {id};
+                                                       update we_template_customer set isdefault =  0, UpdatedBy = {loginData.UserID} ,UpdatedDate = GETUTCDATE() where CustomerID = {loginData.CustomerID} and Disabled = 0 and is_template_center = 0 and id_row <> {id}  and IsDefault = 1";
                     cnn.BeginTransaction();
                     cnn.ExecuteNonQuery(sql_update);
                     if (cnn.LastError != null)
@@ -269,7 +271,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     val.Add("CreatedDate", Common.GetDateTime());
                     val.Add("CreatedBy", iduser);
                     val.Add("IsDefault", 0);
-                    string strCheck = "select count(*) from we_template_customer where Disabled=0 and (CustomerID=@customerid) and title=@name";
+                    string strCheck = "select count(*) from we_template_customer where disabled=0 and (CustomerID=@customerid) and title=@name";
                     if (int.Parse(cnn.ExecuteScalar(strCheck, new SqlConditions() { { "customerid", data.customerid }, { "name", data.title } }).ToString()) > 0)
                     {
                         return JsonResultCommon.Custom("Mẫu đã tồn tại trong danh sách");
@@ -1325,6 +1327,10 @@ from we_template_library where disabled = 0 and id_template = " + id;
                         val.Add("field_id", data.field_id);
                     else
                         val.Add("field_id", DBNull.Value);
+                    if (data.start_date != DateTime.MinValue)
+                        val.Add("start_date", data.start_date);
+                    if (data.end_date != DateTime.MinValue)
+                        val.Add("end_date", data.end_date);
                     // flow -> insert vào mẫu tạm xong lấy dữ liệu trong mẫu tạm đi insert
                     cnn.BeginTransaction();
                     if (cnn.Insert(val, "we_template_customer_temp") != 1)

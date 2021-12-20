@@ -1671,7 +1671,7 @@ where disabled = 0 and u.id_user in ({listID}) and id_project_team = @id";
         /// <returns></returns>
         [Route("ExportExcel")]
         [HttpGet]
-        public object Task<IActionResult> ExportExcel([FromQuery] QueryParams query)
+        public async Task<IActionResult> ExportExcel([FromQuery] QueryParams query)
         {
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)

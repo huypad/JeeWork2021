@@ -620,6 +620,10 @@ namespace JeeWork_Core2021.Controllers.Wework
                     val.Add("createdby", iduser);
                     val.Add("isdefault", 0);
                     val.Add("is_template_center", 1);
+                    if (data.start_date != DateTime.MinValue)
+                        val.Add("start_date", data.start_date);
+                    if (data.end_date != DateTime.MinValue)
+                        val.Add("end_date", data.end_date);
                     val.Add("types", data.types);
                     val.Add("levels", data.levels);
                     val.Add("template_typeid", 1); // lấy mặc định trong we_template_types

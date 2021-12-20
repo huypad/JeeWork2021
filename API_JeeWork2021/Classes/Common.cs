@@ -756,28 +756,33 @@ namespace JeeWork_Core2021.Classes
             }
             return model.data;
         }
-        public static object UpdateCustomData(IConfiguration _configuration, string URL, ObjCustomData objCustomData)
+        public static object UpdateCustomData(IHeaderDictionary pHeader, string URL, ObjCustomData objCustomData)
         {
-            string internal_secret = JeeWorkLiteController.getSecretToken(_configuration);
+            if (pHeader == null) return null;
+            if (!pHeader.ContainsKey(HeaderNames.Authorization)) return null;
+            IHeaderDictionary _d = pHeader;
+            string _bearer_token;
+            _bearer_token = _d[HeaderNames.Authorization].ToString();
             var content = new ObjCustomData
             {
                 userId = objCustomData.userId.ToString(),
                 updateField = objCustomData.updateField,
                 fieldValue = objCustomData.fieldValue,
             };
+
             object stringContent = JsonConvert.SerializeObject(content);
-            string link_api = URL + @$"/api/accountmanagement/UppdateCustomData/internal";
+            string link_api = URL + @$"/api/accountmanagement/UppdateCustomData";
             var client = new RestClient(link_api);
             var request = new RestRequest(Method.POST);
-            request.AddHeader("Authorization", internal_secret);
+            request.AddHeader("Authorization", _bearer_token);
             request.AddJsonBody(stringContent);
             IRestResponse response = client.Execute(request);
             var model = JsonConvert.DeserializeObject<ResultModel>(response.Content);
-            if (model == null || model.status == 0)
+            if (model == null)
             {
                 return null;
             }
-            return model;
+            return model.data;
         }
         public static bool CheckRoleByProject(string id_project_team, UserJWT loginData, DpsConnection Conn, string ConnectionString)
         {
