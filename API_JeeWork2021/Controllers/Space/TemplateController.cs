@@ -1002,7 +1002,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
-                    string sqlq = @$"select id_row, title, description, createddate, createdby,addtolibrary,save_as_id
+                    string sqlq = "";
+                   sqlq = @$"select id_row, title, description, createddate, createdby,addtolibrary,save_as_id
                                     , isdefault, color, id_department, templateid, customerid
                                     , is_template_center, types, levels, viewid, group_statusid 
                                     , template_typeid, img_temp, field_id, share_with, sample_id
@@ -1243,6 +1244,7 @@ from we_template_library where disabled = 0 and id_template = " + id;
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     long idc = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_template_customer')").ToString());
+                    data.id_row = idc;
                     #region insert we_template_library
                     val = new Hashtable();
                     val.Add("id_template", idc);
@@ -1339,6 +1341,7 @@ from we_template_library where disabled = 0 and id_template = " + id;
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     long idc = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_template_customer_temp')").ToString());
+                    data.id_row = idc;
                     //select save_as_id from we_template_customer where id_row =
                     #region insert Bảng tạm về data
                     if (!InsertTempToData(idc, data, loginData, istemplatelist, cnn, out error))

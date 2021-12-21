@@ -548,6 +548,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     long idc = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_template_customer')").ToString());
+                    data.id_row = idc;
                     #region insert we_template_library
                     val = new Hashtable();
                     val.Add("id_template", idc);
@@ -605,7 +606,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                 string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
-
                     long iduser = loginData.UserID;
                     long idk = loginData.CustomerID;
                     string x = string.Join(",", data.list_field_name.Select(x => x.id_field));
@@ -644,7 +644,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                     }
                     long idc = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_template_customer_temp')").ToString());
                     //select save_as_id from we_template_customer where id_row =
-                    #region insert Bảng tạm về data
+                    data.id_row = idc;
+                    #region insert bảng tạm về data
                     if (!InsertTempToData(idc, data, loginData, istemplatelist, cnn, out error))
                     {
                         return JsonResultCommon.Custom(error);
@@ -1047,7 +1048,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     return false;
                 }
                 // xong bước 1 kiểm tra có folder hay không nếu có thì lưu folder
-                string sqlf = "select * from we_department_temp where  Disabled = 0 and  ParentID = " + idmau;
+                string sqlf = "select * from we_department_temp where disabled = 0 and  ParentID = " + idmau;
                 DataTable datafolder = cnn.CreateDataTable(sqlf);
                 if (datafolder.Rows.Count > 0)
                 {
