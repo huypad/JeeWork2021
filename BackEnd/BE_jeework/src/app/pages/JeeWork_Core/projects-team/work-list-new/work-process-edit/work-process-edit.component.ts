@@ -2,7 +2,7 @@ import { WorkService } from "./../../../work/work.service";
 import { WeWorkService } from "./../../../services/wework.services";
 import { TranslateService } from "@ngx-translate/core";
 import { ProjectsTeamService } from "./../../Services/department-and-project.service";
-import { LayoutUtilsService } from "./../../../../../_metronic/jeework_old/core/utils/layout-utils.service";
+import { LayoutUtilsService, MessageType } from "./../../../../../_metronic/jeework_old/core/utils/layout-utils.service";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { Component, OnInit, ChangeDetectorRef, Inject } from "@angular/core";
 
@@ -23,7 +23,7 @@ export class WorkProcessEditComponent implements OnInit {
     private WeWorkService: WeWorkService,
     private changeDetectorRefs: ChangeDetectorRef,
     @Inject(MAT_DIALOG_DATA) public data: any
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     // Process
@@ -51,7 +51,7 @@ export class WorkProcessEditComponent implements OnInit {
       this.layoutUtilsService.OffWaitingDiv();
       if (res && res.status === 1) {
       } else {
-        this.layoutUtilsService.showError(res.error.message);
+        this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
       }
     });
   }
@@ -99,7 +99,7 @@ export class WorkProcessModel {
     this.id_project_team = id_project_team;
     this.statusid = statusid;
     this.workid = workid;
-    this.checker = checker?checker:''; 
-    this.change_note = change_note?change_note:'';
+    this.checker = checker ? checker : '';
+    this.change_note = change_note ? change_note : '';
   }
 }

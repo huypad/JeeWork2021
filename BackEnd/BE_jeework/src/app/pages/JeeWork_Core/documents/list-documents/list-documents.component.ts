@@ -107,7 +107,7 @@ export class ListDocumentsComponent implements OnInit {
             }
         }
     }
-    displayedColumns = ['STT','filename', 'NguoiTao', 'CreatedDate', 'size', 'action'];
+    displayedColumns = ['STT', 'filename', 'NguoiTao', 'CreatedDate', 'size', 'action'];
 
     getHeight() {
         return window.innerHeight - 300 - this.tokenStorage.getHeightHeader() + 'px';
@@ -209,7 +209,7 @@ export class ListDocumentsComponent implements OnInit {
                             .subscribe((tt) => {
                             });
                     } else {
-                        this.LayoutUtilsService.showError(res.error.message);
+                        this.LayoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
                     }
                     this.changeDetectorRefs.detectChanges();
                 });

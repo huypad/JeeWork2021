@@ -1,6 +1,6 @@
 import { QueryParamsModel } from './../../../../_metronic/jeework_old/core/_base/crud/models/query-models/query-params.model';
 import { QueryResultsModel } from './../../../../_metronic/jeework_old/core/_base/crud/models/query-models/query-results.model';
-import { LayoutUtilsService } from './../../../../_metronic/jeework_old/core/utils/layout-utils.service';
+import { LayoutUtilsService, MessageType } from './../../../../_metronic/jeework_old/core/utils/layout-utils.service';
 import { ProjectsTeamService } from './../../projects-team/Services/department-and-project.service';
 import { TemplateCenterService } from './../../template-center/template-center.service';
 import { TranslateService } from '@ngx-translate/core';
@@ -34,7 +34,7 @@ export class AutomationTabManageComponent implements OnInit {
         this.listAutomation = res.data;
         this.changeDetectorRefs.detectChanges();
       } else {
-        this.layoutUtilsService.showError(res.error.message);
+        this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
       }
     })
   }
@@ -53,7 +53,7 @@ export class AutomationTabManageComponent implements OnInit {
       if (res && res.status == 1) {
         this.ngOnInit();
       } else {
-        this.layoutUtilsService.showError(res.error.message);
+        this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
       }
     })
   }
@@ -69,7 +69,7 @@ export class AutomationTabManageComponent implements OnInit {
         // this.layoutUtilsService.showActionNotification("cập nhật thành công");
       } else {
         this.ngOnInit();
-        this.layoutUtilsService.showError(res.error.message);
+        this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
       }
     });
   }

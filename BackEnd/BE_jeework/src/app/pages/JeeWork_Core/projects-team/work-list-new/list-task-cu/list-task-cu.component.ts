@@ -62,7 +62,6 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
         this.list_priority = this.WeWorkService.list_priority;
         this.UserID = +localStorage.getItem('idUser');
     }
-
     @Input() ID_Project = 1;
     @Input() ID_NV = 0;
     @Input() selectedTab = 0;
@@ -93,13 +92,14 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
     keyword = '';
     // view setting
     tasklocation = true;
-    showsubtask = true;
-    showclosedtask = true;
-    showclosedsubtask = true;
+    showsubtask = false;
+    showclosedtask = false;
+    showclosedsubtask = false;
     showtaskmutiple = true;
     showemptystatus = false;
     // viewTaskOrder = false;
-    filterwork = 0;
+    isAssignforme = false;
+    filterwork = 1;
     status_dynamic: any = [];
     ListAllStatusDynamic: any = [];
     list_priority: any[];
@@ -186,8 +186,8 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
         this.filter_groupby = this.getMystaff ? this.listFilter_Groupby[1] : this.listFilter_Groupby[0];
         const today = new Date();
         this.filterDay = {
-            endDate: new Date(today.setMonth(today.getMonth() + 1)),
-            startDate: new Date(today.getFullYear(), today.getMonth() - 6, 1),
+            endDate: new Date(today.setMonth(today.getMonth())),
+            startDate: new Date(today.getFullYear(), today.getMonth() - 3, 1),
         };
         this.column_sort = this.sortField[0];
         this.route.params.subscribe(res => {
@@ -206,8 +206,9 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
                 this.IsAdminGroup = res.data.IsAdminGroup;
             }
         });
-        this.BindDataLite();
+        this.LoadFilterProject();
         this.LoadTask();
+        this.BindDataLite();
         this.changeDetectorRefs.detectChanges();
     }
 
@@ -332,6 +333,11 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
             }
             this.options_assign = this.getOptions_Assign();
         });
+    }
+    Forme(val) {
+        this.isAssignforme = val;
+        this.UpdateInfoProject();
+        // this.LoadDataTaskNew();
     }
     GetField() {
         this.WeWorkService.GetListField(0, 3, false).subscribe(res => {
@@ -550,7 +556,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
         if (this.ListAllStatusDynamic) {
             const item = this.ListAllStatusDynamic.find(x => +x.id_row === id_project_team);
             if (item) {
-                return item.title;
+                return item.space_name;
             } else {
                 return '';
             }
@@ -662,7 +668,6 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
     }
     // Assign
     ItemSelected(val: any, task) { // chọn item
-        debugger
         if (val.id_user) {
             val.id_nv = val.id_user;
         }
@@ -675,7 +680,6 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
     }
     LoadUserByProject(id_project_team) {
         const filter: any = {};
-        debugger
         filter.id_project_team = id_project_team;
         this.WeWorkService.list_account(filter).subscribe(res => {
             if (res && res.status === 1) {
@@ -752,7 +756,72 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
     ExpandNode(node) {
         node.isExpanded = !node.isExpanded;
     }
+    LoadInfoProject(item) {
+        if (item.tasklocation) {
+            this.tasklocation = item.tasklocation;
+        }
+        if (item.showclosedtask) {
+            this.showclosedtask = item.showclosedtask;
+        }
+        if (item.showclosedsubtask) {
+            this.showclosedsubtask = item.showclosedsubtask;
+        }
+        if (item.filter_groupby && !item.filter_groupby.iscustom) {
+            this.filter_groupby = item.filter_groupby;
+        }
+        if (item.filter_subtask) {
+            this.filter_subtask = item.filter_subtask;
+        }
+        if (item.filterDay) {
+            this.filterDay = item.filterDay;
+        }
+        if (item.isAssignforme) {
+            this.filterwork == 0;
+          this.isAssignforme = item.isAssignforme;
+        }
+    }
+    CreateInfoProject() {
+        const InfoNew = JSON.parse(localStorage.getItem("personal-task"));
+        InfoNew.push({ projectteam: this.ID_Project, data: this.InfoFilter() });
+        localStorage.setItem("personal-task", JSON.stringify(InfoNew));
+    }
 
+    UpdateInfoProject() {
+        const InfoNew = JSON.parse(localStorage.getItem("personal-task"));
+        InfoNew.forEach((res) => {
+            if (res.projectteam == this.ID_Project) {
+                res.data = this.InfoFilter();
+            }
+        });
+        localStorage.setItem("personal-task", JSON.stringify(InfoNew));
+    }
+    InfoFilter() {
+        return {
+            tasklocation: this.tasklocation,
+            showclosedtask: this.showclosedtask,
+            showclosedsubtask: this.showclosedsubtask,
+            showemptystatus: this.showemptystatus,
+            column_sort: this.column_sort,
+            filter_groupby: this.filter_groupby,
+            filter_subtask: this.filter_subtask,
+            filterDay: this.filterDay,
+            //   isAssignforme: this.isAssignforme,
+        };
+    }
+    LoadFilterProject() {
+        const Info = JSON.parse(localStorage.getItem("personal-task"));
+        if (Info && Info.length > 0) {
+            const itemproject = Info.find((x) => x.projectteam == this.ID_Project);
+            if (itemproject) {
+                this.LoadInfoProject(itemproject.data);
+            } else {
+                this.CreateInfoProject();
+            }
+        } else {
+            localStorage.setItem("personal-task", JSON.stringify([]));
+            this.CreateInfoProject();
+        }
+    }
     ShowCloseTask() {
         this.showclosedtask = !this.showclosedtask;
         // this.LoadWork();
@@ -794,7 +863,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
                 // this.LoadWork();
                 this.LoadTask();
             } else {
-                this.layoutUtilsService.showError(res.error.message);
+                this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
             }
         });
         // this.AddnewTask(val, true);
@@ -806,7 +875,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
                 // this.LoadWork();
                 this.LoadTask();
             } else {
-                this.layoutUtilsService.showError(res.error.message);
+                this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
             }
         });
     }
@@ -841,21 +910,18 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
         item.id_row = task.id_row;
         item.key = key;
         item.value = value;
-        debugger
         if (task.id_nv > 0) {
             item.IsStaff = true;
         }
         this._service._UpdateByKey(item).subscribe(res => {
-            debugger
             if (res && res.status === 1) {
                 // this.LoadListStatusByProject();
                 // this.LoadWork();
 
             } else {
                 // this.LoadWork();
-                this.layoutUtilsService.showError(res.error.message);
+                this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
             }
-
         });
         this.LoadTask();
     }
@@ -899,7 +965,6 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
     }
 
     getAssignee(id_nv) {
-        debugger
         if (+id_nv > 0 && this.listUser) {
             const assign = this.listUser.find(x => x.id_nv === id_nv);
             if (assign) {
@@ -970,7 +1035,6 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
     }
 
     assign(node) {
-        debugger
         this.loadOptionprojectteam(node);
         const item = this.options_assign;
         const dialogRef = this.dialog.open(WorkAssignedComponent, {
@@ -1020,7 +1084,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
             if (res && res.status === 1) {
                 this.layoutUtilsService.showInfo('Nhân bản thành công');
             } else {
-                this.layoutUtilsService.showError(res.error.message);
+                this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
             }
         });
     }
@@ -1036,7 +1100,6 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
 
     ReloadData(event) {
         // this.ngOnInit();
-        debugger
         this.LoadTask();
     }
 
@@ -1050,7 +1113,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
                 this.LoadListStatusByProject();
                 this.LoadTask();
             } else {
-                this.layoutUtilsService.showError(res.error.message);
+                this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
             }
         });
     }
@@ -1118,8 +1181,6 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
         }
         return true;
     }
-
-
     trackByFn(index, item) {
         return item.id_row;
     }

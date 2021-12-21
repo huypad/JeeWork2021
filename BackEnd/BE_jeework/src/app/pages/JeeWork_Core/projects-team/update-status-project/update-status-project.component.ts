@@ -87,7 +87,7 @@ export class UpdateStatusProjectComponent implements OnInit {
 				this.createForm();
 			}
 			else
-				this.layoutUtilsService.showError(res.error.message);
+				this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
 			if (this.IsProject) {
 				this.tendapb = this.translate.instant("projects.tenduan") + '';
 				this.mota = this.translate.instant("projects.motangangonveduan") + '';

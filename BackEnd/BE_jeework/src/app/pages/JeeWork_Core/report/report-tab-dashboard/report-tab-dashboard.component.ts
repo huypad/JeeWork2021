@@ -1,17 +1,17 @@
-import {SelectionModel} from '@angular/cdk/collections';
-import {tap} from 'rxjs/operators';
-import {NestedTreeControl} from '@angular/cdk/tree';
-import {ListDepartmentService} from './../../department/Services/List-department.service';
-import {LayoutUtilsService} from './../../../../_metronic/jeework_old/core/utils/layout-utils.service';
-import {QueryParamsModelNew} from './../../../../_metronic/jeework_old/core/models/query-models/query-params.model';
-import {environment} from 'src/environments/environment';
-import {TranslateService} from '@ngx-translate/core';
-import {BaoCaoThongKeModel, ChartModal} from './../modal/report.modal';
-import {ReportService} from './../report.service';
-import {MatDialog} from '@angular/material/dialog';
-import {ChangeDetectorRef, Component, OnInit, Type} from '@angular/core';
-import {DialogSelectdayComponent} from '../dialog-selectday/dialog-selectday.component';
-import {Color} from 'ng2-charts';
+import { SelectionModel } from '@angular/cdk/collections';
+import { tap } from 'rxjs/operators';
+import { NestedTreeControl } from '@angular/cdk/tree';
+import { ListDepartmentService } from './../../department/Services/List-department.service';
+import { LayoutUtilsService, MessageType } from './../../../../_metronic/jeework_old/core/utils/layout-utils.service';
+import { QueryParamsModelNew } from './../../../../_metronic/jeework_old/core/models/query-models/query-params.model';
+import { environment } from 'src/environments/environment';
+import { TranslateService } from '@ngx-translate/core';
+import { BaoCaoThongKeModel, ChartModal } from './../modal/report.modal';
+import { ReportService } from './../report.service';
+import { MatDialog } from '@angular/material/dialog';
+import { ChangeDetectorRef, Component, OnInit, Type } from '@angular/core';
+import { DialogSelectdayComponent } from '../dialog-selectday/dialog-selectday.component';
+import { Color } from 'ng2-charts';
 import * as Highcharts from 'highcharts';
 
 declare var require: any;
@@ -19,10 +19,10 @@ const More = require('highcharts/highcharts-more');
 More(Highcharts);
 
 import Histogram from 'highcharts/modules/histogram-bellcurve';
-import {WeWorkService} from '../../services/wework.services';
-import {ActivatedRoute} from '@angular/router';
-import {MatTreeNestedDataSource} from '@angular/material/tree';
-import {BehaviorSubject} from 'rxjs';
+import { WeWorkService } from '../../services/wework.services';
+import { ActivatedRoute } from '@angular/router';
+import { MatTreeNestedDataSource } from '@angular/material/tree';
+import { BehaviorSubject } from 'rxjs';
 
 Histogram(Highcharts);
 
@@ -67,13 +67,13 @@ export class ReportTabDashboardComponent implements OnInit {
         let set_thang = today.getMonth();
         if (today.getDate() < 10)
             set_thang = today.getMonth() - 1;
-            this.selectedDate = {
-                startDate: new Date(today.getFullYear(), set_thang, 1),
-                endDate: new Date(today.setMonth(today.getMonth())),
-            };
+        this.selectedDate = {
+            startDate: new Date(today.getFullYear(), set_thang, 1),
+            endDate: new Date(today.setMonth(today.getMonth())),
+        };
     }
 
-    hasChild = ( node: any) => !!node.data && node.data.length > 0;
+    hasChild = (node: any) => !!node.data && node.data.length > 0;
 
     trangthai: any;
 
@@ -106,10 +106,10 @@ export class ReportTabDashboardComponent implements OnInit {
         let set_thang = today.getMonth();
         if (today.getDate() < 10)
             set_thang = today.getMonth() - 1;
-            this.selectedDate = {
-                startDate: new Date(today.getFullYear(), set_thang, 1),
-                endDate: new Date(today.setMonth(today.getMonth())),
-            };
+        this.selectedDate = {
+            startDate: new Date(today.getFullYear(), set_thang, 1),
+            endDate: new Date(today.setMonth(today.getMonth())),
+        };
         this.filterCVC = this._filterCV[0];
         this.trangthai = this._filterTT[0];
         this.column_sort = this.sortField[0];
@@ -247,18 +247,18 @@ export class ReportTabDashboardComponent implements OnInit {
 
     LoadDatafilter() {
         this.weworkService.lite_tree_department(this.ID_department).subscribe(res => {
-                if (res && res.status === 1) {
-                    this.datatree.next(res.data);
-                    if (this.ID_department > 0) {
-                        this.Selected = res.data[0];
-                    }
-                } else {
-                    this.datatree.next([]);
-                    this.layoutUtilsService.showError(res.error.message);
+            if (res && res.status === 1) {
+                this.datatree.next(res.data);
+                if (this.ID_department > 0) {
+                    this.Selected = res.data[0];
                 }
-                this.LoadData();
-                this.detectChange.detectChanges();
-            },
+            } else {
+                this.datatree.next([]);
+                this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
+            }
+            this.LoadData();
+            this.detectChange.detectChanges();
+        },
             (error) => {
                 this.layoutUtilsService.showError(error);
                 this.LoadData();
@@ -353,7 +353,7 @@ export class ReportTabDashboardComponent implements OnInit {
         this.translate.instant('filter.quahan'),
         this.translate.instant('filter.chuacocongviec'),
     ];
-    public pieChartOptions = {cutoutPercentage: 80};
+    public pieChartOptions = { cutoutPercentage: 80 };
     public pieChartLegend = false;
     public pieChartColor = [{
         backgroundColor: this.listColor,
@@ -411,9 +411,9 @@ export class ReportTabDashboardComponent implements OnInit {
     };
     public chartLegend2 = false;
     public chartColor2 = [
-        {backgroundColor: this.listColor2[0], fill: false, borderColor: this.listColor2[0],},
-        {backgroundColor: this.listColor2[1]},
-        {backgroundColor: this.listColor2[2]},
+        { backgroundColor: this.listColor2[0], fill: false, borderColor: this.listColor2[0], },
+        { backgroundColor: this.listColor2[1] },
+        { backgroundColor: this.listColor2[2] },
     ];
     public chartType2 = 'bar';
     ListLabel = [this.translate.instant('filter.tatca'), this.translate.instant('filter.quahan'), this.translate.instant('filter.hoanthanh')];
@@ -508,10 +508,10 @@ export class ReportTabDashboardComponent implements OnInit {
     };
     public chartLegend3 = false;
     public chartColor3 = [
-        {backgroundColor: this.titleChart3[0].mau},
-        {backgroundColor: this.titleChart3[1].mau},
-        {backgroundColor: this.titleChart3[2].mau},
-        {backgroundColor: this.titleChart3[3].mau},
+        { backgroundColor: this.titleChart3[0].mau },
+        { backgroundColor: this.titleChart3[1].mau },
+        { backgroundColor: this.titleChart3[2].mau },
+        { backgroundColor: this.titleChart3[3].mau },
     ];
     public chartType3 = 'bar';
 
@@ -564,7 +564,7 @@ export class ReportTabDashboardComponent implements OnInit {
     titleChart4: string[] = [];
     chartData4 = [];
     chartLabel4: string[] = [''];
-    chartOptions4 = {cutoutPercentage: 80};
+    chartOptions4 = { cutoutPercentage: 80 };
     chartLegend4 = false;
     chartColor4 = [{
         backgroundColor: this.listColorChart4,
@@ -624,8 +624,8 @@ export class ReportTabDashboardComponent implements OnInit {
         chartType: 'pie',
         options: {
             cutoutPercentage: 70,
-            tooltips: {enabled: false},
-            hover: {mode: null},
+            tooltips: { enabled: false },
+            hover: { mode: null },
         },
         color: [],
     };
@@ -717,10 +717,10 @@ export class ReportTabDashboardComponent implements OnInit {
                 }
                 for (let index of this.keyObject) {
                     this.chartPhanbocongviecDepartment.datasets.push(
-                        {data: dt1[index], label: this.getTitle(index), backgroundColor: this.getColor(index)}
+                        { data: dt1[index], label: this.getTitle(index), backgroundColor: this.getColor(index) }
                     );
                     this.chartPhanbocongviecDepartment.color.push(
-                        {backgroundColor: this.getColor(index)}
+                        { backgroundColor: this.getColor(index) }
                     );
                     this.chartPhanbocongviecDepartment.titleLegend.push(
                         {
@@ -825,7 +825,7 @@ export class ReportTabDashboardComponent implements OnInit {
     }
 
     options: any = {
-        legend: {position: 'bottom'},
+        legend: { position: 'bottom' },
         responsive: true,
         maintainAspectRatio: false,
     };

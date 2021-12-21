@@ -6,32 +6,32 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
 } from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 // Material
-import {MatDialog} from '@angular/material/dialog';
-import {MatPaginator} from '@angular/material/paginator';
-import {MatSort} from '@angular/material/sort';
-import {SelectionModel} from '@angular/cdk/collections';
+import { MatDialog } from '@angular/material/dialog';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { SelectionModel } from '@angular/cdk/collections';
 // RXJS
-import {tap} from 'rxjs/operators';
-import {fromEvent, merge, BehaviorSubject} from 'rxjs';
-import {TranslateService} from '@ngx-translate/core';
+import { tap } from 'rxjs/operators';
+import { fromEvent, merge, BehaviorSubject } from 'rxjs';
+import { TranslateService } from '@ngx-translate/core';
 // Services
 // Models
-import {FormGroup, FormBuilder, Validators} from '@angular/forms';
-import {isFulfilled} from 'q';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { isFulfilled } from 'q';
 // import { LeaveRegistrationEditComponent } from '../leave-registration-edit/leave-registration-edit.component';
-import {DatePipe} from '@angular/common';
-import {TemplateSoftwareDataSource} from '../Model/data-sources/template-software.datasource';
-import {templateSoftwareEditComponent} from '../template-software-edit/template-software-edit.component';
-import {templateSoftwareService} from '../Services/template-software.service';
-import {PaginatorState, SortState} from '../../../../_metronic/shared/crud-table';
-import {GroupNameModel} from '../Model/template-software.model';
-import {SubheaderService} from '../../../../_metronic/partials/layout';
-import {LayoutUtilsService, MessageType} from '../../../../_metronic/jeework_old/core/utils/layout-utils.service';
-import {DanhMucChungService} from '../../../../_metronic/jeework_old/core/services/danhmuc.service';
-import {QueryParamsModel} from '../../../../_metronic/jeework_old/core/models/query-models/query-params.model';
-import {TokenStorage} from '../../../../_metronic/jeework_old/core/auth/_services';
+import { DatePipe } from '@angular/common';
+import { TemplateSoftwareDataSource } from '../Model/data-sources/template-software.datasource';
+import { templateSoftwareEditComponent } from '../template-software-edit/template-software-edit.component';
+import { templateSoftwareService } from '../Services/template-software.service';
+import { PaginatorState, SortState } from '../../../../_metronic/shared/crud-table';
+import { GroupNameModel } from '../Model/template-software.model';
+import { SubheaderService } from '../../../../_metronic/partials/layout';
+import { LayoutUtilsService, MessageType } from '../../../../_metronic/jeework_old/core/utils/layout-utils.service';
+import { DanhMucChungService } from '../../../../_metronic/jeework_old/core/services/danhmuc.service';
+import { QueryParamsModel } from '../../../../_metronic/jeework_old/core/models/query-models/query-params.model';
+import { TokenStorage } from '../../../../_metronic/jeework_old/core/auth/_services';
 
 @Component({
     selector: 'kt-template-software-list',
@@ -183,7 +183,7 @@ export class templateSoftwareListComponent implements OnInit {
         this.Add({});
     }
 
-    Add(_item : any) {
+    Add(_item: any) {
         let saveMessageTranslateParam = '';
         saveMessageTranslateParam +=
             _item.id_row > 0
@@ -191,7 +191,7 @@ export class templateSoftwareListComponent implements OnInit {
                 : this.translate.instant('GeneralKey.themthanhcong');
         const _saveMessage = this.translate.instant(saveMessageTranslateParam);
         const _messageType = _item.id_row > 0 ? MessageType.Update : MessageType.Create;
-        _item.id_template =_item.id_row > 0 ? _item.id_row : 0;
+        _item.id_template = _item.id_row > 0 ? _item.id_row : 0;
         const dialogRef = this.dialog.open(templateSoftwareEditComponent, {
             data: _item,
         });
@@ -212,12 +212,12 @@ export class templateSoftwareListComponent implements OnInit {
     }
 
     lock(val: any, id: any) {
-        this.templateService.SetDefault(id,val).subscribe(res => {
-            if(res && res.status === 1){
+        this.templateService.SetDefault(id, val).subscribe(res => {
+            if (res && res.status === 1) {
                 this.loadDataList();
-            }else{
+            } else {
                 this.loadDataList();
-                this.layoutUtilsService.showError(res.error.message);
+                this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
             }
         })
     }
@@ -301,7 +301,7 @@ export class templateSoftwareListComponent implements OnInit {
     //==========================================================
     getHeight(): any {
         let tmp_height = 0;
-        tmp_height = window.innerHeight -  300 - this.tokenStorage.getHeightHeader();
+        tmp_height = window.innerHeight - 300 - this.tokenStorage.getHeightHeader();
         return tmp_height + 'px';
     }
 }

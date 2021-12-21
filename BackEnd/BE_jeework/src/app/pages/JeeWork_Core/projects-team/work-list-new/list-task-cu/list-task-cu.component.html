@@ -64,7 +64,8 @@
                             <div class="filter row pd-0" *ngIf="selectedTab != 3 && !getMystaff">
                                 <div class="icon-user border" (click)="filterwork=1;ChangeData()"
                                     matTooltip="Công việc giao cho tôi">
-                                    <i class="fas fa-user" [ngClass]="{'text-success': filterwork===1}"></i>
+                                    <i class="fas fa-user" (click)="Forme(true)"
+                                        [ngClass]="{'text-success': filterwork===1}"></i>
                                 </div>
                                 <div class="icon-user border" (click)="filterwork=2;ChangeData()"
                                     matTooltip="Công việc tôi giao đi">

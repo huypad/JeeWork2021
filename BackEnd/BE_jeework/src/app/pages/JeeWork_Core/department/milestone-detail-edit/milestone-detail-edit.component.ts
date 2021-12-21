@@ -8,7 +8,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { ReplaySubject, BehaviorSubject, Observable } from 'rxjs';
 import { Router } from '@angular/router';
 import { ListDepartmentService } from '../Services/List-department.service';
-import { DanhMucChungService } from './../../../../_metronic/jeework_old/core/services/danhmuc.service';import { DepartmentModel, MilestoneModel } from '../Model/List-department.model';
+import { DanhMucChungService } from './../../../../_metronic/jeework_old/core/services/danhmuc.service'; import { DepartmentModel, MilestoneModel } from '../Model/List-department.model';
 import { WeWorkService } from '../../services/wework.services';
 // import { startWith, map } from 'rxjs/operators';
 @Component({
@@ -51,7 +51,7 @@ export class milestoneDetailEditComponent implements OnInit {
 	/** LOAD DATA */
 	ngOnInit() {
 		this.item = this.data._item;
-		if(this.data.reloadPage){
+		if (this.data.reloadPage) {
 			this.reloadPage = this.data.reloadPage;
 		}
 		if (this.data._item) {
@@ -65,17 +65,17 @@ export class milestoneDetailEditComponent implements OnInit {
 				this.ChangeProject(this.data._item.id_project_team);
 				this.isChangeTeam = false;
 			}
-			else{
+			else {
 				this.isChangeTeam = true;
 			}
-			if(this.item.id_department>0){
+			if (this.item.id_department > 0) {
 				this.weworkService.lite_project_team_bydepartment(this.item.id_department).subscribe(res => {
 					if (res && res.status === 1) {
 						this.listProject = res.data;
 					};
 				});
-				
-			}else{
+
+			} else {
 				this.weworkService.lite_project_team_byuser("").subscribe(res => {
 					if (res && res.status === 1) {
 						this.listProject = res.data;
@@ -120,7 +120,7 @@ export class milestoneDetailEditComponent implements OnInit {
 		this.itemForm = this.fb.group({
 			title: ['' + this.item.title, Validators.required],
 			milestonedate: ['' + this.item.deadline, Validators.required],
-			id_project_team: [''+this.item.id_project_team],
+			id_project_team: ['' + this.item.id_project_team],
 			description: [this.item.description],
 			pic: [this.item.person_in_charge.id_nv, Validators.required],
 		});
@@ -211,7 +211,7 @@ export class milestoneDetailEditComponent implements OnInit {
 			}
 			else {
 				this.viewLoading = false;
-				this.layoutUtilsService.showError(res.error.message);
+				this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
 			}
 		});
 	}

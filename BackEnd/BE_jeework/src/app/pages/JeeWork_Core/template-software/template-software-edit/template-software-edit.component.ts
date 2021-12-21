@@ -6,13 +6,13 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Observable, forkJoin, from, of, BehaviorSubject } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import {ProjectsTeamService} from '../../projects-team/Services/department-and-project.service';
-import {LayoutUtilsService, MessageType} from '../../../../_metronic/jeework_old/core/utils/layout-utils.service';
-import {WeWorkService} from '../../services/wework.services';
-import {ListDepartmentService} from '../../department/Services/List-department.service';
-import {CdkDrag, CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
-import {Different_StatusesModel, MapModel, PositionModel, UpdateQuickModel} from '../../department/Model/List-department.model';
-import {StatusDynamicModel} from '../../projects-team/Model/status-dynamic.model';
+import { ProjectsTeamService } from '../../projects-team/Services/department-and-project.service';
+import { LayoutUtilsService, MessageType } from '../../../../_metronic/jeework_old/core/utils/layout-utils.service';
+import { WeWorkService } from '../../services/wework.services';
+import { ListDepartmentService } from '../../department/Services/List-department.service';
+import { CdkDrag, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { Different_StatusesModel, MapModel, PositionModel, UpdateQuickModel } from '../../department/Model/List-department.model';
+import { StatusDynamicModel } from '../../projects-team/Model/status-dynamic.model';
 
 @Component({
 	selector: 'kt-template-software-edit',
@@ -50,7 +50,7 @@ export class templateSoftwareEditComponent implements OnInit {
 
 	ngOnInit() {
 		this.TempSelected = this.data.id_template > 0 ? this.data.id_template : 0;
-		if(this.TempSelected === 0){
+		if (this.TempSelected === 0) {
 			this.isAddTemplate = true;
 		}
 		this.LoadDataTemp();
@@ -73,14 +73,14 @@ export class templateSoftwareEditComponent implements OnInit {
 	 * Predicate function that only allows even numbers to be
 	 * sorted into even indices and odd numbers at odd indices.
 	 */
-	dropPosition(_item){
+	dropPosition(_item) {
 		this._service.dropPositionTemplate(_item).subscribe((res) => {
-			if (res && res.status == 1) { 
-			  this.LoadDataTemp();
+			if (res && res.status == 1) {
+				this.LoadDataTemp();
 			} else {
-			  this.layoutUtilsService.showError(res.error.message);
+				this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
 			}
-		  });
+		});
 	}
 
 	sortPredicate(index: number, item: CdkDrag<number>) {
@@ -100,7 +100,7 @@ export class templateSoftwareEditComponent implements OnInit {
 					this.TempSelected = this.litsTemplateDemo[0].id_row;
 				}
 				// if (!this.isStatusNow) {
-					this.LoadListSTT();
+				this.LoadListSTT();
 				// }
 				this.changeDetectorRefs.detectChanges();
 			}
@@ -109,7 +109,7 @@ export class templateSoftwareEditComponent implements OnInit {
 
 	ListStatusDynamic() {
 		this.layoutUtilsService.showWaitingDiv();
-		this.weworkService.ListStatusDynamic(this.data.id_row,this.data.columnname!=='id_project_team').subscribe((res) => {
+		this.weworkService.ListStatusDynamic(this.data.id_row, this.data.columnname !== 'id_project_team').subscribe((res) => {
 			this.layoutUtilsService.OffWaitingDiv();
 			if (res && res.status == 1) {
 				this.listStatus = res.data;
@@ -124,10 +124,10 @@ export class templateSoftwareEditComponent implements OnInit {
 
 	LoadListSTT() {
 		// if (!this.isStatusNow) {
-			let x = this.litsTemplateDemo.find((x) => x.id_row == this.TempSelected);
-			if (x) {
-				this.listSTT = x.status;
-			}
+		let x = this.litsTemplateDemo.find((x) => x.id_row == this.TempSelected);
+		if (x) {
+			this.listSTT = x.status;
+		}
 		// }
 	}
 
@@ -186,10 +186,10 @@ export class templateSoftwareEditComponent implements OnInit {
 		}
 	}
 
-	LuuThayDoi(){
-		if(this.data.columnname === 'id_project_team'){
-			this.IsSave=true;
-		}else{
+	LuuThayDoi() {
+		if (this.data.columnname === 'id_project_team') {
+			this.IsSave = true;
+		} else {
 		}
 	}
 
@@ -238,7 +238,7 @@ export class templateSoftwareEditComponent implements OnInit {
 				this.layoutUtilsService.showInfo('Update thành công');
 				this.dialogRef.close(true);
 			} else {
-				this.layoutUtilsService.showError(res.error.message);
+				this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
 			}
 		});
 	}

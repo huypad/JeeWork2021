@@ -4,7 +4,7 @@ import { ListDepartmentService } from "./../department/Services/List-department.
 import { TranslateService } from "@ngx-translate/core";
 import { TemplateCenterService } from "./../template-center/template-center.service";
 import { ProjectsTeamService } from "./../projects-team/Services/department-and-project.service";
-import { LayoutUtilsService } from "./../../../_metronic/jeework_old/core/utils/layout-utils.service";
+import { LayoutUtilsService, MessageType } from "./../../../_metronic/jeework_old/core/utils/layout-utils.service";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import {
   Component,
@@ -20,7 +20,7 @@ import {
   styleUrls: ["./automation.component.scss"],
 })
 export class AutomationComponent implements OnInit {
-  
+
   ID_department = 0;
   ID_projectteam = 0;
   isEditAuto = false;
@@ -37,7 +37,7 @@ export class AutomationComponent implements OnInit {
     private changeDetectorRefs: ChangeDetectorRef,
     private automationService: AutomationService,
     @Inject(MAT_DIALOG_DATA) public data: any
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     // this.LoadListAutomation();
@@ -50,20 +50,20 @@ export class AutomationComponent implements OnInit {
         if (res && res.status == 1) {
           this.ID_department = res.data.id_row;
           this.locationtitle.title = res.data.title;
-          if(res.data.ParentID > 0){
+          if (res.data.ParentID > 0) {
             this.locationtitle.folder = res.data.title;
             this.departmentServices.DeptDetail(res.data.ParentID).subscribe((res) => {
               if (res && res.status == 1) {
                 this.locationtitle.department = res.data.title;
               } else {
-                this.layoutUtilsService.showError(res.error.message);
+                this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
               }
             });
-          }else{
+          } else {
             this.locationtitle.department = res.data.title;
           }
         } else {
-          this.layoutUtilsService.showError(res.error.message);
+          this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
         }
       });
     } else if (this.data.item.type == 3) {
@@ -78,60 +78,60 @@ export class AutomationComponent implements OnInit {
             this.locationtitle.project = res.data.title;
             this.departmentServices.DeptDetail(this.ID_department).subscribe((res) => {
               if (res && res.status == 1) {
-                if(res.data.ParentID > 0){
+                if (res.data.ParentID > 0) {
                   this.locationtitle.folder = res.data.title;
                   this.departmentServices.DeptDetail(res.data.ParentID).subscribe((res) => {
                     if (res && res.status == 1) {
                       this.locationtitle.department = res.data.title;
                     } else {
-                      this.layoutUtilsService.showError(res.error.message);
+                      this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
                     }
                   });
-                }else{
+                } else {
                   this.locationtitle.department = res.data.title;
                 }
               } else {
-                this.layoutUtilsService.showError(res.error.message);
+                this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
               }
             });
-        } else {
-            this.layoutUtilsService.showError(res.error.message);
+          } else {
+            this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
           }
         });
     }
- 
+
   }
 
-  getTitleEdit(){
+  getTitleEdit() {
     var x = [];
-    if(this.locationtitle.department){
+    if (this.locationtitle.department) {
       x.push(this.locationtitle.department);
     }
-    if(this.locationtitle.folder){
+    if (this.locationtitle.folder) {
       x.push(this.locationtitle.folder);
     }
-    if(this.locationtitle.project){
+    if (this.locationtitle.project) {
       x.push(this.locationtitle.project);
     }
 
-    if(x.length == 0){
+    if (x.length == 0) {
       return 'Loading . . .';
-    }else{
+    } else {
       return x.join(' &gt; ')
     }
   }
 
-  EditItem(value){
-      this.isEditAuto = true;
-    if(value){
+  EditItem(value) {
+    this.isEditAuto = true;
+    if (value) {
       this.dataEdit = value;
-    }else{
+    } else {
       this.dataEdit = {};
     }
   }
-  Close(event){ 
+  Close(event) {
     this.isEditAuto = false;
-    if(event){
+    if (event) {
       this.dialogRef.close();
     }
   }

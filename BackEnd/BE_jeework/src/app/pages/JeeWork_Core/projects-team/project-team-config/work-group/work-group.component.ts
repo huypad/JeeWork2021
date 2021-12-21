@@ -202,9 +202,7 @@ export class WorkGroupComponent implements OnInit {
             this.loadDataList();
           }
           else {
-            // this.LayoutUtilsService.showError(res.error.message);
-        this.LayoutUtilsService.showActionNotification(res.error.message, MessageType.Read, 999999999, true, false, 9999999, 'top', 0);
-
+            this.LayoutUtilsService.showActionNotification(res.error.message, MessageType.Read, 999999999, true, false, 9999999, 'top', 0);
           }
         });
       }

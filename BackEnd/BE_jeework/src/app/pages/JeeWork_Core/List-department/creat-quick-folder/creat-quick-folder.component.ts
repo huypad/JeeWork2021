@@ -1,5 +1,5 @@
 import { DepartmentModel } from './../Model/List-department.model';
-import { LayoutUtilsService } from './../../../../_metronic/jeework_old/core/utils/layout-utils.service';
+import { LayoutUtilsService, MessageType } from './../../../../_metronic/jeework_old/core/utils/layout-utils.service';
 import { ListDepartmentService } from './../Services/List-department.service';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Component, OnInit, Inject } from '@angular/core';
@@ -46,7 +46,7 @@ export class CreatQuickFolderComponent implements OnInit {
         this.dialogRef.close(res);
 			} else {
 				this.viewLoading = false;
-				this.layoutUtilsService.showError(res.error.message);
+				          this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
 			}
 		});
 	}

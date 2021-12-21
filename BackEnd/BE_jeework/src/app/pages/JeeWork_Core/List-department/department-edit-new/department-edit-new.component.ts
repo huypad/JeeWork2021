@@ -210,7 +210,7 @@ export class DepartmentEditNewComponent implements OnInit {
         }
         this.createForm();
       } else {
-        this.layoutUtilsService.showError(res.error.message);
+        this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
       }
     });
   }
@@ -239,7 +239,7 @@ export class DepartmentEditNewComponent implements OnInit {
     //       }
     //     }
     //   } else {
-    //     this.layoutUtilsService.showError(res.error.message);
+    //               this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
     //   }
     // });
   }
@@ -529,7 +529,7 @@ export class DepartmentEditNewComponent implements OnInit {
               false
             )
             .afterDismissed()
-            .subscribe((tt) => {});
+            .subscribe((tt) => { });
           // this.focusInput.nativeElement.focus();
         }
       } else {
@@ -1036,7 +1036,7 @@ export class DepartmentEditNewComponent implements OnInit {
   }
 
   MoveItem(curent, previous) {
-    
+
     const position_from = previous.Position;
     const position_to = curent.Position;
     previous.Position = position_to;

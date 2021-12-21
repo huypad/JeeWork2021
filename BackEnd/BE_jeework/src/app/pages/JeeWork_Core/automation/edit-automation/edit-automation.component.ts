@@ -5,7 +5,7 @@ import { ListDepartmentService } from "./../../department/Services/List-departme
 import { TranslateService } from "@ngx-translate/core";
 import { TemplateCenterService } from "./../../template-center/template-center.service";
 import { ProjectsTeamService } from "./../../projects-team/Services/department-and-project.service";
-import { LayoutUtilsService } from "./../../../../_metronic/jeework_old/core/utils/layout-utils.service";
+import { LayoutUtilsService, MessageType } from "./../../../../_metronic/jeework_old/core/utils/layout-utils.service";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import {
   Component,
@@ -78,7 +78,7 @@ export class EditAutomationComponent implements OnInit, OnChanges {
         this.ListEvent = res.data;
         if (!this.dataEdit.eventid) this.Eventid = this.ListEvent[0].rowid;
       } else {
-        this.layoutUtilsService.showError(res.error.message);
+        this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
       }
     });
     this.automationService.getAutomationActionList().subscribe((res) => {
@@ -87,16 +87,16 @@ export class EditAutomationComponent implements OnInit, OnChanges {
         if (!this.dataEdit.actionid) this.Actionid = this.ListAction[9].rowid;
         if (this.ID_projectteam == 0) {
           this.ListAction.forEach(element => {
-            if ( element.rowid == 7 ) element.disabled = true;
+            if (element.rowid == 7) element.disabled = true;
           })
         }
         // disabled webhook
         this.ListAction.forEach(element => {
-          if ( element.rowid == 15 ) element.disabled = true;
+          if (element.rowid == 15) element.disabled = true;
         })
         this.changeDetectorRefs.detectChanges();
       } else {
-        this.layoutUtilsService.showError(res.error.message);
+        this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
       }
     });
   }
@@ -414,7 +414,7 @@ export class EditAutomationComponent implements OnInit, OnChanges {
         this.layoutUtilsService.showActionNotification("Thêm mới thành công");
         this.eventClose.emit(isclose)
       } else {
-        this.layoutUtilsService.showError(res.error.message);
+        this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
       }
     });
   }
@@ -424,7 +424,7 @@ export class EditAutomationComponent implements OnInit, OnChanges {
         this.layoutUtilsService.showActionNotification("Cập nhật thành công");
         this.eventClose.emit(isclose)
       } else {
-        this.layoutUtilsService.showError(res.error.message);
+        this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
       }
     });
   }
@@ -457,6 +457,6 @@ export class EditAutomationComponent implements OnInit, OnChanges {
     this.idAction++;
   }
 
-  ChangeData(){
+  ChangeData() {
   }
 }

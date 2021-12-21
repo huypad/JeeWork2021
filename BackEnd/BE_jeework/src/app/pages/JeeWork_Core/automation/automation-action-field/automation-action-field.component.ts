@@ -4,7 +4,7 @@ import { ListDepartmentService } from "./../../department/Services/List-departme
 import { TranslateService } from "@ngx-translate/core";
 import { TemplateCenterService } from "./../../template-center/template-center.service";
 import { ProjectsTeamService } from "./../../projects-team/Services/department-and-project.service";
-import { LayoutUtilsService } from "./../../../../_metronic/jeework_old/core/utils/layout-utils.service";
+import { LayoutUtilsService, MessageType } from "./../../../../_metronic/jeework_old/core/utils/layout-utils.service";
 import {
   Component,
   OnInit,
@@ -71,7 +71,7 @@ export class AutomationActionFieldComponent implements OnInit, OnChanges {
       if (res && res.status == 1) {
         this.listUser = res.data;
       } else {
-        this.layoutUtilsService.showError(res.error.message);
+        this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
       }
     });
     // list lựa chọn dự án ( cây ở bên template center có sẵn )
@@ -79,7 +79,7 @@ export class AutomationActionFieldComponent implements OnInit, OnChanges {
       if (res && res.status == 1) {
         this.ListDepartmentFolder = res.data;
       } else {
-        this.layoutUtilsService.showError(res.error.message);
+        this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
       }
     });
     // list Task (để lựa chọn cv con)
@@ -99,7 +99,7 @@ export class AutomationActionFieldComponent implements OnInit, OnChanges {
             if (this.Actionid == 2 || this.Actionid == 3) this.LoadStatusTask();
             this.changeDetectorRefs.detectChanges();
           } else {
-            this.layoutUtilsService.showError(res.error.message);
+            this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
           }
         });
       // load task parent
@@ -110,7 +110,7 @@ export class AutomationActionFieldComponent implements OnInit, OnChanges {
             this.ListTaskParent = res.data;
             this.changeDetectorRefs.detectChanges();
           } else {
-            this.layoutUtilsService.showError(res.error.message);
+            this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
           }
         });
     } else if (this.ID_department > 0) {
@@ -123,7 +123,7 @@ export class AutomationActionFieldComponent implements OnInit, OnChanges {
             if (this.Actionid == 2 || this.Actionid == 3) this.LoadStatusTask();
             this.changeDetectorRefs.detectChanges();
           } else {
-            this.layoutUtilsService.showError(res.error.message);
+            this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
           }
         });
       // load task parent
@@ -134,13 +134,13 @@ export class AutomationActionFieldComponent implements OnInit, OnChanges {
             this.ListTaskParent = res.data;
             this.changeDetectorRefs.detectChanges();
           } else {
-            this.layoutUtilsService.showError(res.error.message);
+            this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
           }
         });
     }
   }
 
-  selectedParent(value) {}
+  selectedParent(value) { }
 
   ngOnChanges(changes: SimpleChanges): void {
     this.checked = 0;
@@ -189,7 +189,7 @@ export class AutomationActionFieldComponent implements OnInit, OnChanges {
                 if (res && res.status == 1) {
                   this.value.title_project_team = res.data.title;
                 } else {
-                  // this.layoutUtilsService.showError(res.error.message);
+                  //           this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
                 }
               });
             this.value.status = {};
@@ -219,17 +219,17 @@ export class AutomationActionFieldComponent implements OnInit, OnChanges {
       case 14:
         {
           this.value.id_project_team = +this.data_actions.value;
-          if(this.value.id_project_team > 0){
+          if (this.value.id_project_team > 0) {
             this.projectsTeamService
-            .Detail(this.value.id_project_team)
-            .subscribe((res) => {
-              if (res && res.status == 1) {
-                this.value.title_project_team = res.data.title;
-                this.changeDetectorRefs.detectChanges();
-              } else {
-                // this.layoutUtilsService.showError(res.error.message);
-              }
-            });
+              .Detail(this.value.id_project_team)
+              .subscribe((res) => {
+                if (res && res.status == 1) {
+                  this.value.title_project_team = res.data.title;
+                  this.changeDetectorRefs.detectChanges();
+                } else {
+                  //           this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
+                }
+              });
           }
         }
         break;
@@ -265,7 +265,7 @@ export class AutomationActionFieldComponent implements OnInit, OnChanges {
     if (this.listUser && this.listUser.length > 0) {
       this.dataAction.data_actions.forEach((element) => {
         var listUser = element.value.split(",");
-        if(element.actionid == 3){
+        if (element.actionid == 3) {
           this.value.removeall = element.value;
         }
         listUser.forEach((UserID) => {

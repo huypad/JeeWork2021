@@ -109,7 +109,6 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
         this.list_priority = this.WeWorkService.list_priority;
         this.UserID = +localStorage.getItem('idUser');
     }
-
     @Input() ID_Project = 0;
     @Input() Id_Department = 0;
     @Input() filter: any = {};
@@ -167,25 +166,18 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
     private readonly componentName: string = 'kt-task_';
     Emtytask = true;
     public column_sort: any = [];
-
     IsAdminGroup = false;
-
     listStatus: any = [];
-
     // list da nhiệm
     // nodes: any[] = demoData;
-
     // ids for connected drop lists
     dropTargetIds = [];
     nodeLookup = {};
     dropActionTodo: DropInfo = null;
-
     taskinsert = new WorkModel();
     cot = 1;
     Assign: any = [];
-
     listUser: any[];
-
     selectedDate: any = {
         startDate: '',
         endDate: '',
@@ -284,7 +276,6 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
             }
         });
     }
-
     CheckRoles(roleID: number) {
         if (this.list_role) {
             const x = this.list_role.find((x) => x.id_row == this.ID_Project);
@@ -466,57 +457,6 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
             )
             .subscribe();
     }
-
-    // LoadBindingData() {
-    //     this.loadding = true;
-    //     this.dataLoader$
-    //         .pipe(
-    //             switchMap((resultFromServer) =>
-    //                 of(resultFromServer).pipe(
-    //                     tap((data) => {
-    //                         this.listFilter = data.Filter;
-
-    //                         // this.LoadUpdateCol();
-    //                         // this.LoadUpdateColNew(data.TenCot);
-
-    //                         this.ListTasks = data.datawork ? data.datawork : [];
-    //                         this.Emtytask = true;
-    //                         if (this.groupby == 'status' && this.ListTasks.length == 0) {
-    //                             if (this.listFilter[0]) {
-    //                                 this.newtask = this.listFilter[0].id_row;
-    //                             }
-    //                         }
-
-    //                         this.prepareDragDrop(this.ListTasks);
-    //                         this.ListTags = data.Tag;
-    //                         this.ListUsers = data.User;
-    //                         this.DataNewField = data.DataWork_NewField;
-    //                     })
-    //                 )
-    //             ),
-    //             catchError((err) => throwError(err)),
-    //             finalize(() => (this.loadding = false))
-    //         )
-    //         .subscribe(() => {
-    //             this.LoadListStatus();
-    //             this.changeDetectorRefs.detectChanges();
-    //         });
-    // }
-
-    // Statusdefault() {
-    //     const x = this.status_dynamic.find(
-    //         (x) =>
-    //             x.isdefault == true &&
-    //             x.IsToDo == false &&
-    //             x.IsFinal == false &&
-    //             x.IsDeadline == false
-    //     );
-    //     if (x) {
-    //         return x.id_row;
-    //     }
-    //     return 0;
-    // }
-
     GetDataNewField(id_work, id_field, isDropdown = false, getColor = false) {
         const x = this.DataNewField.find(
             (x) => x.WorkID == id_work && x.FieldID == id_field
@@ -740,7 +680,6 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
     }
 
     CheckDataWorkGroup(valuefilter, elementTask) {
-
         if (
             this.groupby == 'groupwork' &&
             elementTask.id_group == valuefilter.id_row
@@ -814,7 +753,7 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
             if (res && res.status == 1) {
                 this.ReloadColData();
             } else {
-                this.layoutUtilsService.showError(res.error.message);
+                this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
             }
         });
     }
@@ -844,7 +783,6 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
                     ? 1
                     : 0
         );
-
         this.changeDetectorRefs.detectChanges();
     }
 
@@ -856,17 +794,15 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
         }
         return false;
     }
-
     ClosedTask(value, node) {
         this._service.ClosedTask(node.id_row, value).subscribe((res) => {
             this.ReloadData();
             if (res && res.status == 1) {
             } else {
-                this.layoutUtilsService.showError(res.error.message);
+                this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
             }
         });
     }
-
     getDropdownField(idField) {
         const list = this.listNewfield.filter((x) => x.FieldID == idField);
         if (list) {
@@ -874,7 +810,6 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
         }
         return [];
     }
-
     focusInput(idtask, idfield) {
         this.editmail = idtask.toString() + idfield.toString();
     }
@@ -1277,7 +1212,7 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
         this.router.navigate([
             '',
             { outlets: { auxName: 'aux/detail/' + item.id_row } },
-        ]);       
+        ]);
     }
 
     f_convertDate(v: any) {
@@ -1350,7 +1285,7 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
                 this.ReloadData();
                 // this.LoadData();
             } else {
-                this.layoutUtilsService.showError(res.error.message);
+                this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
             }
         });
     }
@@ -1361,7 +1296,7 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
                 this.ReloadData();
                 // this.LoadData();
             } else {
-                this.layoutUtilsService.showError(res.error.message);
+                this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
             }
         });
     }
@@ -1408,7 +1343,7 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
             this.ReloadData();
             if (res && res.status == 1) {
             } else {
-                this.layoutUtilsService.showError(res.error.message);
+                this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
             }
         });
     }
@@ -1988,7 +1923,7 @@ export class WorksListGroup2Component implements OnInit, OnChanges {
             if (res && res.status == 1) {
                 this.ReloadColData();
             } else {
-                this.layoutUtilsService.showError(res.error.message);
+                this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
             }
         });
     }

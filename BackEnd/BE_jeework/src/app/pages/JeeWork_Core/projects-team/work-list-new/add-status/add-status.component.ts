@@ -141,7 +141,7 @@ export class AddStatusComponent implements OnInit {
 					this.createForm();
 				}
 				else
-					this.layoutUtilsService.showError(res.error.message);
+					this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
 			});
 		}
 		filter.cocauid = this.item.id_department;

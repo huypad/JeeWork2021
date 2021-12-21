@@ -1,8 +1,8 @@
-import {tinyMCE} from 'src/app/_metronic/jeework_old/components/tinyMCE';
-import {DanhMucChungService} from './../../../../../_metronic/jeework_old/core/services/danhmuc.service';
-import {LayoutUtilsService} from './../../../../../_metronic/jeework_old/core/utils/layout-utils.service';
-import {ProjectTeamEditStatusComponent} from './../../project-team-edit-status/project-team-edit-status.component';
-import {ProjectViewsModel} from './../../Model/department-and-project.model';
+import { tinyMCE } from 'src/app/_metronic/jeework_old/components/tinyMCE';
+import { DanhMucChungService } from './../../../../../_metronic/jeework_old/core/services/danhmuc.service';
+import { LayoutUtilsService, MessageType } from './../../../../../_metronic/jeework_old/core/utils/layout-utils.service';
+import { ProjectTeamEditStatusComponent } from './../../project-team-edit-status/project-team-edit-status.component';
+import { ProjectViewsModel } from './../../Model/department-and-project.model';
 import {
     Component,
     OnInit,
@@ -17,13 +17,13 @@ import {
     Output,
     EventEmitter,
 } from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 // Material
-import {MatDialog} from '@angular/material/dialog';
-import {SelectionModel} from '@angular/cdk/collections';
+import { MatDialog } from '@angular/material/dialog';
+import { SelectionModel } from '@angular/cdk/collections';
 // RXJS
-import {fromEvent, merge, ReplaySubject, BehaviorSubject, throwError} from 'rxjs';
-import {TranslateService} from '@ngx-translate/core';
+import { fromEvent, merge, ReplaySubject, BehaviorSubject, throwError } from 'rxjs';
+import { TranslateService } from '@ngx-translate/core';
 
 // Models
 import {
@@ -33,13 +33,13 @@ import {
     FormGroup,
     Validators,
 } from '@angular/forms';
-import {WeWorkService} from '../../../services/wework.services';
+import { WeWorkService } from '../../../services/wework.services';
 import {
     ProjectTeamModel,
     TagsModel,
 } from '../../Model/department-and-project.model';
-import {ProjectsTeamService} from '../../Services/department-and-project.service';
-import {tap, catchError, finalize} from 'rxjs/operators';
+import { ProjectsTeamService } from '../../Services/department-and-project.service';
+import { tap, catchError, finalize } from 'rxjs/operators';
 
 @Component({
     selector: 'kt-setting',
@@ -128,7 +128,7 @@ export class SettingComponent {
                 this.ID_Struct = '' + this.item.id_department;
                 this.createForm();
             } else {
-                this.layoutUtilsService.showError(res.error.message);
+                this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
             }
             if (this.IsProject) {
                 this.tendapb = this.translate.instant('projects.tenduan') + '';
@@ -418,7 +418,7 @@ export class SettingComponent {
                 if (res && res.status == 1) {
                     this.ngOnInit();
                 } else {
-                    this.layoutUtilsService.showError(res.error.message);
+                    this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
                 }
             });
     }
@@ -433,7 +433,7 @@ export class SettingComponent {
             if (res && res.status == 1) {
                 this.ngOnInit();
             } else {
-                this.layoutUtilsService.showError(res.error.message);
+                this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
             }
         });
     }
@@ -448,7 +448,7 @@ export class SettingComponent {
             if (res && res.status == 1) {
                 this.ngOnInit();
             } else {
-                this.layoutUtilsService.showError(res.error.message);
+                this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
             }
         });
     }
@@ -461,7 +461,7 @@ export class SettingComponent {
                 this.ngOnInit();
                 this.LoadParent(true);
             } else {
-                this.layoutUtilsService.showError(res.error.message);
+                this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
             }
         });
     }
@@ -495,7 +495,7 @@ export class SettingComponent {
                     this.ngOnInit();
                     this.layoutUtilsService.showActionNotification(_deleteMessage);
                 } else {
-                    this.layoutUtilsService.showError(res.error.message);
+                    this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
                 }
             });
 
@@ -573,7 +573,7 @@ export class SettingComponent {
             if (res && res.status == 1) {
 
             } else {
-                this.layoutUtilsService.showError(res.error.message);
+                this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
             }
             this.LoadParent(true);
             this.LoadData();
@@ -586,7 +586,7 @@ export class SettingComponent {
                 this.LoadData();
                 this.LoadParent(true);
             } else {
-                this.layoutUtilsService.showError(res.error.message);
+                this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
             }
             this.LoadData();
         });

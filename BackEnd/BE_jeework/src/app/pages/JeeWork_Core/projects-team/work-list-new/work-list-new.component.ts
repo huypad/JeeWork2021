@@ -139,10 +139,10 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   keyword = "";
   // view setting
   tasklocation = false;
-  showsubtask = true;
-  showclosedtask = true;
-  showclosedsubtask = true;
-  showtaskmutiple = true;
+  showsubtask = false;
+  showclosedtask = false;
+  showclosedsubtask = false;
+  showtaskmutiple = false;
   showemptystatus = false;
   status_dynamic: any = [];
   list_priority: any[];
@@ -562,7 +562,6 @@ export class WorkListNewComponent implements OnInit, OnChanges {
           this.listStatus = res.data;
           var itemPush = [];
           this.listStatus.forEach((element) => {
-            debugger
             itemPush = itemPush.concat(element.datawork);
           });
           this.ListTasks = itemPush;
@@ -619,7 +618,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
       this.LoadData();
       if (res && res.status == 1) {
       } else {
-        this.layoutUtilsService.showError(res.error.message);
+        this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
       }
     });
   }
@@ -934,7 +933,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
       if (res && res.status == 1) {
         this.GetField();
       } else {
-        this.layoutUtilsService.showError(res.error.message);
+        this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
       }
     });
   }
@@ -1310,7 +1309,6 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     // this.ListTasks.concat(task);
     // this.ListTasks.forEach(list => {
     //   if (task.id_row == list.id_row) {
-    //     debugger
     //     list.Users[0] = task.Users[0];
     //   }
     // });
@@ -1461,7 +1459,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         this.AddnewTask(val.status, true);
         // }, 1000);
       } else {
-        this.layoutUtilsService.showError(res.error.message);
+        this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
       }
     });
   }
@@ -1471,7 +1469,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
       if (res && res.status == 1) {
         this.LoadData();
       } else {
-        this.layoutUtilsService.showError(res.error.message);
+        this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
       }
     });
   }
@@ -1539,20 +1537,20 @@ export class WorkListNewComponent implements OnInit, OnChanges {
             this.LoadData();
           }, 500);
         }
-        this.layoutUtilsService.showError(res.error.message);
+        this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
       }
     });
   }
-	emit() {
-		let _data = [];
-		for (var i = 0; i < this.ListTasks.length; i++) {
-			let x = this.ListTasks[i];
-			if (x.IdRow == 0)
-				_data.push(x);
-		}
-		// _data = _data.concat(this.dataResult_Deleted);
-		// this.DataChange.emit(_data);
-	}
+  emit() {
+    let _data = [];
+    for (var i = 0; i < this.ListTasks.length; i++) {
+      let x = this.ListTasks[i];
+      if (x.IdRow == 0)
+        _data.push(x);
+    }
+    // _data = _data.concat(this.dataResult_Deleted);
+    // this.DataChange.emit(_data);
+  }
   UpdateByKey(node, key, value, isReloadData = true) {
     // if (!this.KiemTraThayDoiCongViec(+, key)) {
     //   return;
@@ -1567,10 +1565,10 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     this._service._UpdateByKey(item).subscribe((res) => {
       if (res && res.status == 1) {
         // this.LoadData();
-      this.ReloadTask(item);
+        this.ReloadTask(item);
       } else {
 
-        this.layoutUtilsService.showError(res.error.message);
+        this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
       }
       this.ReloadTask(item);
     });
@@ -1866,7 +1864,6 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         }
       });
     }
-
     setTimeout(() => {
       this.clearList();
       this.LoadData();
@@ -2107,7 +2104,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         if (res && res.status == 1) {
           this.GetField();
         } else {
-          this.layoutUtilsService.showError(res.error.message);
+          this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
         }
       });
   }

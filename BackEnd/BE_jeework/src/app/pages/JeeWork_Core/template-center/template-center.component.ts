@@ -14,7 +14,7 @@ import { TranslateService } from "@ngx-translate/core";
 import { MatMenuTrigger } from "@angular/material/menu";
 import { filter } from "rxjs/operators";
 import { QueryParamsModelNew } from "./../../../_metronic/jeework_old/core/models/query-models/query-params.model";
-import { LayoutUtilsService } from "./../../../_metronic/jeework_old/core/utils/layout-utils.service";
+import { LayoutUtilsService, MessageType } from "./../../../_metronic/jeework_old/core/utils/layout-utils.service";
 import { TemplateCenterService } from "./template-center.service";
 import { MatAccordion } from "@angular/material/expansion";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
@@ -51,6 +51,7 @@ export class TemplateCenterComponent implements OnInit {
   chontacvu = 1;
   DanhSachTC: any = [];
   ListField: any = [];
+  listcustomitems: any = [];
   TemplateDetail: any = [];
   TemplateTypes: any = [];
   TemplateKeyWorks: any = "";
@@ -74,7 +75,7 @@ export class TemplateCenterComponent implements OnInit {
     private departmentServices: ListDepartmentService,
     private changeDetectorRefs: ChangeDetectorRef,
     @Inject(MAT_DIALOG_DATA) public data: any
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.userFilterCtrl.valueChanges.pipe().subscribe(() => {
@@ -86,7 +87,7 @@ export class TemplateCenterComponent implements OnInit {
         this.TemplateTypes = res.data;
         this.filterUsers();
       } else {
-        this.layoutUtilsService.showError(res.error.message);
+        this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
       }
     });
     //load Department Folder
@@ -94,7 +95,7 @@ export class TemplateCenterComponent implements OnInit {
       if (res && res.status == 1) {
         this.ListDepartmentFolder = res.data;
       } else {
-        this.layoutUtilsService.showError(res.error.message);
+        this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
       }
     });
     //load list field Template
@@ -105,7 +106,7 @@ export class TemplateCenterComponent implements OnInit {
           element.checked = true;
         });
       } else {
-        this.layoutUtilsService.showError(res.error.message);
+        this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
       }
     });
     this.LoadTC();
@@ -144,7 +145,7 @@ export class TemplateCenterComponent implements OnInit {
           this.DanhSachTC = res.data;
           this.changeDetectorRefs.detectChanges();
         } else {
-          this.layoutUtilsService.showError(res.error.message);
+          this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
         }
       });
   }
@@ -279,7 +280,7 @@ export class TemplateCenterComponent implements OnInit {
       TCinsert.title = this.TemplateDetail.title;
 
       if (!TCinsert.title) {
-        this.layoutUtilsService.showError("Tên Template Center là bắt buộc");
+        this.layoutUtilsService.showActionNotification("Tên mẫu trung tâm là bắt buộc", MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
         return;
       }
     }
@@ -287,57 +288,39 @@ export class TemplateCenterComponent implements OnInit {
     if (this.TemplateDetail.types > 1) {
       if (this.ItemParentID.type > 0) {
         if (this.ItemParentID.type >= this.TemplateDetail.types) {
-          this.layoutUtilsService.showError("Vị trí lưu trữ không hợp lệ.");
+          this.layoutUtilsService.showActionNotification("Vị trí lưu trữ không hợp lệ", MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
           return;
         } else {
           TCinsert.ParentID =
             this.ItemParentID.id_row > 0 ? this.ItemParentID.id_row : 0;
         }
       } else {
-        this.layoutUtilsService.showError(
-          "Vị trí lưu trữ không được để trống."
-        );
+        this.layoutUtilsService.showActionNotification("Vị trí lưu trữ không được để trống", MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
         return;
       }
     }
     // kiểm tra custom item
     TCinsert.is_customitems = this.importall;
     TCinsert.list_field_name = [];
+    this.listcustomitems = this.ListField;
     if (!this.importall) {
-      const listcustomitems = this.ListField.filter((item) => item.checked);
-      listcustomitems.forEach((element) => {
-        const cus_it = new ListFieldModel();
-        cus_it.clear();
-        cus_it.fieldname = element.fieldname;
-        cus_it.id_field = element.id_field;
-        cus_it.isnewfield = element.isnewfield;
-        cus_it.isdefault = element.isdefault;
-        cus_it.isvisible = element.isvisible;
-        cus_it.position = element.position;
-        cus_it.title = element.title;
-        if (element.note) cus_it.note = element.note;
-        if (element.type) cus_it.type = element.type;
-        if (element.typeid) cus_it.typeid = element.typeid;
-        TCinsert.list_field_name.push(cus_it);
-      });
-    } else {
-      this.ListField.forEach((element) => {
-        const cus_it = new ListFieldModel();
-        cus_it.clear();
-        cus_it.fieldname = element.fieldname;
-        cus_it.id_field = element.id_field;
-        cus_it.isnewfield = element.isnewfield;
-        cus_it.isdefault = element.isdefault;
-        cus_it.isvisible = element.isvisible;
-        cus_it.position = element.position;
-        cus_it.title = element.title;
-        if (element.note) cus_it.note = element.note;
-        if (element.type) cus_it.type = element.type;
-        if (element.typeid) cus_it.typeid = element.typeid;
-        TCinsert.list_field_name.push(cus_it);
-      });
+      this.listcustomitems = this.ListField.filter((item) => item.checked);
     }
-    //ListField new
+    this.listcustomitems.forEach((element) => {
+      const cus_it = new ListFieldModel();
+      cus_it.clear();
+      cus_it.fieldname = element.fieldname;
+      cus_it.id_field = element.id_field;
+      cus_it.isnewfield = element.isnewfield;
+      cus_it.isdefault = element.isdefault;
+      cus_it.isvisible = element.isvisible;
+      cus_it.position = element.position;
+      cus_it.title = element.title;
+      if (element.note) cus_it.note = element.note;
+      if (element.type) cus_it.type = element.type;
+      if (element.typeid) cus_it.typeid = element.typeid;
+      TCinsert.list_field_name.push(cus_it);
+    });
     // kiểm tra project date
     TCinsert.is_projectdates = this.ProjectDatesDefault;
     if (!this.ProjectDatesDefault) {
@@ -348,13 +331,11 @@ export class TemplateCenterComponent implements OnInit {
         TCinsert.end_date = this.f_convertDate(this.end_date);
       }
     }
-
     var istemplatelist = this.TemplateDetail.istemplatelist;
     if (this.TemplateDetail.addtolibrary) {
       istemplatelist = true;
       TCinsert.id_row = this.TemplateDetail.save_as_id;
     }
-
     setTimeout(() => {
       this.SudungMau(TCinsert, istemplatelist);
     }, 5);
@@ -366,12 +347,13 @@ export class TemplateCenterComponent implements OnInit {
       .Sudungmau(_item, istemplatelist)
       .subscribe((res) => {
         if (res && res.status === 1) {
-          this.layoutUtilsService.showActionNotification("Thêm Mẫu thành công");
+          this.layoutUtilsService.showActionNotification("Thêm mẫu thành công", MessageType.Create, 4000, true, false, 3000, 'top', 1);
+
           setTimeout(() => {
             window.location.reload();
           }, 10);
         } else {
-          this.layoutUtilsService.showError(res.error.message);
+          this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
         }
         this.disabledBtn = false;
         this.layoutUtilsService.OffWaitingDiv();
@@ -385,12 +367,12 @@ export class TemplateCenterComponent implements OnInit {
       this.disabledBtn = false;
       this.changeDetectorRefs.detectChanges();
       if (res && res.status === 1) {
-        this.layoutUtilsService.showActionNotification("Thêm Mẫu thành công");
+        this.layoutUtilsService.showActionNotification("Thêm mẫu thành công", MessageType.Create, 4000, true, false, 3000, 'top', 1);
         setTimeout(() => {
           window.location.reload();
         }, 10);
       } else {
-        this.layoutUtilsService.showError(res.error.message);
+        this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
       }
     });
   }
@@ -400,16 +382,15 @@ export class TemplateCenterComponent implements OnInit {
       this.disabledBtn = false;
       this.changeDetectorRefs.detectChanges();
       if (res && res.status === 1) {
-        this.layoutUtilsService.showActionNotification("Thêm Mẫu thành công");
+        this.layoutUtilsService.showActionNotification("Thêm mẫu thành công", MessageType.Create, 4000, true, false, 3000, 'top', 1);
         setTimeout(() => {
           window.location.reload();
         }, 10);
       } else {
-        this.layoutUtilsService.showError(res.error.message);
+        this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
       }
     });
   }
-
   f_convertDate(v: any = "") {
     let a = v === "" ? new Date() : new Date(v);
     return (
@@ -459,14 +440,9 @@ export class TemplateCenterComponent implements OnInit {
           this.disabledBtn = false;
           this.changeDetectorRefs.detectChanges();
           if (res && res.status === 1) {
-            this.layoutUtilsService.showActionNotification(
-              "Thêm Mẫu thành công"
-            );
-            // setTimeout(() => {
-            //   window.location.reload();
-            // }, 10);
+            this.layoutUtilsService.showActionNotification("Thêm mẫu thành công", MessageType.Create, 4000, true, false, 3000, 'top', 1);
           } else {
-            this.layoutUtilsService.showError(res.error.message);
+            this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
           }
         });
     }, 50);
@@ -579,10 +555,10 @@ export class TemplateCenterComponent implements OnInit {
     };
     this.templatecenterService.add_template_library(object).subscribe((res) => {
       if (res && res.status == 1) {
-        this.layoutUtilsService.showInfo("thêm vào thư viện thành công");
+        this.layoutUtilsService.showActionNotification("Thêm vào thư viện thành công", MessageType.Create, 4000, true, false, 3000, 'top', 1);
         this.isAddsuccess = true;
       } else {
-        this.layoutUtilsService.showError(res.error.message);
+        this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
       }
     });
   }
@@ -594,7 +570,7 @@ export class TemplateCenterComponent implements OnInit {
           this.buocthuchien = 1;
           this.LoadTC();
         } else {
-          this.layoutUtilsService.showError(res.error.message);
+          this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
         }
       });
   }
@@ -622,7 +598,6 @@ export class TemplateCenterComponent implements OnInit {
     if (!this.TemplateTypes) {
       return;
     }
-
     let search = this.userFilterCtrl.value;
     if (!search) {
       this.filteredUsecase.next(this.TemplateTypes.slice());
@@ -633,7 +608,7 @@ export class TemplateCenterComponent implements OnInit {
     // filter the banks
     this.filteredUsecase.next(
       this.TemplateTypes.filter(
-        (bank) => bank.title.toLowerCase().indexOf(search) > -1
+        (_type) => _type.title.toLowerCase().indexOf(search) > -1
       )
     );
   }

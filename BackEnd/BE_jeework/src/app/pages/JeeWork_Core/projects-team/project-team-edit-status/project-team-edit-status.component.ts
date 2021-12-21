@@ -143,7 +143,7 @@ export class ProjectTeamEditStatusComponent implements OnInit {
         if (res && res.status == 1) {
           this.ListStatusDynamic();
         } else {
-          this.layoutUtilsService.showError(res.error.message);
+          this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
         }
       });
     } else {
@@ -151,7 +151,7 @@ export class ProjectTeamEditStatusComponent implements OnInit {
         if (res && res.status == 1) {
           this.LoadDataTemp();
         } else {
-          this.layoutUtilsService.showError(res.error.message);
+          this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
         }
       });
     }
@@ -288,7 +288,7 @@ export class ProjectTeamEditStatusComponent implements OnInit {
           );
           this.dialogRef.close(true);
         } else {
-          this.layoutUtilsService.showError(res.error.message);
+          this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
         }
       });
     }
@@ -349,7 +349,7 @@ export class ProjectTeamEditStatusComponent implements OnInit {
         this.dialogRef.close(true);
         window.location.reload();
       } else {
-        this.layoutUtilsService.showError(res.error.message);
+        this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
       }
     });
   }

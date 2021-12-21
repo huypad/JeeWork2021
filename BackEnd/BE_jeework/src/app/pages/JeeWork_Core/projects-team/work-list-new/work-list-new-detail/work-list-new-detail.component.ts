@@ -363,7 +363,7 @@ export class WorkListNewDetailComponent implements OnInit {
                 this.resetComment();
                 this.changeDetectorRefs.detectChanges();
             } else {
-                this.layoutUtilsService.showError(res.error.message);
+                this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
             }
         });
     }
@@ -396,7 +396,7 @@ export class WorkListNewDetailComponent implements OnInit {
                 }
                 this.changeDetectorRefs.detectChanges();
             } else {
-                this.layoutUtilsService.showError(res.error.message);
+                this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
             }
         });
     }
@@ -438,7 +438,7 @@ export class WorkListNewDetailComponent implements OnInit {
         //         }
         //         this.changeDetectorRefs.detectChanges();
         //     } else {
-        //         this.layoutUtilsService.showError(res.error.message);
+        //                   this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
         //     }
         // });
         // this.weworkService.lite_milestone(this.Id_project_team).subscribe((res) => {
@@ -549,7 +549,7 @@ export class WorkListNewDetailComponent implements OnInit {
             this.SendMessage(true);
             if (res && res.status == 1) {
             } else {
-                this.layoutUtilsService.showError(res.error.message);
+                this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
             }
         });
     }
@@ -746,7 +746,7 @@ export class WorkListNewDetailComponent implements OnInit {
                 this.LoadData();
                 this.SendMessage(true);
             } else {
-                this.layoutUtilsService.showError(res.error.message);
+                this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
             }
         });
     }
@@ -790,7 +790,6 @@ export class WorkListNewDetailComponent implements OnInit {
     }
 
     ItemSelected_Assign(data) {
-        debugger
         this.selected_Assign = this.list_Assign;
         this.selected_Assign.push(data);
         const i = this._Assign.lastIndexOf('@');
@@ -969,7 +968,7 @@ export class WorkListNewDetailComponent implements OnInit {
                 this.LoadData();
                 this.SendMessage(true);
             } else {
-                this.layoutUtilsService.showError(res.error.message);
+                this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
             }
         });
     }
@@ -1205,8 +1204,6 @@ export class WorkListNewDetailComponent implements OnInit {
         item.id_row = task.id_row;
         item.key = key;
         item.value = value;
-        debugger
-        
         if (task.Users.length > 0 && task.Users[0].id_nv > 0) {
             item.IsStaff = true;
         }
@@ -1219,7 +1216,7 @@ export class WorkListNewDetailComponent implements OnInit {
                 }
             }
             else {
-                this.layoutUtilsService.showError(res.error.message);
+                this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
             }
             this.showsuccess = false;
             this.disabledBtn = false;
@@ -1241,7 +1238,7 @@ export class WorkListNewDetailComponent implements OnInit {
         //                 this.is_confirm = false;
         //             }
         //         } else {
-        //             this.layoutUtilsService.showError(res.error.message);
+        //                       this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
         //         }
         //     }),
         //     catchError((err) => throwError(err)),
@@ -1285,7 +1282,7 @@ export class WorkListNewDetailComponent implements OnInit {
     //                     this.is_confirm = false;
     //                 }
     //             } else {
-    //                 this.layoutUtilsService.showError(res.error.message);
+    //                           this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
     //             }
     //         }),
     //         catchError((err) => throwError(err)),
@@ -1534,7 +1531,6 @@ export class WorkListNewDetailComponent implements OnInit {
             reader.readAsDataURL(evt.target.files[0]);
             let base64Str;
             setTimeout(() => {
-                debugger
                 console.log('size', file.size);
                 console.log('type', file.type);
                 base64Str = reader.result as String;
@@ -1554,7 +1550,6 @@ export class WorkListNewDetailComponent implements OnInit {
                     item.key = type == '1' ? 'Attachments' : 'Attachments_result';
                     item.values = new Array<FileUploadModel>(ct);
                     this.projectsTeamService._UpdateByKey(item).subscribe((res) => {
-                debugger
                         if (res && res.status == 1) {
                             this.LoadData();
                             this.SendMessage(true);
@@ -1986,7 +1981,6 @@ export class WorkListNewDetailComponent implements OnInit {
             });
     }
     // @HostListener('window:beforeunload', ['$event']) unloadHandler(event: Event) {
-    //     debugger
     //     event.returnValue = false;
     // }
     goBack() {
@@ -2026,7 +2020,7 @@ export class WorkListNewDetailComponent implements OnInit {
                     if (res && res.status == 1) {
                         this.dialogRef.close();
                     } else {
-                        this.layoutUtilsService.showError(res.error.message);
+                        this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
                     }
                 }),
                 catchError((err) => throwError(err)),

@@ -1,10 +1,10 @@
-import {MatDialog} from '@angular/material/dialog';
-import {TokenStorage} from './../../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
-import {MenuPhanQuyenServices} from './../../../../_metronic/jeework_old/core/_base/layout/services/menu-phan-quyen.service';
-import {StatusDynamicDialogComponent} from './../../status-dynamic/status-dynamic-dialog/status-dynamic-dialog.component';
-import {FormControl} from '@angular/forms';
-import {WeWorkService} from './../../services/wework.services';
-import {WorkGroupEditComponent} from './../../work/work-group-edit/work-group-edit.component';
+import { MatDialog } from '@angular/material/dialog';
+import { TokenStorage } from './../../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
+import { MenuPhanQuyenServices } from './../../../../_metronic/jeework_old/core/_base/layout/services/menu-phan-quyen.service';
+import { StatusDynamicDialogComponent } from './../../status-dynamic/status-dynamic-dialog/status-dynamic-dialog.component';
+import { FormControl } from '@angular/forms';
+import { WeWorkService } from './../../services/wework.services';
+import { WorkGroupEditComponent } from './../../work/work-group-edit/work-group-edit.component';
 import {
     WorkModel,
     WorkGroupModel,
@@ -22,15 +22,15 @@ import {
     Input,
     SimpleChange,
 } from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 // Material
-import {SelectionModel} from '@angular/cdk/collections';
+import { SelectionModel } from '@angular/cdk/collections';
 // RXJS
-import {fromEvent, merge, ReplaySubject} from 'rxjs';
-import {TranslateService} from '@ngx-translate/core';
+import { fromEvent, merge, ReplaySubject } from 'rxjs';
+import { TranslateService } from '@ngx-translate/core';
 import * as moment from 'moment';
 // Services
-import {DanhMucChungService} from './../../../../_metronic/jeework_old/core/services/danhmuc.service';
+import { DanhMucChungService } from './../../../../_metronic/jeework_old/core/services/danhmuc.service';
 import {
     LayoutUtilsService,
     MessageType,
@@ -42,8 +42,8 @@ import {
     transferArrayItem,
 } from '@angular/cdk/drag-drop';
 // import { DialogDecision } from '../process-work-details/process-work-details.component';
-import {QueryParamsModelNew} from './../../../../_metronic/jeework_old/core/models/query-models/query-params.model';
-import {ProjectsTeamService} from '../Services/department-and-project.service';
+import { QueryParamsModelNew } from './../../../../_metronic/jeework_old/core/models/query-models/query-params.model';
+import { ProjectsTeamService } from '../Services/department-and-project.service';
 
 @Component({
     selector: 'kt-work-kanban',
@@ -303,7 +303,7 @@ export class WorkKanBanComponent implements OnInit {
             this.ListTasks.forEach((element) => {
                 element.isExpanded =
                     this.filter_subtask.value == 'show' ||
-                    this.addNodeitem == element.id_row
+                        this.addNodeitem == element.id_row
                         ? true
                         : false;
                 this.listFilter.forEach((val) => {
@@ -470,7 +470,7 @@ export class WorkKanBanComponent implements OnInit {
                 this.CloseAddnewTask(true);
                 this.LoadData();
             } else {
-                this.layoutUtilsService.showError(res.error.message);
+                this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
             }
         });
     }
@@ -687,7 +687,7 @@ export class WorkKanBanComponent implements OnInit {
     }
 
     ViewDetail(item) {
-        this.router.navigate(['', {outlets: {auxName: 'aux/detail/' + item.id_row},}]);
+        this.router.navigate(['', { outlets: { auxName: 'aux/detail/' + item.id_row }, }]);
     }
 
     ThemCongviec() {
@@ -713,7 +713,7 @@ export class WorkKanBanComponent implements OnInit {
         const _messageType =
             _item.id_row > 0 ? MessageType.Update : MessageType.Create;
         const dialogRef = this.dialog.open(WorkGroupEditComponent, {
-            data: {_item},
+            data: { _item },
         });
         dialogRef.afterClosed().subscribe((res) => {
             if (!res) {

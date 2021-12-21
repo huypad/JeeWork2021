@@ -427,7 +427,7 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
                 this.UpdateProject(_project);
                 this.changeDetectorRefs.detectChanges();
             } else {
-                this.layoutUtilsService.showError(res.error.message);
+                this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
             }
         });
     }
@@ -438,7 +438,7 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
                 // return res.data.locked;
                 // return res.data;
             } else {
-                this.layoutUtilsService.showError(res.error.message);
+                this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
             }
         });
     }
@@ -466,7 +466,7 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
                 this.Update_ClosedProject(model);
                 this.changeDetectorRefs.detectChanges();
             } else {
-                this.layoutUtilsService.showError(res.error.message);
+                this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
             }
         });
     }
@@ -541,7 +541,7 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
                     }
                 });
             } else {
-                this.layoutUtilsService.showError(res.error.message);
+                this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
             }
         });
     }
@@ -602,7 +602,7 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
                     }
                 });
             } else {
-                this.layoutUtilsService.showError(res.error.message);
+                this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
             }
         });
     }
@@ -716,7 +716,7 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
                     }
                 });
             } else {
-                this.layoutUtilsService.showError(res.error.message);
+                this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
             }
         });
         this.layoutUtilsService.menuSelectColumns_On_Off();
@@ -988,7 +988,7 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
                 });
                 this.changeDetectorRefs.detectChanges();
             } else {
-                this.layoutUtilsService.showError(res.error.message);
+                this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
             }
         });
     }
@@ -1015,7 +1015,7 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
                 });
                 this.changeDetectorRefs.detectChanges();
             } else {
-                this.layoutUtilsService.showError(res.error.message);
+                this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
             }
         });
     }

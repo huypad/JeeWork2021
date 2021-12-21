@@ -179,7 +179,7 @@ export class ProjectsTeamComponent implements OnInit {
             if (res && res.status === 1) {
                 this.roles = res.data;
             } else {
-                this.layoutUtilsService.showError(res.error.message);
+                this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
             }
             this.changeDetectorRefs.detectChanges();
         });
@@ -278,7 +278,7 @@ export class ProjectsTeamComponent implements OnInit {
                 if (res && res.status === 1) {
                     this.layoutUtilsService.showActionNotification(_saveMessage);
                 } else {
-                    this.layoutUtilsService.showError(res.error.message);
+                    this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
                 }
                 this.LoadData();
             });
@@ -292,7 +292,7 @@ export class ProjectsTeamComponent implements OnInit {
                     this.ngOnInit();
                 });
             } else {
-                this.layoutUtilsService.showError(res.error.message);
+                this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
             }
         });
     }
@@ -963,7 +963,7 @@ export class ProjectsTeamComponent implements OnInit {
                     }
                 );
             } else {
-                this.layoutUtilsService.showError(res.error.message);
+                this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
             }
         });
     }

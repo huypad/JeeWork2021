@@ -129,10 +129,10 @@ export class RepeatedEditComponent implements OnInit, OnChanges {
       },
     ];
     let x = (this.router.url).split('/');
-		if (+x[2] > 0) {
-			this.id_project = + x[2];
-		} else {
-		}
+    if (+x[2] > 0) {
+      this.id_project = + x[2];
+    } else {
+    }
   }
   /** LOAD DATA */
   ngOnInit() {
@@ -146,7 +146,7 @@ export class RepeatedEditComponent implements OnInit, OnChanges {
     if (this.id_project_team > 0) {
       this.isUpdate = true;
       this.LoadUser(this.id_project_team);
-    } else if(this.id_project > 0){
+    } else if (this.id_project > 0) {
       this.id_project_team = this.id_project;
       this.LoadUser(this.id_project_team);
     }
@@ -179,7 +179,7 @@ export class RepeatedEditComponent implements OnInit, OnChanges {
           var j = 0;
           j < this.item.repeated_day.substring(0).split(",").length;
           j++
-        ) { 
+        ) {
           if (
             this.list_weekdays[i].Code ==
             this.item.repeated_day.substring(0).split(",")[j]
@@ -656,12 +656,12 @@ export class RepeatedEditComponent implements OnInit, OnChanges {
     // _item.id_group = controls['id_group'].value == "null" ? "0" : controls['id_group'].value;
     // _item.assign = controls['assign'].value;// chỉ lưu id
     _item.frequency = controls["frequency"].value;
-    _item.deadline = +controls["deadline"].value>0?controls["deadline"].value:"0";
+    _item.deadline = +controls["deadline"].value > 0 ? controls["deadline"].value : "0";
 
     if (!this.show_frequency)
       _item.repeated_day = controls["repeated_day"].value;
     else _item.repeated_day = this.txt_repeat_day;
-    const LIST = Array<UserInfoModel>(); 
+    const LIST = Array<UserInfoModel>();
     if (this.selectedUser.length > 0) {
       this.selectedUser.map((item, index) => {
         let _true = this.User.find((x) => x.id_nv === item.id_nv);
@@ -752,7 +752,7 @@ export class RepeatedEditComponent implements OnInit, OnChanges {
           // });
         }
       } else {
-        this.layoutUtilsService.showError(res.error.message);
+        this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
       }
       this.changeDetectorRefs.detectChanges();
     });
@@ -795,7 +795,7 @@ export class RepeatedEditComponent implements OnInit, OnChanges {
   updateChanges_Todo() {
     this.onChange(this.listCol_Todo);
   }
-  onChange: (_: any) => void = (_: any) => {};
+  onChange: (_: any) => void = (_: any) => { };
   checkShow($event, arr) {
     if ($event.target.value == "" || arr[arr.length - 1].SubTask == "") return;
     let item = {

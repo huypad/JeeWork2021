@@ -1,4 +1,4 @@
-import { LayoutUtilsService } from './../../../../../_metronic/jeework_old/core/utils/layout-utils.service';
+import { LayoutUtilsService, MessageType } from './../../../../../_metronic/jeework_old/core/utils/layout-utils.service';
 import { ProjectsTeamService } from './../../Services/department-and-project.service';
 import { WeWorkService } from "./../../../services/wework.services";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
@@ -51,12 +51,12 @@ export class AddNewFieldsComponent implements OnInit {
 		});
 		if (this.data.id_row > 0) {
 			this._service
-				.Detail_column_new_field(this.data.id_row,this.Type)
+				.Detail_column_new_field(this.data.id_row, this.Type)
 				.subscribe((res) => {
 					if (res && res.status == 1) {
 						this.listOptions = res.data.options;
 					} else {
-						this.LayoutUtilsService.showError(res.error.message);
+						this.LayoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
 					}
 				});
 		} else {
@@ -129,7 +129,7 @@ export class AddNewFieldsComponent implements OnInit {
 				this.dialogRef.close(this.data);
 			}
 			else {
-				this.LayoutUtilsService.showError(res.error.message);
+				this.LayoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
 			}
 		});
 	}
@@ -140,7 +140,7 @@ export class AddNewFieldsComponent implements OnInit {
 				// this.LoadData();
 				this.dialogRef.close(this.data);
 			} else {
-				this.LayoutUtilsService.showError(res.error.message);
+				this.LayoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
 			}
 		});
 	}

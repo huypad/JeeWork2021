@@ -3,7 +3,7 @@ import { ListDepartmentService } from "./../../department/Services/List-departme
 import { TranslateService } from "@ngx-translate/core";
 import { TemplateCenterService } from "./../../template-center/template-center.service";
 import { ProjectsTeamService } from "./../../projects-team/Services/department-and-project.service";
-import { LayoutUtilsService } from "./../../../../_metronic/jeework_old/core/utils/layout-utils.service";
+import { LayoutUtilsService, MessageType } from "./../../../../_metronic/jeework_old/core/utils/layout-utils.service";
 import {
   Component,
   OnInit,
@@ -21,8 +21,7 @@ import {
   styleUrls: ["./automation-trigger-state-condition.component.scss"],
 })
 export class AutomationTriggerStateConditionComponent
-  implements OnInit, OnChanges
-{
+  implements OnInit, OnChanges {
   @Input() ID_projectteam: number = 0;
   @Input() ID_department: number = 0;
   @Input() condition: any = {};
@@ -55,7 +54,7 @@ export class AutomationTriggerStateConditionComponent
         this.listUser = res.data;
         if (this.Eventid == 5 || this.Eventid == 6) this.loadAssign_ev56();
       } else {
-        this.layoutUtilsService.showError(res.error.message);
+        this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
       }
     });
   }
@@ -70,7 +69,7 @@ export class AutomationTriggerStateConditionComponent
             this.LoadDataEvent1();
             this.changeDetectorRefs.detectChanges();
           } else {
-            this.layoutUtilsService.showError(res.error.message);
+            this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
           }
         });
     } else if (this.ID_department > 0) {
@@ -82,7 +81,7 @@ export class AutomationTriggerStateConditionComponent
             this.LoadDataEvent1();
             this.changeDetectorRefs.detectChanges();
           } else {
-            this.layoutUtilsService.showError(res.error.message);
+            this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
           }
         });
     }
@@ -131,7 +130,7 @@ export class AutomationTriggerStateConditionComponent
   loadAssign_ev56() {
     if (!this.listUser || this.listUser.length == 0) return;
     if (this.Eventid != this.condition.eventid) return;
-    if ( !this.Remapdata && this.data_condition.list && this.data_condition.list != "any") {
+    if (!this.Remapdata && this.data_condition.list && this.data_condition.list != "any") {
       this.Remapdata = true;
       var listID = this.data_condition.list.split(",");
       listID.forEach((id) => {

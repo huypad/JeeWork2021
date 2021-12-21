@@ -1,8 +1,8 @@
 import { ConversationService } from './../../../../../_metronic/partials/layout/extras/jee-chat/my-chat/services/conversation.service';
 import { ConversationModel } from './../../../../../_metronic/partials/layout/extras/jee-chat/my-chat/models/conversation';
-import {LayoutUtilsService} from './../../../../../_metronic/jeework_old/core/utils/layout-utils.service';
-import {TokenStorage} from './../../../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
-import {TranslateService} from '@ngx-translate/core';
+import { LayoutUtilsService, MessageType } from './../../../../../_metronic/jeework_old/core/utils/layout-utils.service';
+import { TokenStorage } from './../../../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
+import { TranslateService } from '@ngx-translate/core';
 import {
     Component,
     OnInit,
@@ -15,18 +15,18 @@ import {
     Input,
     SimpleChange
 } from '@angular/core';
-import {ActivatedRoute, Router, Route} from '@angular/router';
+import { ActivatedRoute, Router, Route } from '@angular/router';
 // Material
-import {MatDialog} from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 // Models
 
-import {PopoverContentComponent} from 'ngx-smart-popover';
-import {AddUsersDialogComponent} from '../add-users-dialog/add-users-dialog.component';
-import {ProjectsTeamService} from '../../Services/department-and-project.service';
-import {WeWorkService} from '../../../services/wework.services';
-import {UserChatBox} from '../../../../../_metronic/partials/layout/extras/jee-chat/my-chat/models/user-chatbox';
-import {ChatService} from '../../../../../_metronic/partials/layout/extras/jee-chat/my-chat/services/chat.service';
-import {MenuAsideService, MenuPhanQuyenServices} from '../../../../../_metronic/jeework_old/core/_base/layout';
+import { PopoverContentComponent } from 'ngx-smart-popover';
+import { AddUsersDialogComponent } from '../add-users-dialog/add-users-dialog.component';
+import { ProjectsTeamService } from '../../Services/department-and-project.service';
+import { WeWorkService } from '../../../services/wework.services';
+import { UserChatBox } from '../../../../../_metronic/partials/layout/extras/jee-chat/my-chat/models/user-chatbox';
+import { ChatService } from '../../../../../_metronic/partials/layout/extras/jee-chat/my-chat/services/chat.service';
+import { MenuAsideService, MenuPhanQuyenServices } from '../../../../../_metronic/jeework_old/core/_base/layout';
 
 @Component({
     selector: 'kt-members',
@@ -35,18 +35,18 @@ import {MenuAsideService, MenuPhanQuyenServices} from '../../../../../_metronic/
 })
 export class MembersComponent {
     constructor(public _services: ProjectsTeamService,
-                public dialog: MatDialog,
-                private layoutUtilsService: LayoutUtilsService,
-                private activatedRoute: ActivatedRoute,
-                private menuServices: MenuPhanQuyenServices,
-                private menuAsideService: MenuAsideService,
-                private translate: TranslateService,
-                private changeDetectorRefs: ChangeDetectorRef,
-                private router: Router,private conversation_sevices: ConversationService,
-                private _service: ProjectsTeamService,
-                private chatService: ChatService,
-                public WeWorkService: WeWorkService,
-                private tokenStorage: TokenStorage) {
+        public dialog: MatDialog,
+        private layoutUtilsService: LayoutUtilsService,
+        private activatedRoute: ActivatedRoute,
+        private menuServices: MenuPhanQuyenServices,
+        private menuAsideService: MenuAsideService,
+        private translate: TranslateService,
+        private changeDetectorRefs: ChangeDetectorRef,
+        private router: Router, private conversation_sevices: ConversationService,
+        private _service: ProjectsTeamService,
+        private chatService: ChatService,
+        public WeWorkService: WeWorkService,
+        private tokenStorage: TokenStorage) {
     }
 
     id_project_team: number;
@@ -56,7 +56,7 @@ export class MembersComponent {
     IsAdmin = false;
     customStyle: any = {};
     UserID: any = localStorage.getItem('idUser');
-    @ViewChild('myPopoverA', {static: true}) myPopoverA: PopoverContentComponent;
+    @ViewChild('myPopoverA', { static: true }) myPopoverA: PopoverContentComponent;
 
 
     // chat nhanh
@@ -146,7 +146,7 @@ export class MembersComponent {
 
     initAddMembers(admin = false) {
         const title = admin ? this.translate.instant('GeneralKey.themnhieuquanlyduan') : this.translate.instant('GeneralKey.themnhieuthanhvien');
-        const dialogRef = this.dialog.open(AddUsersDialogComponent, {data: {title, filter: {}, excludes: []}, width: '500px'});
+        const dialogRef = this.dialog.open(AddUsersDialogComponent, { data: { title, filter: {}, excludes: [] }, width: '500px' });
         dialogRef.afterClosed().subscribe(res => {
             if (!res) {
                 return;
@@ -173,7 +173,7 @@ export class MembersComponent {
                 this.LoadParent(true);
                 this.ngOnInit();
             } else {
-                this.layoutUtilsService.showError(res.error.message);
+                this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
             }
         });
         // this.layoutUtilsService.showInfo("add " + (admin ? "admins" : "members"));
@@ -194,7 +194,7 @@ export class MembersComponent {
                 this.ngOnInit();
                 this.LoadParent(true);
             } else {
-                this.layoutUtilsService.showError(res.error.message);
+                this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
             }
         });
         // this.layoutUtilsService.showInfo("add " + (admin ? "admin" : "member"));
@@ -202,11 +202,11 @@ export class MembersComponent {
 
     chatWith(user) {
         // this.layoutUtilsService.showInfo('chatWith ' + user.username);
-        this.chatService.GetChatWithFriend(user.username).subscribe(res=>{
-            if(res && res.status === 1){
-                if(res.data?.length > 0){
+        this.chatService.GetChatWithFriend(user.username).subscribe(res => {
+            if (res && res.status === 1) {
+                if (res.data?.length > 0) {
                     this.selectUser(res.data[0]);
-                }else{
+                } else {
                     this.CreateConverSation(user);
                 }
             }
@@ -215,40 +215,40 @@ export class MembersComponent {
     listDanhBa = [];
     GetDanhBa() {
         this.conversation_sevices.GetDanhBaNotConversation().subscribe(res => {
-          this.listDanhBa = res.data;
-          this.changeDetectorRefs.detectChanges();
+            this.listDanhBa = res.data;
+            this.changeDetectorRefs.detectChanges();
         })
-      }
+    }
     ItemConversation(ten_group: string, data: any): ConversationModel {
         var listUser = [];
         listUser.push(data);
         const item = new ConversationModel();
         item.GroupName = ten_group;
         item.IsGroup = false;
-    
+
         item.ListMember = listUser.slice();
-    
-    
+
+
         return item
-      }
-    
-      CreateConverSation(item) {
-          if(this.listDanhBa){
-              var user = this.listDanhBa.find(x=>x.UserID = item.id_nv);
-              if(user){
+    }
+
+    CreateConverSation(item) {
+        if (this.listDanhBa) {
+            var user = this.listDanhBa.find(x => x.UserID = item.id_nv);
+            if (user) {
                 let it = this.ItemConversation(user.FullName, user);
                 this.conversation_sevices.CreateConversation(it).subscribe(res => {
-                  if (res && res.status === 1) {
-                      if(res.data?.length > 0){
-                          this.selectUser(res.data[0]);
-                      }
-                    // this.listUser = []
-                    // this.CloseDia(res.data);
-                  }
+                    if (res && res.status === 1) {
+                        if (res.data?.length > 0) {
+                            this.selectUser(res.data[0]);
+                        }
+                        // this.listUser = []
+                        // this.CloseDia(res.data);
+                    }
                 })
-              }
-          } 
-      }
+            }
+        }
+    }
     viewProfile(id_nv) {
         this.layoutUtilsService.showInfo('viewProfile ' + id_nv);
     }
@@ -258,11 +258,11 @@ export class MembersComponent {
         this._services.Delete_user(id_row).subscribe(res => {
             this.layoutUtilsService.OffWaitingDiv();
             if (res && res.status == 1) {
-                
+
                 this.ngOnInit();
                 this.LoadParent(true);
             } else {
-                this.layoutUtilsService.showError(res.error.message);
+                this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
             }
         });
         // this.layoutUtilsService.showInfo("delete " + id_row);
@@ -276,7 +276,7 @@ export class MembersComponent {
                 this.ngOnInit();
                 this.LoadParent(true);
             } else {
-                this.layoutUtilsService.showError(res.error.message);
+                this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
             }
         });
         // this.layoutUtilsService.showInfo("updateRule " + id_row + ", " + admin);

@@ -25,7 +25,7 @@ export class AuthorizeEditComponent implements OnInit {
 	disabledBtn: boolean = false;
 	IsEdit: boolean;
 	listUser: any[] = [];
-	ds_project : any = [];
+	ds_project: any = [];
 	public filteredBanks: ReplaySubject<any[]> = new ReplaySubject<any[]>(1);
 	public bankFilterCtrl: FormControl = new FormControl();
 	constructor(public dialogRef: MatDialogRef<AuthorizeEditComponent>,
@@ -58,26 +58,25 @@ export class AuthorizeEditComponent implements OnInit {
 				this.listUser = res.data;
 				this.setUpDropSearchNhanVien();
 				this.changeDetectorRefs.detectChanges();
-			}else {
-				this.layoutUtilsService.showError(res.error.message);
+			} else {
+				this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
 			};
 		});
 		this.createForm();
-
 		this.weworkService.lite_project_team_byuser().subscribe(res => {
 			if (res && res.status === 1) {
 				this.ds_project = res.data
 				// this.changeDetectorRefs.detectChanges();
-			}else {
-				this.layoutUtilsService.showError(res.error.message);
+			} else {
+				this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
 			};
 		});
 	}
-	LoadDetail(id){
+	LoadDetail(id) {
 		this._service.DetailUQ(id).subscribe(res => {
 		});
 	}
-	checkProject(value){
+	checkProject(value) {
 	}
 	setUpDropSearchNhanVien() {
 		this.bankFilterCtrl.setValue('');
@@ -114,16 +113,16 @@ export class AuthorizeEditComponent implements OnInit {
 	}
 	createForm() {
 		var x = [];
-		if(this.item.list_project){
-			this.item.list_project.split(',').forEach(y=>{
+		if (this.item.list_project) {
+			this.item.list_project.split(',').forEach(y => {
 				x.push(+y);
 			})
-			
+
 		}
 		this.itemForm = this.fb.group({
-			id_user: [''+this.item.id_user, Validators.required],
-			start: [this.item.start_date , Validators.required],
-			end: [ this.item.end_date , Validators.required],
+			id_user: ['' + this.item.id_user, Validators.required],
+			start: [this.item.start_date, Validators.required],
+			end: [this.item.end_date, Validators.required],
 			list_project: [x],
 		});
 		this.changeDetectorRefs.detectChanges();
@@ -150,27 +149,27 @@ export class AuthorizeEditComponent implements OnInit {
 		_item.start_date = this.f_convertDate(controls['start'].value);
 		_item.end_date = this.f_convertDate(controls['end'].value);
 		_item.is_all_project = this.is_all_project;
-		if(!this.is_all_project){
-			if(controls['list_project'].value)
+		if (!this.is_all_project) {
+			if (controls['list_project'].value)
 				_item.list_project = controls['list_project'].value.join();
 			else {
 				this.layoutUtilsService.showError('Lỗi lấy danh sách dự án');
 				return null;
 			}
-			}
+		}
 		return _item;
 	}
 	f_convertDate(v: any = "") {
 		let a = v === "" ? new Date() : new Date(v);
 		return (
-		  a.getFullYear() +
-		  "-" +
-		  ("0" + (a.getMonth() + 1)).slice(-2) +
-		  "-" +
-		  ("0" + a.getDate()).slice(-2) +
-		  "T00:00:00.0000000"
+			a.getFullYear() +
+			"-" +
+			("0" + (a.getMonth() + 1)).slice(-2) +
+			"-" +
+			("0" + a.getDate()).slice(-2) +
+			"T00:00:00.0000000"
 		);
-	  }
+	}
 	onSubmit(withBack: boolean = false) {
 		this.hasFormErrors = false;
 		this.loadingAfterSubmit = false;
@@ -184,7 +183,7 @@ export class AuthorizeEditComponent implements OnInit {
 			return;
 		}
 		const updatedegree = this.prepare();
-		if(!updatedegree) return;
+		if (!updatedegree) return;
 		if (updatedegree.id_row > 0) {
 			this.Update(updatedegree, withBack);
 		} else {

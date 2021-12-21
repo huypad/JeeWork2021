@@ -1349,7 +1349,6 @@ from we_template_library where disabled = 0 and id_template = " + id;
                         return JsonResultCommon.Custom(error);
                     }
                     #endregion
-                    data.id_row = idc;
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong(data);
                 }
@@ -1731,7 +1730,7 @@ from we_template_library where disabled = 0 and id_template = " + id;
         private bool InsertTempToData(long id_temp, TemplateCenterModel data, UserJWT loginData, bool istemplatelist, DpsConnection cnn, out string error)
         {
             error = "";
-            long idmau = 0;
+            string idmau = "0";
             string field = "id_temp_center";
             long datatemplatecemter = data.id_row;
             if (istemplatelist)
@@ -1741,14 +1740,16 @@ from we_template_library where disabled = 0 and id_template = " + id;
             // idmau là id của dự án phòng ban muốn đem đi nhân bản vào bảng tạm
             if (data.types == 1) // phòng ban
             {
-                idmau = long.Parse(cnn.ExecuteScalar($"select id_row from we_department_temp where {field} = {datatemplatecemter} and parentid is null").ToString());
-                long idc = InsertTepmToDepartment(id_temp, idmau, data.title, data.ParentID, data.field_id, loginData, cnn, out error);
+                string sql_department = "";
+                sql_department = $"select id_row from we_department_temp where {field} = {datatemplatecemter} and parentid is null";
+                idmau = cnn.ExecuteScalar(sql_department).ToString();
+                long idc = InsertTempToDepartment(id_temp, long.Parse(idmau), data.title, data.ParentID, data.field_id, loginData, cnn, out error);
                 if (idc <= 0)
                 {
                     return false;
                 }
                 // xong bước 1 kiểm tra có folder hay không nếu có thì lưu folder
-                string sqlf = "select * from we_department_temp where  Disabled = 0 and  ParentID = " + idmau;
+                string sqlf = "select * from we_department_temp where disabled = 0 and parentid = " + idmau;
                 DataTable datafolder = cnn.CreateDataTable(sqlf);
                 if (datafolder.Rows.Count > 0)
                 {
@@ -1756,7 +1757,7 @@ from we_template_library where disabled = 0 and id_template = " + id;
                     {
                         long idfolder = long.Parse(dr["id_row"].ToString());
                         string titlef = dr["title"].ToString();
-                        long idfoldertemp = InsertTepmToDepartment(id_temp, idfolder, titlef, idc, data.field_id, loginData, cnn, out error);
+                        long idfoldertemp = InsertTempToDepartment(id_temp, idfolder, titlef, idc, data.field_id, loginData, cnn, out error);
                         if (idfoldertemp <= 0)
                         {
                             return false;
@@ -1766,8 +1767,10 @@ from we_template_library where disabled = 0 and id_template = " + id;
             }
             else if (data.types == 2) // thư mục -- idfolder  
             {
-                idmau = long.Parse(cnn.ExecuteScalar($"select top 1 id_row from we_department_temp where {field} = {datatemplatecemter}").ToString());
-                long idc = InsertTepmToDepartment(id_temp, idmau, data.title, data.ParentID, data.field_id, loginData, cnn, out error);
+                string sql_department = "";
+                sql_department = $"select id_row from we_department_temp where {field} = {datatemplatecemter}";
+                idmau = cnn.ExecuteScalar(sql_department).ToString();
+                long idc = InsertTempToDepartment(id_temp, long.Parse(idmau), data.title, data.ParentID, data.field_id, loginData, cnn, out error);
                 if (idc <= 0)
                 {
                     return false;
@@ -1775,15 +1778,17 @@ from we_template_library where disabled = 0 and id_template = " + id;
             }
             else if (data.types == 3) // phòng ban  
             {
-                idmau = long.Parse(cnn.ExecuteScalar($"select top 1 id_row from we_project_team_temp where {field} = {datatemplatecemter}").ToString());
-                if (!InsertTempToProject(id_temp, idmau, data.title, data.ParentID, cnn, out error))
+                string sql_department = "";
+                sql_department = $"select top 1 id_row from we_project_team_temp where {field} = {datatemplatecemter}";
+                idmau = cnn.ExecuteScalar(sql_department).ToString();
+                if (!InsertTempToProject(id_temp, long.Parse(idmau), data.title, data.ParentID, cnn, out error))
                 {
                     return false;
                 }
             }
             return true;
         }
-        private long InsertTepmToDepartment(long id_temp, long idmau, string title, long idparent, string field_id, UserJWT loginData, DpsConnection cnn, out string error)
+        private long InsertTempToDepartment(long id_temp, long idmau, string title, long idparent, string field_id, UserJWT loginData, DpsConnection cnn, out string error)
         {
             // insert department/folder kiểm tra trong department/folder có dự án thì tạo dự án luôn
             error = "";

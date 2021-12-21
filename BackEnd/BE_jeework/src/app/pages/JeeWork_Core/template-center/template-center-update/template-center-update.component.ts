@@ -6,7 +6,7 @@ import {
 } from "./../template-model/template.model";
 import { WeWorkService } from "./../../services/wework.services";
 import { QueryParamsModelNew } from "./../../../../_metronic/jeework_old/core/models/query-models/query-params.model";
-import { LayoutUtilsService } from "./../../../../_metronic/jeework_old/core/utils/layout-utils.service";
+import { LayoutUtilsService, MessageType } from "./../../../../_metronic/jeework_old/core/utils/layout-utils.service";
 import { ListDepartmentService } from "./../../department/Services/List-department.service";
 import { TranslateService } from "@ngx-translate/core";
 import { TemplateCenterService } from "./../template-center.service";
@@ -62,7 +62,7 @@ export class TemplateCenterUpdateComponent implements OnInit {
       if (res && res.status == 1) {
         this.ListDepartmentFolder = res.data;
       } else {
-        this.layoutUtilsService.showError(res.error.message);
+        this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
       }
     });
     //load DS user
@@ -72,7 +72,7 @@ export class TemplateCenterUpdateComponent implements OnInit {
         this.options = this.getOptions();
         this.changeDetectorRefs.detectChanges();
       } else {
-        this.layoutUtilsService.showError(res.error.message);
+        this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
       }
     });
     //load list field Template
@@ -84,7 +84,7 @@ export class TemplateCenterUpdateComponent implements OnInit {
         });
         this.changeDetectorRefs.detectChanges();
       } else {
-        this.layoutUtilsService.showError(res.error.message);
+        this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
       }
     });
     this.LoadTC();
@@ -109,7 +109,7 @@ export class TemplateCenterUpdateComponent implements OnInit {
 
           this.listDefaultView = this.ItemNewSaveAs.DefaultView;
         } else {
-          this.layoutUtilsService.showError(res.error.message);
+          this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
         }
       });
       // this.ItemNewSaveAs
@@ -121,7 +121,7 @@ export class TemplateCenterUpdateComponent implements OnInit {
           if (res && res.status == 1) {
             this.ItemNewSaveAs = res.data;
           } else {
-            this.layoutUtilsService.showError(res.error.message);
+            this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
           }
         });
       // list view by project
@@ -131,7 +131,7 @@ export class TemplateCenterUpdateComponent implements OnInit {
           if (res && res.status == 1) {
             this.listDefaultView = res.data;
           } else {
-            this.layoutUtilsService.showError(res.error.message);
+            this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
           }
         });
       // list Status
@@ -141,7 +141,7 @@ export class TemplateCenterUpdateComponent implements OnInit {
           if (res && res.status == 1) {
             this.listStatus = res.data;
           } else {
-            this.layoutUtilsService.showError(res.error.message);
+            this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
           }
         });
     }
@@ -171,7 +171,7 @@ export class TemplateCenterUpdateComponent implements OnInit {
           this.ListTemplateUser = res.data;
           this.changeDetectorRefs.detectChanges();
         } else {
-          this.layoutUtilsService.showError(res.error.message);
+          this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
         }
       });
   }
@@ -234,7 +234,7 @@ export class TemplateCenterUpdateComponent implements OnInit {
           this.buocthuchien = 1;
           this.LoadDatafield();
         } else {
-          this.layoutUtilsService.showError(res.error.message);
+          this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
         }
       });
   }
@@ -536,7 +536,7 @@ export class TemplateCenterUpdateComponent implements OnInit {
         this.layoutUtilsService.showActionNotification("Cập nhập thành công");
         this.dialogRef.close();
       } else {
-        this.layoutUtilsService.showError(res.error.message);
+        this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
       }
     });
   }
@@ -546,7 +546,7 @@ export class TemplateCenterUpdateComponent implements OnInit {
         this.layoutUtilsService.showActionNotification("Thêm mới thành công");
         this.dialogRef.close();
       } else {
-        this.layoutUtilsService.showError(res.error.message);
+        this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
       }
     });
   }
