@@ -1596,8 +1596,14 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
             try
             {
                 string query = "";
-                query = "select id_row, title, color, locked from we_project_team where Disabled = 0;" +
-                    "select id_row, StatusName, description, id_project_team, Type, IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo " +
+                query = "select pr.id_row, pr.id_department, pr.title, pr.color" +
+                    ", pr.locked, de.title as space_name " +
+                    "from we_project_team pr join we_department de " +
+                    "on de.id_row = pr.id_department " +
+                    "where de.disabled = 0 and pr.disabled = 0 " +
+                    "and IdKH = "+loginData.CustomerID+";" +
+                    "select id_row, StatusName, description, id_project_team, type" +
+                    ", IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo " +
                     "from we_status where Disabled = 0";
                 string ConnectionString = getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
@@ -1613,6 +1619,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                                    title = r["title"],
                                    color = r["color"],
                                    locked = r["locked"],
+                                   space_name = r["space_name"],
                                    status = from s in ds.Tables[1].AsEnumerable()
                                             where s["id_project_team"].ToString() == r["id_row"].ToString()
                                             select new
