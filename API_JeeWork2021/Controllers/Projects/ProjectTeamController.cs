@@ -2823,7 +2823,7 @@ join we_project_team p on p.id_row=u.id_project_team and p.id_row=" + id + " whe
                     if (temp == null)
                         return JsonResultCommon.Custom("Người dùng không thuộc dự án/phòng ban");
                     cnn.BeginTransaction();
-                    string sql = "Update we_project_team_user set Disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + loginData.UserID + " where id_row=" + id;
+                    string sql = "Update we_project_team_user set disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + loginData.UserID + " where id_row=" + id;
                     int re = cnn.ExecuteNonQuery(sql);
                     if (re <= 0)
                     {

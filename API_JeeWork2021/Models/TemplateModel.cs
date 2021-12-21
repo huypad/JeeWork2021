@@ -91,7 +91,7 @@ namespace JeeWork_Core2021.Models
         public bool is_task { get; set; }
         public bool is_views { get; set; }
         public long share_with { get; set; } // 1 - Only Me, 2 - Everyone (including guests), 3 - All Members, 4 - Select people
-        public List<ListFieldModel> list_field_name { get; set; } = null;
+        //public List<ListFieldModel> list_field_name { get; set; };
         public DateTime start_date { get; set; }
         public DateTime end_date { get; set; }
         public long nodeid { get; set; } = 0;
