@@ -589,7 +589,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         /// <returns></returns>
         [Route("use-template")]
         [HttpPost]
-        public async Task<object> SudungTemplate(HangThienModel data)
+        public async Task<object> SudungTemplate(TemplateCenterModel data, bool istemplatelist)
         {
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
@@ -608,11 +608,11 @@ namespace JeeWork_Core2021.Controllers.Wework
 
                     long iduser = loginData.UserID;
                     long idk = loginData.CustomerID;
-                    //string x = string.Join(",", data.list_field_name.Select(x => x.id_field));
-                    //if (!string.IsNullOrEmpty(x))
-                    //{
-                    //    data.field_id = x;
-                    //}
+                    string x = string.Join(",", data.list_field_name.Select(x => x.id_field));
+                    if (!string.IsNullOrEmpty(x))
+                    {
+                        data.field_id = x;
+                    }
                     Hashtable val = new Hashtable();
                     val.Add("title", data.title);
                     val.Add("customerid", loginData.CustomerID);
@@ -620,10 +620,10 @@ namespace JeeWork_Core2021.Controllers.Wework
                     val.Add("createdby", iduser);
                     val.Add("isdefault", 0);
                     val.Add("is_template_center", 1);
-                    //if (data.start_date != DateTime.MinValue)
-                    //    val.Add("start_date", data.start_date);
-                    //if (data.end_date != DateTime.MinValue)
-                    //    val.Add("end_date", data.end_date);
+                    if (data.start_date != DateTime.MinValue)
+                        val.Add("start_date", data.start_date);
+                    if (data.end_date != DateTime.MinValue)
+                        val.Add("end_date", data.end_date);
                     val.Add("types", data.types);
                     val.Add("levels", data.levels);
                     val.Add("template_typeid", 1); // lấy mặc định trong we_template_types
@@ -645,10 +645,10 @@ namespace JeeWork_Core2021.Controllers.Wework
                     long idc = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_template_customer_temp')").ToString());
                     //select save_as_id from we_template_customer where id_row =
                     #region insert Bảng tạm về data
-                    //if (!InsertTempToData(idc, data, loginData, istemplatelist, cnn, out error))
-                    //{
-                    //    return JsonResultCommon.Custom(error);
-                    //}
+                    if (!InsertTempToData(idc, data, loginData, istemplatelist, cnn, out error))
+                    {
+                        return JsonResultCommon.Custom(error);
+                    }
                     #endregion
                     data.id_row = idc;
                     cnn.EndTransaction();
