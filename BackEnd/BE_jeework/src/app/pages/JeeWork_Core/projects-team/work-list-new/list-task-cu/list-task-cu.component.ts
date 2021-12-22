@@ -261,10 +261,9 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
         this.layoutUtilsService.showWaitingDiv();
         api_service.subscribe(res => {
             if (res && res.status === 1) {
-                // this.DanhSachCongViec = res.data;
+                this.DanhSachCongViec = res.data;
                 debugger
-                this.filteredDanhSachCongViec.next(res.data);
-                // this.filterDanhSach();
+                this.filterDanhSach();
                 this.layoutUtilsService.OffWaitingDiv();
                 this.changeDetectorRefs.detectChanges();
             }
@@ -533,10 +532,9 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
     }
 
     protected filterDanhSach() {
-        // filter the banks
-        this.filteredDanhSachCongViec.next(
-            this.DanhSachCongViec.slide()
-        );
+        // filter the 
+        debugger
+        this.filteredDanhSachCongViec.next(this.DanhSachCongViec.slide());
     }
     ChangeData() {
         // this.LoadWork();
