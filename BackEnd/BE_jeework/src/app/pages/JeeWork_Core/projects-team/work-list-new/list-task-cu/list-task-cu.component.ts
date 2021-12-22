@@ -260,11 +260,10 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
         this.DanhSachCongViec = [];
         this.layoutUtilsService.showWaitingDiv();
         api_service.subscribe(res => {
+            this.layoutUtilsService.OffWaitingDiv();
             if (res && res.status === 1) {
                 this.DanhSachCongViec = res.data;
-                debugger
                 this.filterDanhSach();
-                this.layoutUtilsService.OffWaitingDiv();
                 this.changeDetectorRefs.detectChanges();
             }
         });
@@ -344,7 +343,6 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
         this.WeWorkService.GetListField(0, 3, false).subscribe(res => {
             if (res && res.status === 1) {
                 this.listField = res.data;
-
                 const colDelete = ['title', 'id_row', 'id_parent'];
                 colDelete.forEach(element => {
                     const indextt = this.listField.findIndex(x => x.fieldname === element);
@@ -533,8 +531,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
 
     protected filterDanhSach() {
         // filter the 
-        debugger
-        this.filteredDanhSachCongViec.next(this.DanhSachCongViec.slide());
+        this.filteredDanhSachCongViec.next(this.DanhSachCongViec);
     }
     ChangeData() {
         // this.LoadWork();

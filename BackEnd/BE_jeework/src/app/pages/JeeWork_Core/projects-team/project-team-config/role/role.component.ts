@@ -1,5 +1,5 @@
 import { DanhMucChungService } from './../../../../../_metronic/jeework_old/core/services/danhmuc.service';
-import { LayoutUtilsService, MessageType } from './../../../../../_metronic/jeework_old/core/utils/layout-utils.service';
+import { LayoutUtilsService } from './../../../../../_metronic/jeework_old/core/utils/layout-utils.service';
 import { Component, OnInit, ElementRef, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef, Inject, HostListener, Input, SimpleChange } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
@@ -31,6 +31,7 @@ export class RoleComponent {
 	ngOnInit() {
 		var arr = this.router.url.split("/");
 		this.id_project_team = +arr[2];
+
 		this.layoutUtilsService.showWaitingDiv();
 		this._service.ListRole(this.id_project_team).subscribe(res => {
 			this.layoutUtilsService.OffWaitingDiv();
@@ -38,9 +39,9 @@ export class RoleComponent {
 				this.roles = res.data;
 			}
 			else
-				this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
+				this.layoutUtilsService.showError(res.error.message);
+			this.changeDetectorRefs.detectChanges();
 		});
-		this.changeDetectorRefs.detectChanges();
 	}
 
 	update(event, id_row, key, val: any = []): any {
@@ -51,7 +52,7 @@ export class RoleComponent {
 			if (res && res.status == 1)
 				this.ngOnInit();
 			else
-				this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
+				this.layoutUtilsService.showError(res.error.message);
 		})
 	}
 }
