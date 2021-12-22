@@ -26,7 +26,7 @@ namespace JeeWork_Core2021.Controllers.Wework
     /// <summary>
     /// api quản lý we_authorize
     /// </summary>
-    [CusAuthorize(Roles = "3610")]
+    //[CusAuthorize(Roles = "3610")]
     public class TopicController : ControllerBase
     {
         private readonly IHostingEnvironment _hostingEnvironment;
@@ -111,9 +111,9 @@ namespace JeeWork_Core2021.Controllers.Wework
                                 ,c.tong, coalesce (u.favourite,0) as favourite from we_topic t
                                 join we_project_team p on t.id_project_team=p.id_row
                                 join we_department d on d.id_row=p.id_department 
-                                and d.idkh = "+loginData.CustomerID+" left join (select count(*) tong,object_id from we_comment where object_type=2 and Disabled=0 group by object_id) c on c.object_id=t.id_row " +
+                                and d.idkh = " + loginData.CustomerID + " left join (select count(*) tong,object_id from we_comment where object_type=2 and Disabled=0 group by object_id) c on c.object_id=t.id_row " +
                                 "join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row (user) where t.Disabled=0 and d.Disabled = 0 " +
-                                " "+ dieukien_where + " order by "+dieukienSort;
+                                " " + dieukien_where + " order by " + dieukienSort;
                     sqlq += $" select u.id_user as Id_NV, '' as hoten,'' as mobile, '' as username, '' as Email, '' as image,'' as Tenchucdanh, id_topic from we_topic_user u where u.Disabled=0 ";
                     if (IsAdmin)
                     {
@@ -569,7 +569,7 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                             }
                         }
                         //insert thêm tài liệu IdRow = 0;
-                        var newListAttachments = data.Attachments.Where( x => x.IdRow == 0);
+                        var newListAttachments = data.Attachments.Where(x => x.IdRow == 0);
                         foreach (var item in newListAttachments)
                         {
                             var temp = new AttachmentModel()
@@ -714,7 +714,6 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                 return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
-
         #region follower
         /// <summary>
         /// 
@@ -870,7 +869,7 @@ left join we_topic_user u on u.Disabled=0 and u.id_topic=t.id_row and u.id_user=
                         cnn.EndTransaction();
 
                         #endregion
-                        sqlq = "select * from we_topic where Disabled=0 and  id_row = " + topic;
+                        sqlq = "select * from we_topic where disabled=0 and  id_row = " + topic;
                         DataTable dt_topic = cnn.CreateDataTable(sqlq);
                         if (dt_topic.Rows.Count == 0)
                             return JsonResultCommon.ThanhCong();

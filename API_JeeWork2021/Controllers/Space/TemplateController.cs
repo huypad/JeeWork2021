@@ -1342,6 +1342,7 @@ from we_template_library where disabled = 0 and id_template = " + id;
                     }
                     long idc = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_template_customer_temp')").ToString());
                     //select save_as_id from we_template_customer where id_row =
+                    data.id_row = data.templateid;
                     #region insert Bảng tạm về data
                     if (!InsertTempToData(idc, data, loginData, istemplatelist, cnn, out error))
                     {
