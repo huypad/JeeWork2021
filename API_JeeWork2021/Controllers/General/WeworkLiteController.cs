@@ -1537,8 +1537,8 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                     where stt.Disabled = 0 and  id_project_team in (select distinct p.id_row from we_project_team p
                     join we_department d on d.id_row = p.id_department
                     join we_project_team_user u on u.id_project_team = p.id_row
-                    where u.Disabled = 0 and id_user = {loginData.UserID} 
-                    and p.Disabled = 0  and d.Disabled = 0 and (d.id_row= {id_department} or d.ParentID = {id_department})
+                    where u.disabled = 0 and id_user = {loginData.UserID} 
+                    and p.disabled = 0  and d.Disabled = 0 and (d.id_row= {id_department} or d.ParentID = {id_department})
                     and IdKH={loginData.CustomerID})";
                     query += " order by IsFinal,id_row";
                     DataTable dt = cnn.CreateDataTable(query);

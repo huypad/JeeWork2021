@@ -1003,7 +1003,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 {
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
                     string sqlq = "";
-                   sqlq = @$"select id_row, title, description, createddate, createdby,addtolibrary,save_as_id
+                    sqlq = @$"select id_row, title, description, createddate, createdby,addtolibrary,save_as_id
                                     , isdefault, color, id_department, templateid, customerid
                                     , is_template_center, types, levels, viewid, group_statusid 
                                     , template_typeid, img_temp, field_id, share_with, sample_id
@@ -1341,13 +1341,13 @@ from we_template_library where disabled = 0 and id_template = " + id;
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     long idc = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_template_customer_temp')").ToString());
-                    data.id_row = idc;
                     //select save_as_id from we_template_customer where id_row =
                     #region insert Bảng tạm về data
                     if (!InsertTempToData(idc, data, loginData, istemplatelist, cnn, out error))
                     {
                         return JsonResultCommon.Custom(error);
                     }
+                    data.id_row = idc;
                     #endregion
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong(data);
@@ -1367,7 +1367,6 @@ from we_template_library where disabled = 0 and id_template = " + id;
         [HttpPost]
         public async Task<BaseModel<object>> update_template_center(TemplateCenterModel data)
         {
-
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -1633,7 +1632,7 @@ from we_template_library where disabled = 0 and id_template = " + id;
                     return false;
                 }
                 // xong bước 1 kiểm tra có folder hay không nếu có thì lưu folder
-                string sqlf = "select * from we_department where  Disabled = 0 and  ParentID = " + idmau;
+                string sqlf = "select * from we_department where Disabled = 0 and  ParentID = " + idmau;
                 DataTable datafolder = cnn.CreateDataTable(sqlf);
                 if (datafolder.Rows.Count > 0)
                 {
@@ -1732,59 +1731,68 @@ from we_template_library where disabled = 0 and id_template = " + id;
             error = "";
             string idmau = "0";
             string field = "id_temp_center";
-            long datatemplatecemter = data.id_row;
             if (istemplatelist)
             {
                 field = "id_template_list";
             }
-            // idmau là id của dự án phòng ban muốn đem đi nhân bản vào bảng tạm
-            if (data.types == 1) // phòng ban
+            string sqlq = "";
+            DataTable dt = new DataTable();
+            switch (data.types)
             {
-                string sql_department = "";
-                sql_department = $"select id_row from we_department_temp where {field} = {datatemplatecemter} and parentid is null";
-                idmau = cnn.ExecuteScalar(sql_department).ToString();
-                long idc = InsertTempToDepartment(id_temp, long.Parse(idmau), data.title, data.ParentID, data.field_id, loginData, cnn, out error);
-                if (idc <= 0)
-                {
-                    return false;
-                }
-                // xong bước 1 kiểm tra có folder hay không nếu có thì lưu folder
-                string sqlf = "select * from we_department_temp where disabled = 0 and parentid = " + idmau;
-                DataTable datafolder = cnn.CreateDataTable(sqlf);
-                if (datafolder.Rows.Count > 0)
-                {
-                    foreach (DataRow dr in datafolder.Rows)
+                case 1:
                     {
-                        long idfolder = long.Parse(dr["id_row"].ToString());
-                        string titlef = dr["title"].ToString();
-                        long idfoldertemp = InsertTempToDepartment(id_temp, idfolder, titlef, idc, data.field_id, loginData, cnn, out error);
-                        if (idfoldertemp <= 0)
+                        sqlq = $"select id_row from we_department_temp where {field} = {data.id_row} and parentid is null";
+                        dt = cnn.CreateDataTable(sqlq);
+                        if (dt.Rows.Count > 0)
+                            idmau = dt.Rows[0][0].ToString();
+                        long idc = InsertTempToDepartment(id_temp, long.Parse(idmau), data.title, data.ParentID, data.field_id, loginData, cnn, out error);
+                        if (idc <= 0)
                         {
                             return false;
                         }
+                        // xong bước 1 kiểm tra có folder hay không nếu có thì lưu folder
+                        string sqlf = "select * from we_department_temp where disabled = 0 and parentid = " + idmau;
+                        DataTable datafolder = cnn.CreateDataTable(sqlf);
+                        if (datafolder.Rows.Count > 0)
+                        {
+                            foreach (DataRow dr in datafolder.Rows)
+                            {
+                                long idfolder = long.Parse(dr["id_row"].ToString());
+                                string titlef = dr["title"].ToString();
+                                long idfoldertemp = InsertTempToDepartment(id_temp, idfolder, titlef, idc, data.field_id, loginData, cnn, out error);
+                                if (idfoldertemp <= 0)
+                                {
+                                    return false;
+                                }
+                            }
+                        }
+                        break;
                     }
-                }
-            }
-            else if (data.types == 2) // thư mục -- idfolder  
-            {
-                string sql_department = "";
-                sql_department = $"select id_row from we_department_temp where {field} = {datatemplatecemter}";
-                idmau = cnn.ExecuteScalar(sql_department).ToString();
-                long idc = InsertTempToDepartment(id_temp, long.Parse(idmau), data.title, data.ParentID, data.field_id, loginData, cnn, out error);
-                if (idc <= 0)
-                {
-                    return false;
-                }
-            }
-            else if (data.types == 3) // phòng ban  
-            {
-                string sql_department = "";
-                sql_department = $"select top 1 id_row from we_project_team_temp where {field} = {datatemplatecemter}";
-                idmau = cnn.ExecuteScalar(sql_department).ToString();
-                if (!InsertTempToProject(id_temp, long.Parse(idmau), data.title, data.ParentID, cnn, out error))
-                {
-                    return false;
-                }
+                case 2:
+                    {
+                        sqlq = $"select id_row from we_department_temp where {field} = {data.id_row}";
+                        idmau = cnn.ExecuteScalar(sqlq).ToString();
+                        long idc = InsertTempToDepartment(id_temp, long.Parse(idmau), data.title, data.ParentID, data.field_id, loginData, cnn, out error);
+                        if (idc <= 0)
+                        {
+                            return false;
+                        }
+                        break;
+                    }
+                case 3:
+                    {
+                        sqlq = $"select top 1 id_row from we_project_team_temp where {field} = {data.id_row}";
+                        idmau = cnn.ExecuteScalar(sqlq).ToString();
+                        if (!InsertTempToProject(id_temp, long.Parse(idmau), data.title, data.ParentID, cnn, out error))
+                        {
+                            return false;
+                        }
+                        break;
+                    }
+                default:
+                    {
+                        break;
+                    }
             }
             return true;
         }

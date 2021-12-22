@@ -123,10 +123,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
     reloadData = false;
     listField: any = [];
     listStatus: any = [];
-    // list da nhiệm
-    // nodes: any[] = demoData;
-    // ids for connected drop lists
-    dropTargetIds = [];
+    // dropTargetIds = [];
     nodeLookup = {};
     dropActionTodo: DropInfo = null;
     taskinsert = new WorkModel();
@@ -207,8 +204,8 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
             }
         });
         this.LoadFilterProject();
-        this.LoadTask();
         this.BindDataLite();
+        this.LoadTask();
         this.changeDetectorRefs.detectChanges();
     }
 
@@ -264,10 +261,12 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
         this.layoutUtilsService.showWaitingDiv();
         api_service.subscribe(res => {
             if (res && res.status === 1) {
-                this.DanhSachCongViec = res.data;
-                this.changeDetectorRefs.detectChanges();
+                // this.DanhSachCongViec = res.data;
+                debugger
+                this.filteredDanhSachCongViec.next(res.data);
+                // this.filterDanhSach();
                 this.layoutUtilsService.OffWaitingDiv();
-                this.filterDanhSach();
+                this.changeDetectorRefs.detectChanges();
             }
         });
     }
@@ -278,6 +277,9 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
         this.LoadFilter();
         this.LoadListAccount();
         this.LoadDetailProject();
+        this.LoadListAllStatusDynamic();
+    }
+    LoadListAllStatusDynamic() {
         this.WeWorkService.ListAllStatusDynamic().subscribe(res => {
             if (res && res.status === 1) {
                 this.ListAllStatusDynamic = res.data;
@@ -533,7 +535,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
     protected filterDanhSach() {
         // filter the banks
         this.filteredDanhSachCongViec.next(
-            this.DanhSachCongViec
+            this.DanhSachCongViec.slide()
         );
     }
     ChangeData() {
@@ -777,7 +779,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
         }
         if (item.isAssignforme) {
             this.filterwork == 0;
-          this.isAssignforme = item.isAssignforme;
+            this.isAssignforme = item.isAssignforme;
         }
     }
     CreateInfoProject() {

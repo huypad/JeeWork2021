@@ -732,17 +732,15 @@
                                     </div>
                                 </ng-template>
 
-                                <div class="cu-task-list__rows" cdkDropList [cdkDropListData]="lstcongviec.data"
+                                <!-- <div class="cu-task-list__rows" cdkDropList [cdkDropListData]="lstcongviec.data"
                                     [id]="'main'" [cdkDropListConnectedTo]="dropTargetIds"
-                                    [cdkDropListSortingDisabled]="true">
+                                    [cdkDropListSortingDisabled]="true"> -->
+                                <div class="cu-task-row row" *ngFor="let node of lstcongviec.data;trackBy: trackByFn">
 
-                                    <div class="cu-task-row row"
-                                        *ngFor="let node of lstcongviec.data;trackBy: trackByFn">
+                                    <ng-container *ngTemplateOutlet="tmplNode1,context:{node:node}"></ng-container>
 
-                                        <ng-container *ngTemplateOutlet="tmplNode1,context:{node:node}"></ng-container>
-
-                                    </div>
                                 </div>
+                                <!-- </div> -->
                                 <ng-container *ngIf="newtask == lstcongviec.id">
                                     <div
                                         class="cu-task-row-new ng-tns-c104-196 ng-star-inserted cu-task-row-new_active">
