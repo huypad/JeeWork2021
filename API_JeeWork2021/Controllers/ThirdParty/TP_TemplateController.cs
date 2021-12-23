@@ -1347,6 +1347,8 @@ from we_template_library where disabled = 0 and id_template = " + id;
                         return JsonResultCommon.Custom(error);
                     }
                     data.id_row = idc;
+                    long projectID = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_project_team')").ToString());
+                    data.nodeid = projectID;
                     #endregion
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong(data);
