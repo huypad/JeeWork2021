@@ -4473,6 +4473,16 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                         }
                         if ("Attachments".Equals(data.key) || "Attachments_result".Equals(data.key))//upload files mới
                         {
+                            if ("Attachments".Equals(data.key))
+                            {
+                                templateguimail = 29;
+                                TitleLanguageKey = "ww_themtailieucongviec";
+                            }
+                            else
+                            {
+                                templateguimail = 34;
+                                TitleLanguageKey = "ww_themtailieucapnhatketquacongviec";
+                            }
                             int object_type = data.key == "Attachments" ? 1 : 11;
                             List<FileUploadModel> Attachments = (from r in data.values select Newtonsoft.Json.JsonConvert.DeserializeObject<FileUploadModel>(r.ToString())).ToList();
                             if (Attachments != null)
@@ -4499,18 +4509,6 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                             {
                                 var users = new List<long> { long.Parse(dt_user.Rows[0]["id_nv"].ToString()) };
                                 cnn.EndTransaction();
-                                if ("Attachments".Equals(data.key))
-                                {
-                                    //idtemplateguimail = 29;
-                                    templateguimail = 29;
-                                    TitleLanguageKey = "ww_themtailieucongviec";
-                                }
-                                else
-                                {
-                                    templateguimail = 34;
-                                    TitleLanguageKey = "ww_themtailieucapnhatketquacongviec";
-                                    //idtemplateguimail = 30;
-                                }
                             }
                         }
                     }
