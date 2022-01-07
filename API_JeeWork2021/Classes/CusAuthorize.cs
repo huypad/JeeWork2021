@@ -49,14 +49,16 @@ namespace JeeWork_Core2021.Classes
                     {
                         //Kiểm tra quyền ở đây
                         var requiredPermissions = Roles.Split(","); // nhận nhiều mã quyền từ controller, xóa "," để lấy từng quyền
+                        Roles= Roles.Replace(" ","");
                         List<string> roles = new List<string>();
                         if (cusData.JeeWork.WeWorkRoles != null)
                             roles = cusData.JeeWork.WeWorkRoles.Split(",").ToList();
                         if (cusData.JeeWork.roles != null)
                             roles = cusData.JeeWork.roles.Split(",").ToList();
+                        roles = roles.Select(s => s.Replace(" ", "")).ToList();
                         foreach (var x in requiredPermissions)
                         {
-                            if (roles.Contains(x))
+                            if (roles.Contains(x.Replace(" ","")))
                                 return; //User Authorized
                         }
                         actionContext.Result = new JsonResult(new { message = "Forbidden" }) { StatusCode = StatusCodes.Status403Forbidden };

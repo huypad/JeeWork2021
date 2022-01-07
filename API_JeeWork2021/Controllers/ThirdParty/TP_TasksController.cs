@@ -6245,7 +6245,6 @@ where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { query.fil
             string list_Todo = "";
             list_Todo = ReportController.GetListStatusDynamic(listDept, cnn, "IsTodo");
             #endregion
-
             #region filter thời gian , keyword
             DateTime from = Common.GetDateTime();
             DateTime to = Common.GetDateTime();
@@ -6329,7 +6328,6 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
                     item["NguoiSua"] = infoNguoiSua.Username;
                 }
             }
-
             foreach (DataRow item in ds.Tables[2].Rows)
             {
                 var info = DataAccount.Where(x => item["id_user"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
