@@ -274,13 +274,14 @@ namespace JeeWork_Core2021.Controllers.Wework
                     return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
                 #endregion
                 string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
-                 ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
+                ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     long IDNV = loginData.UserID;
                     #region filter thời gian, keyword
                     DateTime from = Common.GetDateTime();
                     DateTime to = Common.GetDateTime();
+                    string strW = "";
                     if (!string.IsNullOrEmpty(query.filter["TuNgay"]))
                     {
                         bool from1 = DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
@@ -299,10 +300,9 @@ namespace JeeWork_Core2021.Controllers.Wework
                     string select_user = $@"select distinct w_user.id_user,'' as hoten,'' as email,'' as image, id_work,w_user.loai,w_user.CreatedBy
                                         from we_work_user w_user 
                                         join we_work on we_work.id_row = w_user.id_work where (where)";
-                   DataTable dt_Users = cnn.CreateDataTable(select_user, "(where)", conds);
+                    DataTable dt_Users = cnn.CreateDataTable(select_user, "(where)", conds);
                     #region Lấy công việc user theo filter
                     string strW_parent = "";
-                    string strW = "";
                     if (!string.IsNullOrEmpty(query.filter["id_nv"]))
                         IDNV = long.Parse(query.filter["id_nv"]);
                     strW = " and (w.id_nv=@iduser or w.createdby=@iduser or w.nguoigiao=@iduser or w.id_row in (select id_work from we_work_user where loai = 2 and disabled=0 and id_user = @iduser)  (parent))"; // w.nguoigiao=@iduser or w.createdby=@iduser -- w.NguoiGiao = @iduser or
@@ -314,6 +314,10 @@ namespace JeeWork_Core2021.Controllers.Wework
                             strW = " and (w.nguoigiao=@iduser (parent))";
                         if (query.filter["filter"] == "3")// theo dõi
                             strW = $" and (w.id_row in (select id_work from we_work_user where loai = 2 and disabled=0 and id_user = @iduser ) (parent))";
+                    }
+                    if (!string.IsNullOrEmpty(query.filter["isclose"]))
+                    {
+                        strW = " and w.closed = " + query.filter["isclose"] + ""; // đóng truyền 0, không đóng truyền 1
                     }
                     string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                     displayChild = query.filter["displayChild"];
@@ -341,18 +345,10 @@ namespace JeeWork_Core2021.Controllers.Wework
                         strW += $" and  w.id_row not in (select id_row from we_work where end_date is not null and id_parent is null) ";
                     #endregion
                     string columnName = "id_project_team";
-                    #region group
-                    string strG = @$"select distinct p.id_row, p.title 
-                                    from we_project_team_user u
-                                    join we_project_team p on p.id_row=u.id_project_team 
-                                    join we_department d on d.id_row = p.id_department
-                                    where u.disabled=0 and p.disabled=0 and d.disabled = 0 
-                                    and id_user = { IDNV } and d.idkh = { loginData.CustomerID}";
-                    #endregion
                     DataSet ds = GetWorkByEmployee(Request.Headers, cnn, query, IDNV, DataAccount, strW);
                     if (cnn.LastError != null || ds == null)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
-                    var temp = filterWork(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
+                    var temp = filterTasks(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
                     var tags = ds.Tables[1].AsEnumerable();
                     // Phân trang
                     int total = temp.Count();
@@ -371,50 +367,66 @@ namespace JeeWork_Core2021.Controllers.Wework
                     var dtChild = ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] != DBNull.Value).AsEnumerable();
                     Func<DateTime, int> weekProjector = d => CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(d, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
                     var data = from r in dtNew.AsEnumerable()
-                                   select new
-                                   {
-                                       id_parent = r["id_parent"],
-                                       id_row = r["id_row"],
-                                       title = r["title"],
-                                       description = r["description"],
-                                       id_project_team = r["id_project_team"],
-                                       project_team = r["project_team"],
-                                       deadline = r["deadline"],
-                                       end_date = r["end_date"],
-                                       urgent = r["urgent"],
-                                       important = r["important"],
-                                       start_date = r["start_date"],
-                                       prioritize = r["prioritize"],
-                                       favourite = r["favourite"],
-                                       status = r["status"],
-                                       id_milestone = r["id_milestone"],
-                                       milestone = r["milestone"],
-                                       trehan = r["TreHan"],
-                                       estimates = r["estimates"],
-                                       hoanthanh = r["done"],
-                                       danglam = r["Doing"],
-                                       closed = r["closed"],
-                                       closed_work_date = r["closed_work_date"],
-                                       closed_work_by = r["closed_work_by"],
-                                       accepted_date = r["accepted_date"] == DBNull.Value ? "" : r["accepted_date"],
-                                       activated_by = r["activated_by"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(r["activated_by"].ToString(), DataAccount),
-                                       activated_date = r["activated_date"] == DBNull.Value ? "" : r["activated_date"],
-                                       closed_by = r["closed_by"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(r["closed_by"].ToString(), DataAccount),
-                                       closed_date = r["closed_date"] == DBNull.Value ? "" : r["closed_date"],
-                                       state_change_date = r["state_change_date"] == DBNull.Value ? "" : r["state_change_date"],
-                                       createddate = r["CreatedDate"],
-                                       createdby = r["CreatedBy"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(r["CreatedBy"].ToString(), DataAccount),
-                                       nguoitao = r["NguoiTao"],
-                                       updateddate = r["UpdatedDate"] == DBNull.Value ? "" : r["UpdatedDate"],
-                                       updatedby = r["UpdatedBy"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(r["UpdatedBy"].ToString(), DataAccount),
-                                       nguoisua = r["NguoiSua"],
-                                       clickup_prioritize = r["clickup_prioritize"],
-                                       activity_date = r["ActivityDate"],
-                                       comments = SoluongComment(r["id_row"].ToString(), ConnectionString),  // SL bình luận
-                                       status_info = JeeWorkLiteController.get_info_status(r["status"].ToString(), ConnectionString),
-                                       DataStatus = list_status_user(r["id_row"].ToString(), r["id_project_team"].ToString(), loginData, ConnectionString, DataAccount),
-                                       User = from us in dt_Users.AsEnumerable()
-                                              where r["id_row"].Equals(us["id_work"]) && long.Parse(us["loai"].ToString()).Equals(1)
+                               select new
+                               {
+                                   id_parent = r["id_parent"],
+                                   id_row = r["id_row"],
+                                   title = r["title"],
+                                   description = r["description"],
+                                   id_project_team = r["id_project_team"],
+                                   project_team = r["project_team"],
+                                   deadline = r["deadline"],
+                                   end_date = r["end_date"],
+                                   urgent = r["urgent"],
+                                   important = r["important"],
+                                   start_date = r["start_date"],
+                                   prioritize = r["prioritize"],
+                                   favourite = r["favourite"],
+                                   status = r["status"],
+                                   id_milestone = r["id_milestone"],
+                                   milestone = r["milestone"],
+                                   trehan = r["TreHan"],
+                                   estimates = r["estimates"],
+                                   hoanthanh = r["done"],
+                                   danglam = r["Doing"],
+                                   closed = r["closed"],
+                                   closed_work_date = r["closed_work_date"],
+                                   closed_work_by = r["closed_work_by"],
+                                   accepted_date = r["accepted_date"] == DBNull.Value ? "" : r["accepted_date"],
+                                   activated_by = r["activated_by"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(r["activated_by"].ToString(), DataAccount),
+                                   activated_date = r["activated_date"] == DBNull.Value ? "" : r["activated_date"],
+                                   closed_by = r["closed_by"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(r["closed_by"].ToString(), DataAccount),
+                                   closed_date = r["closed_date"] == DBNull.Value ? "" : r["closed_date"],
+                                   state_change_date = r["state_change_date"] == DBNull.Value ? "" : r["state_change_date"],
+                                   createddate = r["CreatedDate"],
+                                   createdby = r["CreatedBy"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(r["CreatedBy"].ToString(), DataAccount),
+                                   nguoitao = r["NguoiTao"],
+                                   updateddate = r["UpdatedDate"] == DBNull.Value ? "" : r["UpdatedDate"],
+                                   updatedby = r["UpdatedBy"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(r["UpdatedBy"].ToString(), DataAccount),
+                                   nguoisua = r["NguoiSua"],
+                                   clickup_prioritize = r["clickup_prioritize"],
+                                   activity_date = r["ActivityDate"],
+                                   comments = SoluongComment(r["id_row"].ToString(), ConnectionString),  // SL bình luận
+                                   status_info = JeeWorkLiteController.get_info_status(r["status"].ToString(), ConnectionString),
+                                   DataStatus = list_status_user(r["id_row"].ToString(), r["id_project_team"].ToString(), loginData, ConnectionString, DataAccount),
+                                   User = from us in dt_Users.AsEnumerable()
+                                          where r["id_row"].Equals(us["id_work"]) && long.Parse(us["loai"].ToString()).Equals(1)
+                                          select new
+                                          {
+                                              id_nv = us["id_user"],
+                                              hoten = us["hoten"],
+                                              image = us["image"],
+                                              email = us["email"],
+                                              loai = us["loai"],
+                                          },
+                                   NguoiGiao = from us in dt_Users.AsEnumerable()
+                                               where r["id_row"].ToString().Equals(us["id_work"].ToString()) && long.Parse(us["loai"].ToString()).Equals(1)
+                                               select us["CreatedBy"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(us["CreatedBy"].ToString(), DataAccount),
+                                   UsersInfo = from us in dt_Users.AsEnumerable()
+                                               where r["id_row"].Equals(us["id_work"]) && long.Parse(us["loai"].ToString()).Equals(1)
+                                               select us["id_user"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(us["id_user"].ToString(), DataAccount),
+                                   Follower = from us in dt_Users.AsEnumerable()
+                                              where r["id_row"].Equals(us["id_work"]) && long.Parse(us["loai"].ToString()).Equals(2)
                                               select new
                                               {
                                                   id_nv = us["id_user"],
@@ -423,53 +435,37 @@ namespace JeeWork_Core2021.Controllers.Wework
                                                   email = us["email"],
                                                   loai = us["loai"],
                                               },
-                                       NguoiGiao = from us in dt_Users.AsEnumerable()
-                                                   where r["id_row"].ToString().Equals(us["id_work"].ToString()) && long.Parse(us["loai"].ToString()).Equals(1)
-                                                   select us["CreatedBy"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(us["CreatedBy"].ToString(), DataAccount),
-                                       UsersInfo = from us in dt_Users.AsEnumerable()
-                                                   where r["id_row"].Equals(us["id_work"]) && long.Parse(us["loai"].ToString()).Equals(1)
-                                                   select us["id_user"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(us["id_user"].ToString(), DataAccount),
-                                       Follower = from us in dt_Users.AsEnumerable()
+                                   FollowerInfo = from us in dt_Users.AsEnumerable()
                                                   where r["id_row"].Equals(us["id_work"]) && long.Parse(us["loai"].ToString()).Equals(2)
                                                   select new
                                                   {
-                                                      id_nv = us["id_user"],
-                                                      hoten = us["hoten"],
-                                                      image = us["image"],
-                                                      email = us["email"],
-                                                      loai = us["loai"],
+                                                      data = us["id_user"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(us["id_user"].ToString(), DataAccount),
                                                   },
-                                       FollowerInfo = from us in dt_Users.AsEnumerable()
-                                                      where r["id_row"].Equals(us["id_work"]) && long.Parse(us["loai"].ToString()).Equals(2)
-                                                      select new
-                                                      {
-                                                          data = us["id_user"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(us["id_user"].ToString(), DataAccount),
-                                                      },
-                                       Tags = from t in tags
-                                              where r["id_row"].Equals(t["id_work"])
-                                              select new
-                                              {
-                                                  id_row = t["id_tag"],
-                                                  title = t["title"],
-                                                  color = t["color"]
-                                              },
-                                       //Status = from s in dt_status.AsEnumerable()
-                                       //         select new
-                                       //         {
-                                       //             id_row = s["id_row"],
-                                       //             statusname = s["StatusName"],
-                                       //             description = s["description"],
-                                       //             id_project_team = s["id_project_team"],
-                                       //             typeid = s["type"],
-                                       //             color = s["color"],
-                                       //             position = s["position"],
-                                       //             IsFinal = s["isfinal"],
-                                       //             IsDeadline = s["isdeadline"],
-                                       //             IsDefault = s["Isdefault"],
-                                       //             IsToDo = s["istodo"]
-                                       //         },
-                                       Childs = displayChild == "0" ? new List<string>() : getChild(domain, loginData.CustomerID, columnName, displayChild == "1" ? "0" : "2", 0, dtChild.CopyToDataTable().AsEnumerable(), tags, DataAccount, loginData, ConnectionString, r["id_row"])
-                                   };
+                                   Tags = from t in tags
+                                          where r["id_row"].Equals(t["id_work"])
+                                          select new
+                                          {
+                                              id_row = t["id_tag"],
+                                              title = t["title"],
+                                              color = t["color"]
+                                          },
+                                   //Status = from s in dt_status.AsEnumerable()
+                                   //         select new
+                                   //         {
+                                   //             id_row = s["id_row"],
+                                   //             statusname = s["StatusName"],
+                                   //             description = s["description"],
+                                   //             id_project_team = s["id_project_team"],
+                                   //             typeid = s["type"],
+                                   //             color = s["color"],
+                                   //             position = s["position"],
+                                   //             IsFinal = s["isfinal"],
+                                   //             IsDeadline = s["isdeadline"],
+                                   //             IsDefault = s["Isdefault"],
+                                   //             IsToDo = s["istodo"]
+                                   //         },
+                                   Childs = displayChild == "0" ? new List<string>() : getChild(domain, loginData.CustomerID, columnName, displayChild == "1" ? "0" : "2", 0, dtChild.CopyToDataTable().AsEnumerable(), tags, DataAccount, loginData, ConnectionString, r["id_row"])
+                               };
                     return JsonResultCommon.ThanhCong(data, pageModel, Visible);
                 }
             }
@@ -6988,6 +6984,19 @@ where u.disabled = 0 and u.loai = 2";
                 temp = temp.Where(x => x["require"].ToString().Contains(filter["require"]));
             if (!string.IsNullOrEmpty(filter["is_danglam"]))//đang làm
                 temp = temp.Where(x => x["is_danglam"].ToString().Contains(filter["is_danglam"]));
+            #endregion
+            return temp;
+        }
+        public static EnumerableRowCollection<DataRow> filterTasks(EnumerableRowCollection<DataRow> enumerableRowCollections, FilterModel filter)
+        {
+            var temp = enumerableRowCollections;
+            #region filter
+            if (!string.IsNullOrEmpty(filter["New"]))// Task new
+                temp = temp.Where(x => x["New"].ToString() == filter["New"]);
+            if (!string.IsNullOrEmpty(filter["Done"]))// Task hoàn thành
+                temp = temp.Where(x => x["Done"].ToString() == filter["Done"]);
+            if (!string.IsNullOrEmpty(filter["Doing"]))// Task đang làm
+                temp = temp.Where(x => x["Doing"].ToString().Contains(filter["Doing"]));
             #endregion
             return temp;
         }
