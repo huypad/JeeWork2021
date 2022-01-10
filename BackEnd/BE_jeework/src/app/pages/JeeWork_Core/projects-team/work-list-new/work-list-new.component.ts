@@ -37,6 +37,7 @@ import {
   startWith,
   switchMap,
   map,
+  distinctUntilChanged,
 } from "rxjs/operators";
 import { element } from "protractor";
 import { WeWorkService } from "./../../services/wework.services";
@@ -71,7 +72,7 @@ import { workAddFollowersComponent } from "../../work/work-add-followers/work-ad
 import { WorkAssignedComponent } from "../../work/work-assigned/work-assigned.component";
 import { DuplicateWorkComponent } from "../../work/work-duplicate/work-duplicate.component";
 import { OverlayContainer } from "@angular/cdk/overlay";
-import { BehaviorSubject, of, SubscriptionLike, throwError } from "rxjs";
+import { BehaviorSubject, fromEvent, Observable, of, SubscriptionLike, throwError } from "rxjs";
 import { CommunicateService } from "./work-list-new-service/communicate.service";
 import { AuthService } from "../../../../modules/auth";
 
@@ -166,34 +167,23 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   };
   IsAdminGroup = false;
   public column_sort: any = [];
-
   listField: any = [];
-
   listStatus: any = [];
-
   // list da nhiệm
   // nodes: any[] = demoData;
-
   // ids for connected drop lists
   dropTargetIds = [];
   nodeLookup = {};
   dropActionTodo: DropInfo = null;
-
   listNewfield: any = [];
-
   taskinsert = new WorkModel();
-
   cot = 1;
-
   Assign: any = [];
-
   listUser: any[];
-
   selectedDate: any = {
     startDate: "",
     endDate: "",
   };
-
   listFilter_Groupby = [
     {
       title: "Status",
@@ -227,7 +217,6 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     // },
   ];
   listFilterCustom_Groupby: any = [];
-
   listFilter_Subtask = [
     {
       title: "showtask",
@@ -240,12 +229,9 @@ export class WorkListNewComponent implements OnInit, OnChanges {
       value: "show",
     },
   ];
-
   colorName = "";
-
   list_Tag: any = [];
   project_team: any = "";
-
   sortField = [
     {
       title: this.translate.instant("day.theongaytao"),
@@ -260,7 +246,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
       value: "StartDate",
     },
   ];
-
+  text$: Observable<string>;
   ngOnInit() {
     // set ngày filter
     const today = new Date();
@@ -268,7 +254,6 @@ export class WorkListNewComponent implements OnInit, OnChanges {
       endDate: new Date(today.setMonth(today.getMonth() + 1)),
       startDate: new Date(today.getFullYear(), today.getMonth() - 6, 1),
     };
-
     // giao tiếp service
     this.subscription = this.CommunicateService.currentMessage.subscribe(
       (message) => {
@@ -278,9 +263,7 @@ export class WorkListNewComponent implements OnInit, OnChanges {
       }
     );
     // end giao tiếp service
-
     this.LoadFilterProject();
-
     this.column_sort = this.sortField[0];
     this.menuServices
       .GetRoleWeWork("" + this.UserID)
@@ -310,6 +293,13 @@ export class WorkListNewComponent implements OnInit, OnChanges {
       }
     });
     this.GetCustomFields();
+    // this.text$ = fromEvent(this.searchElemRef.nativeElement, 'keyup').pipe(
+    //   map((e: Event) => (e.target as HTMLInputElement).value),
+    //   debounceTime(300),
+    //   distinctUntilChanged(),
+    //   map((searchText) => this.getHighlightedText(searchText)),
+    //   startWith(originalText)
+    // );    
   }
 
   ngOnDestroy(): void {
@@ -569,6 +559,11 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         }
       },
     );
+  }
+  getHighlightedText(searchText) {
+    // const regexp = new RegExp(searchText, 'gi');
+    // const highlightedText = originalText.replace(regexp, '<span class="highlight">$&</span>');
+    // return highlightedText;
   }
   async LoadNewField() {
     this.weworkService.GetValuesNewFields(this.ID_Project).subscribe((res) => {

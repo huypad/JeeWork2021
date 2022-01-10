@@ -20,6 +20,8 @@ const tinyMCE = {
     min_height: 100,
     max_height: 850,
     autoresize_bottom_margin: 25,
+    autoresize_min_height: 400,
+    autoresize_max_height: 800,
     autoresize_on_init: true,
     language: 'vi',
     language_url: './assets/tinymce/langs/vi.js',
@@ -75,15 +77,14 @@ const tinyMCE = {
         var xhr, formData;
         xhr = new XMLHttpRequest();
         xhr.withCredentials = false;
+        debugger
         xhr.open('POST', environment.APIROOTS + '/api/attachment/upload-img');
         xhr.onload = function () {
             var json;
-
             if (xhr.status < 200 || xhr.status >= 300) {
                 failure('HTTP Error: ' + xhr.status);
                 return;
             }
-
             json = JSON.parse(xhr.responseText);
             if (!json || typeof json.imageUrl != 'string') {
                 failure('Invalid JSON: ' + xhr.responseText);
@@ -93,7 +94,6 @@ const tinyMCE = {
         };
         formData = new FormData();
         formData.append('file', blobInfo.blob(), blobInfo.filename());
-
         xhr.send(formData);
     },
     init_instance_callback: function () {
@@ -120,8 +120,9 @@ const tinyMCE = {
                     .trim();
                 if (e.target.editorUpload.blobCache.getByUri(s)) {
                     let size = e.target.editorUpload.blobCache.getByUri(s).blob().size;
-                    const allowedSize = 2048; // KB
+                    const allowedSize = 2048000; // KB
                     size = size / 1024; // KB
+                    debugger
                     if (size > allowedSize) {
                         // alert('Hình ảnh đã vượt qua kích thước tối đa.');
                         editor.windowManager.alert('Hình ảnh đã vượt qua kích thước tối đa');

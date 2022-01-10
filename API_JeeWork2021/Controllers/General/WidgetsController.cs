@@ -665,7 +665,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     DataTable dtG = cnn.CreateDataTable(strG);
                     if (dtG.Rows.Count == 0)
                         return JsonResultCommon.ThanhCong(new List<string>(), null, Visible);
-                    DataSet ds = GetTasks(Request.Headers, cnn, query, long.Parse(loginData.UserID.ToString()), DataAccount, strW);
+                    DataSet ds = GetTasks(loginData.CustomerID, Request.Headers, cnn, query, long.Parse(loginData.UserID.ToString()), DataAccount, strW);
                     if (cnn.LastError != null || ds == null)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     var temp = filterWork(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
@@ -839,7 +839,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     DataTable dtG = cnn.CreateDataTable(strG);
                     if (dtG.Rows.Count == 0)
                         return JsonResultCommon.ThanhCong(new List<string>(), null, Visible);
-                        ds = GetTasks(Request.Headers, cnn, query, long.Parse(loginData.UserID.ToString()), DataAccount, strW);
+                        ds = GetTasks(loginData.CustomerID, Request.Headers, cnn, query, long.Parse(loginData.UserID.ToString()), DataAccount, strW);
                     if (cnn.LastError != null || ds == null)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     var temp = filterWork(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
@@ -964,7 +964,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     DataTable dtG = cnn.CreateDataTable(strG);
                     if (dtG.Rows.Count == 0)
                         return JsonResultCommon.ThanhCong(new List<string>(), null, Visible);
-                    DataSet ds = GetTasks(Request.Headers, cnn, query, long.Parse(loginData.UserID.ToString()), DataAccount, strW);
+                    DataSet ds = GetTasks(loginData.CustomerID, Request.Headers, cnn, query, long.Parse(loginData.UserID.ToString()), DataAccount, strW);
                     if (cnn.LastError != null || ds == null)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     var temp = filterWork(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
@@ -1588,7 +1588,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             if (!"".Equals(result)) result = result.Substring(3);
             return result;
         }
-        public static DataSet GetTasks(IHeaderDictionary _header, DpsConnection cnn, QueryParams query, long curUser, List<AccUsernameModel> DataAccount, string dieukien_where = "", long meetingid = 0)
+        public static DataSet GetTasks(long customerid, IHeaderDictionary _header, DpsConnection cnn, QueryParams query, long curUser, List<AccUsernameModel> DataAccount, string dieukien_where = "", long meetingid = 0)
         {
             SqlConditions Conds = new SqlConditions();
             Conds.Add("iduser", curUser);
@@ -1669,6 +1669,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                             {"urgent","urgent" }
                         };
             #endregion
+            string id_moitao = "";
+            id_moitao = GetListStatusDynamic(cnn, customerid);
             if (!string.IsNullOrEmpty(query.sortField) && sortableFields.ContainsKey(query.sortField))
                 dieukienSort = sortableFields[query.sortField] + ("desc".Equals(query.sortOrder) ? " desc" : " asc");
             #region Return data to backend to display on the interface
@@ -1683,9 +1685,9 @@ namespace JeeWork_Core2021.Controllers.Wework
                             ,'' as NguoiTao, '' as NguoiSua 
                             , w.accepted_date, w.activated_date, w.closed_date, w.state_change_date,
                             w.activated_by, w.closed_by, w.closed, w.closed_work_date, w.closed_work_by
+                            ,IIf((select count(*) from we_status tbu where tbu.Disabled=0 and tbu.id_row=tb.w and w.status in( {id_moitao} )>0,1,0) as isnew 
                             ,iIf(w.deadline < GETUTCDATE() and w.deadline is not null and w.end_date is null  ,1,0) as TreHan -- Trễ hạn: Ngày kết thúc is null và deadline is not null và deadline < GETUTCDATE()
                             ,iIf(w.end_date is not null ,1,0) as Done --Hoàn thành: Ngày kết thúc is not null và deadline is not null và deadline < GETUTCDATE()
-                            ,iIf(((deadline >= GETUTCDATE() and deadline is not null) or deadline is null) and w.end_date is null ,1,0) as Doing -- Đang làm: Ngày kết thúc is null và deadline is not null và deadline => GETUTCDATE()
                             from v_wework_new w 
                             left join (select count(*) as count,object_id 
                             from we_attachment where object_type=1 group by object_id) f on f.object_id=w.id_row
@@ -1693,7 +1695,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                             from we_comment where object_type=1 group by object_id) com on com.object_id=w.id_row
                             left join we_work_favourite fa 
                             on fa.id_work=w.id_row and fa.createdby=@iduser and fa.disabled=0
-                            where 1=1 " + dieukien_where + "  order by " + dieukienSort;
+                            where 1=1 " + dieukien_where + " order by " + dieukienSort;
             sqlq += ";select id_work, id_tag,color, title " +
                 "from we_work_tag wt join we_tag t on wt.id_tag=t.id_row where wt.disabled=0 and t.disabled=0";
             string where_string = "";
@@ -1710,6 +1712,10 @@ namespace JeeWork_Core2021.Controllers.Wework
             #endregion
             DataTable dt_task = new DataTable();
             dt_task = ds.Tables[0];
+            if (!string.IsNullOrEmpty(query.filter["stage"]))
+            {
+                
+            }
             #region Map info account từ JeeAccount
             foreach (DataRow item in ds.Tables[0].Rows)
             {
@@ -1744,6 +1750,26 @@ namespace JeeWork_Core2021.Controllers.Wework
             }
             #endregion
             return ds;
+        }
+        public static string GetListStatusDynamic(DpsConnection cnn, long customerid)
+        {
+            string sql = "";
+            sql = @$"select distinct * from we_status 
+                           where disabled = 0 and type = 1 and isdefault = 1 
+                            and isfinal = 0 and IsDeadline = 0 and IsToDo = 0
+                            and id_project_team 
+                            in (select p.id_row from we_project_team p 
+                            join we_department de 
+                            on de.id_row = p.id_department where p.disabled = 0 
+                            and de.disabled = 0 and idkh = "+customerid+")";
+            DataTable dt = cnn.CreateDataTable(sql);
+            List<string> nvs = dt.AsEnumerable().Select(x => x["id_row"].ToString()).ToList();
+            string ids = string.Join(",", nvs);
+            if (string.IsNullOrEmpty(ids))
+            {
+                return "0";
+            }
+            return ids;
         }
         public static DateTime GetEndDateInMonth(int thang, int nam)
         {

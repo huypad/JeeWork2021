@@ -64,7 +64,7 @@ import { CommunicateService } from '../work-list-new-service/communicate.service
 import { LogWorkDescriptionComponent } from '../../../log-work-description/log-work-description.component';
 import { tinyMCE } from 'src/app/_metronic/jeework_old/components/tinyMCE';
 import { DomSanitizer } from '@angular/platform-browser';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 @Component({
     selector: 'kt-work-list-new-detail',
     templateUrl: './work-list-new-detail.component.html',
@@ -78,6 +78,7 @@ export class WorkListNewDetailComponent implements OnInit {
         private workService: WorkService,
         private communicateService: CommunicateService,
         private el: ElementRef,
+        private router: Router,
         private projectsTeamService: ProjectsTeamService,
         public dialog: MatDialog,
         public subheaderService: SubheaderService,
@@ -1105,8 +1106,7 @@ export class WorkListNewDetailComponent implements OnInit {
                 checklist_model.id_work = this.item.id_row;
                 checklist_model.title = this.Value;
 
-                this.updatebykeyService
-                    .Insert_CheckList(checklist_model)
+                this.updatebykeyService.Insert_CheckList(checklist_model)
                     .subscribe((res) => {
                         if (res && res.status === 1) {
                             this.IsShow_CheckList = !this.IsShow_CheckList;
@@ -1124,7 +1124,6 @@ export class WorkListNewDetailComponent implements OnInit {
                     this.changeDetectorRefs.detectChanges();
                     if (res && res.status === 1) {
                         this.IsShow_MoTaCV = !this.IsShow_MoTaCV;
-
                         this.projectsTeamService.WorkDetail(model.id_row).subscribe((res) => {
                             if (res && res.status == 1) {
                                 this.description = res.data.description;
@@ -1185,6 +1184,7 @@ export class WorkListNewDetailComponent implements OnInit {
     }
     chinhsuamota = false;
     UpdateDescription() {
+        debugger
         if (this.item.description.trim() != this.description_tiny.trim()) {
             this.disabledBtn = true;
             // if (!this.KiemTraThayDoiCongViec(this.item, "description")) {
@@ -1207,100 +1207,39 @@ export class WorkListNewDetailComponent implements OnInit {
         if (task.Users.length > 0 && task.Users[0].id_nv > 0) {
             item.IsStaff = true;
         }
-        this.projectsTeamService._UpdateByKey(item).subscribe(res => {
-            if (res && res.status == 1) {
-                this.SendMessage(true);
-                this.LoadDataWorkDetail(item.id_row);
-                if (key == "description") {
+        if (key == "description") {
+            this.layoutUtilsService.showWaitingDiv();
+            this.projectsTeamService._UpdateByKey(item).subscribe(res => {
+                this.layoutUtilsService.OffWaitingDiv();
+                debugger
+                if (res && res.status == 1) {
+                    this.SendMessage(true);
+                    this.LoadDataWorkDetail(item.id_row);
                     this.is_confirm = false;
                 }
-            }
-            else {
-                this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
-            }
-            this.showsuccess = false;
-            this.disabledBtn = false;
-            this.changeDetectorRefs.detectChanges();
-        });
-
-        // this.layoutUtilsService.showWaitingDiv();
-        // this.projectsTeamService._UpdateByKey(item).pipe(
-        //     tap(() => {
-        //     }),
-        //     map(res => {
-        //         this.layoutUtilsService.OffWaitingDiv();
-        //         if (res && res.status == 1) {
-        //             this.SendMessage(true);
-        //             // this.LoadData();
-        //             this.LoadDataWorkDetail(item.id_row);
-        //             // this.bindStatus(res.data.value);
-        //             if (key == "description") {
-        //                 this.is_confirm = false;
-        //             }
-        //         } else {
-        //                       this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
-        //         }
-        //     }),
-        //     catchError((err) => throwError(err)),
-        //     finalize(() => this.layoutUtilsService.OffWaitingDiv()),
-        // ).subscribe((res) => {
-        //     // console.log(res)
-        //     if (key == 'description') {
-        //         this.showsuccess = true;
-        //         setTimeout(() => {
-        //             this.showsuccess = false;
-        //             this.disabledBtn = false;
-        //         }, 1000);
-        //     }
-        // }, (error) => {
-        //     this.disabledBtn = false;
-        // });
+                else {
+                    this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
+                }
+                this.showsuccess = false;
+                this.disabledBtn = false;
+                this.changeDetectorRefs.detectChanges();
+            });
+        }
+        else {
+            this.projectsTeamService._UpdateByKey(item).subscribe(res => {
+                if (res && res.status == 1) {
+                    this.SendMessage(true);
+                    this.LoadDataWorkDetail(item.id_row);
+                }
+                else {
+                    this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
+                }
+                this.showsuccess = false;
+                this.disabledBtn = false;
+                this.changeDetectorRefs.detectChanges();
+            });
+        }
     }
-    // UpdateByKeyNew(task, key, value) {
-    //     if (!this.KiemTraThayDoiCongViec(task, key)) {
-    //         return;
-    //     }
-    //     const item = new UpdateWorkModel();
-    //     item.id_row = task.id_row;
-    //     item.key = key;
-    //     item.value = value;
-    //     if (task.assign && task.assign.id_nv > 0) {
-    //         item.IsStaff = true;
-    //     }
-    //     this.layoutUtilsService.showWaitingDiv();
-    //     this.projectsTeamService._UpdateByKey(item).pipe(
-    //         tap(() => {
-    //         }),
-    //         map(res => {
-    //             this.layoutUtilsService.OffWaitingDiv();
-    //             if (res && res.status == 1) {
-    //                 this.SendMessage(true);
-    //                 // this.LoadData();
-    //                 this.LoadDataWorkDetail(item.id_row);
-    //                 // this.bindStatus(res.data.value);
-    //                 if (key == "description") {
-    //                     this.is_confirm = false;
-    //                 }
-    //             } else {
-    //                           this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
-    //             }
-    //         }),
-    //         catchError((err) => throwError(err)),
-    //         finalize(() => this.layoutUtilsService.OffWaitingDiv()),
-    //     ).subscribe((res) => {
-    //         // console.log(res)
-    //         if (key == 'description') {
-    //             this.showsuccess = true;
-    //             setTimeout(() => {
-    //                 this.showsuccess = false;
-    //                 this.disabledBtn = false;
-    //             }, 1000);
-    //         }
-    //     }, (error) => {
-    //         this.disabledBtn = false;
-    //     });
-    // }
-
     UpdateKey(_item: UpdateByKeyModel) {
         let saveMessageTranslateParam = '';
         saveMessageTranslateParam +=
@@ -1963,31 +1902,33 @@ export class WorkListNewDetailComponent implements OnInit {
     onChangeNote(): void {
         this.is_confirm = true;
     }
-    @HostListener('window:keyup.esc') onKeyUp() {
-        this.layoutUtilsService.confirm('Xác nhận', 'Bạn đã sửa đổi công việc này. Bạn có thể lưu các thay đổi, hủy các thay đổi hoặc hủy để tiếp tục chỉnh sửa')
-            .then((close) => {
-                if (close) {
-                    this.dialogRef.close(true);
-                }
-            })
-            .catch((err) => {
-                if (err == 'pad') {
-                    this.UpdateDescription();
-                    this.dialogRef.close(true);
-                }
-                else {
-                    // console.log('User dismissed the dialog (e.g., by using ESC, clicking the cross icon, or clicking outside the dialog)'));
-                }
-            });
-    }
+    // @HostListener('window:keyup.esc') onKeyUp() {
+    //     this.layoutUtilsService.confirm('Xác nhận', 'Bạn đã sửa đổi công việc này. Bạn có thể lưu các thay đổi, hủy các thay đổi hoặc hủy để tiếp tục chỉnh sửa')
+    //         .then((close) => {
+    //             if (close) {
+    //                 this.dialogRef.close(true);
+    //             }
+    //         })
+    //         .catch((err) => {
+    //             if (err == 'pad') {
+    //                 this.UpdateDescription();
+    //                 this.dialogRef.close(true);
+    //             }
+    //             else {
+    //                 // console.log('User dismissed the dialog (e.g., by using ESC, clicking the cross icon, or clicking outside the dialog)'));
+    //             }
+    //         });
+    // }
     // @HostListener('window:beforeunload', ['$event']) unloadHandler(event: Event) {
     //     event.returnValue = false;
     // }
     goBack() {
-        if (!this.is_confirm)
-            this.dialogRef.close(true);
-        else
-            this.onKeyUp();
+        // if (!this.is_confirm)
+        this.router.navigate(['', { outlets: { auxName: null } }]);
+        // AuxiliaryRouterJWComponent.dialogRef = null;
+        this.dialogRef.close(true);
+        // else
+        // this.onKeyUp();
         this.changeDetectorRefs.detectChanges();
     }
     DeleteTask() {
@@ -2034,6 +1975,7 @@ export class WorkListNewDetailComponent implements OnInit {
     // gửi giao tiếp tới commponent ngoài
     SendMessage(value) {
         this.communicateService.changeMessage(value);
+        debugger
     }
     imagesUploadHandler = (blobInfo, success, failure) => {
     };

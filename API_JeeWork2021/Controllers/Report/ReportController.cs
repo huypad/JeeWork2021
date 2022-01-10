@@ -510,16 +510,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                     {
                         strW += " and id_department in (" + listDept + ") ";
                     }
-                    string list_Complete = "";
-                    list_Complete = GetListStatusDynamic(listDept, cnn, " IsFinal ");
-                    string list_Deadline = "";
-                    list_Deadline = GetListStatusDynamic(listDept, cnn, " IsDeadline ");
-                    string list_Todo = "";
-                    list_Todo = GetListStatusDynamic(listDept, cnn, " IsTodo ");
-
                     if (!string.IsNullOrEmpty(query.filter["status"]))//1: đang thực hiên(đang làm & phải làm)||2: đã xong
                     {
-
                         if (query.filter["status"].ToString().Equals(1.ToString()))
                         {
                             // strW += $" and w.status not in ({list_Complete})";
