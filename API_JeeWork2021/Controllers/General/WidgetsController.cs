@@ -1685,9 +1685,10 @@ namespace JeeWork_Core2021.Controllers.Wework
                             ,'' as NguoiTao, '' as NguoiSua 
                             , w.accepted_date, w.activated_date, w.closed_date, w.state_change_date,
                             w.activated_by, w.closed_by, w.closed, w.closed_work_date, w.closed_work_by
-                            ,IIf((select count(*) from we_status tbu where tbu.Disabled=0 and tbu.id_row=tb.w and w.status in( {id_moitao} )>0,1,0) as isnew 
+							,iIf(w.status in (select id_row from we_status where disabled = 0 and IsDefault = 1 and Position < 2),1,0) as isnew -- Trạng thái new
                             ,iIf(w.deadline < GETUTCDATE() and w.deadline is not null and w.end_date is null  ,1,0) as TreHan -- Trễ hạn: Ngày kết thúc is null và deadline is not null và deadline < GETUTCDATE()
                             ,iIf(w.end_date is not null ,1,0) as Done --Hoàn thành: Ngày kết thúc is not null và deadline is not null và deadline < GETUTCDATE()
+                            ,iIf(((deadline >= GETUTCDATE() and deadline is not null) or deadline is null) and w.end_date is null ,1,0) as Doing -- Đang làm: Ngày kết thúc is null và deadline is not null và deadline => GETUTCDATE()
                             from v_wework_new w 
                             left join (select count(*) as count,object_id 
                             from we_attachment where object_type=1 group by object_id) f on f.object_id=w.id_row
