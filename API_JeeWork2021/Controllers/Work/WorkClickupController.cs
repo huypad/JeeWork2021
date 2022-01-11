@@ -329,10 +329,11 @@ namespace JeeWork_Core2021.Controllers.Wework
                     strW = " and (w.id_nv=@iduser or w.createdby=@iduser or w.nguoigiao=@iduser or w.id_row in (select id_work from we_work_user where loai = 2 and disabled=0 and id_user = @iduser)  (parent))"; // w.nguoigiao=@iduser or w.createdby=@iduser -- w.NguoiGiao = @iduser or
                     if (!string.IsNullOrEmpty(query.filter["filter"]))
                     {
+                        //strW = " and (w.createdby=@iduser";
                         if (query.filter["filter"] == "1")//được giao
-                            strW = " and (w.id_nv=@iduser (parent)) ";
+                            strW = " and (w.createdby=@iduser or w.id_nv=@iduser (parent)) ";
                         if (query.filter["filter"] == "2")//giao đi
-                            strW = " and (w.nguoigiao=@iduser (parent))";
+                            strW = " and (w.createdby=@iduser or w.nguoigiao=@iduser (parent))";
                         if (query.filter["filter"] == "3")// theo dõi
                             strW = $" and (w.id_row in (select id_work from we_work_user where loai = 2 and disabled=0 and id_user = @iduser ) (parent))";
                     }
@@ -660,8 +661,9 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (DataStaff == null)
                         return JsonResultCommon.ThanhCong(new List<string>());
                     List<string> nvs = DataStaff.Select(x => x.UserId.ToString()).ToList();
-                    string listIDNV = string.Join(",", nvs);
-
+                    string listIDNV = "0";
+                    if (nvs.Count > 0)
+                        listIDNV = string.Join(",", nvs);
                     string error = "";
                     string listID = JeeWorkLiteController.ListAccount(HttpContext.Request.Headers, out error, _configuration);
                     if (error != "")
@@ -6409,7 +6411,7 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
             }
             if (!string.IsNullOrEmpty(query.filter["keyword"]))
             {
-                dieukien_where += " and (w.title like N'%@keyword%' or w.description like N'%@keyword%' )";
+                dieukien_where += " and (w.title like N'%@keyword%' or w.description like N'%@keyword%')";
                 dieukien_where = dieukien_where.Replace("@keyword", query.filter["keyword"]);
             }
             #endregion
@@ -6506,13 +6508,11 @@ where u.disabled = 0 and u.loai = 2";
             foreach (DataRow item in ds.Tables[2].Rows)
             {
                 var info = DataAccount.Where(x => item["id_user"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-
                 if (info != null)
                 {
                     item["hoten"] = info.FullName;
                 }
             }
-
             #endregion
             return ds;
             #endregion
@@ -6528,15 +6528,16 @@ where u.disabled = 0 and u.loai = 2";
             }
             // get user Id 
             DataTable dt_Users = new DataTable();
-            DataTable dt_User2 = new DataTable();
             DataTable dt_status = new DataTable();
             using (DpsConnection cnn = new DpsConnection(ConnectString))
             {
                 SqlConditions conds = new SqlConditions();
                 conds.Add("w_user.disabled", 0);
-                string select_user = $@"select distinct w_user.id_user,'' as hoten,'' as email,'' as image, id_work,w_user.loai,w_user.CreatedBy
+                string select_user = $@"select distinct w_user.id_user,'' as hoten,'' as email,'' as image, id_work
+                                        , w_user.loai,w_user.CreatedBy
                                         from we_work_user w_user 
-                                        join we_work on we_work.id_row = w_user.id_work where (where)";
+                                        join we_work on we_work.id_row = w_user.id_work 
+                                        where (where)";
                 if ("id_project_team".Equals(columnName))
                 {
                     select_user += " and id_work in (select id_row from we_work where id_project_team = " + id + ")";
@@ -6558,14 +6559,14 @@ where u.disabled = 0 and u.loai = 2";
                     }
                 }
                 #endregion
-                if (columnName.ToLower() == "id_nv")
-                {
-                    DataRow[] dr = dt_Users.Select("id_user=" + id);
-                    if (dr.Length > 0)
-                    {
-                        dt_User2 = dr.CopyToDataTable();
-                    }
-                }
+                //if (columnName.ToLower() == "id_nv")
+                //{
+                //    DataRow[] dr = dt_Users.Select("id_user=" + id);
+                //    if (dr.Length > 0)
+                //    {
+                //        dt_User2 = dr.CopyToDataTable();
+                //    }
+                //}
             }
             //columnName="" : không group
             // update lại data khi sửa từ wiget wiget thì bỏ đi phần này : ----- && (columnName == "" || (columnName != "" && r[columnName].Equals(id)))

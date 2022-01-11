@@ -245,6 +245,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
             50,
             true
         );
+        debugger
         var api_service = this._service.ListByFilter(queryParams);
         if (this.selectedTab === 2 && !this.getMystaff) {
             api_service = this._service.ListByFilter(queryParams);
@@ -491,41 +492,56 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
     }
     filterConfiguration(): any {
         const filter: any = {};
+        debugger
         filter.groupby = this.filter_groupby.value;
         filter.keyword = this.keyword;
         filter.id_nv = this.ID_NV;
         filter.displayChild = this.filter_subtask.value;
         filter.subtask_done = this.showclosedsubtask ? 1 : 0;
         filter.task_done = this.showclosedtask ? 1 : 0;
-        switch (this.selectedTab) {
-            case 1:
-            case 3:
-                {
-                    // công việc assign cho tôi = 1
-                    if (this.filterwork > 0) {
-                        filter.filter = this.filterwork;
-                    }
-                    // công việc tôi theo dõi = 3
-                    if (this.selectedTab === 3) {
-                        filter.filter = 3;
-                    }
-                    filter.TuNgay = (this.f_convertDate(this.filterDay.startDate)).toString();
-                    filter.DenNgay = (this.f_convertDate(this.filterDay.endDate)).toString();
-                    filter.collect_by = this.column_sort.value;
-
-                    if (this.idFilter > 0) {
-                        filter.id_filter = this.idFilter;
-                    }
-                    break;
-                }
-            case 2: {
-
-                if (this.idFilter > 0) {
-                    filter.id_filter = this.idFilter;
-                }
-                break;
-            }
+        if (this.filterwork > 0) {
+            filter.filter = this.filterwork;
         }
+        // công việc tôi theo dõi = 3
+        if (this.selectedTab === 3) {
+            filter.filter = 3;
+        }
+        filter.TuNgay = (this.f_convertDate(this.filterDay.startDate)).toString();
+        filter.DenNgay = (this.f_convertDate(this.filterDay.endDate)).toString();
+        filter.collect_by = this.column_sort.value;
+
+        if (this.idFilter > 0) {
+            filter.id_filter = this.idFilter;
+        }
+        // switch (this.selectedTab) {
+        //     case 1:
+        //     case 3:
+        //         {
+        //             // công việc assign cho tôi = 1
+        //             if (this.filterwork > 0) {
+        //                 filter.filter = this.filterwork;
+        //             }
+        //             // công việc tôi theo dõi = 3
+        //             if (this.selectedTab === 3) {
+        //                 filter.filter = 3;
+        //             }
+        //             filter.TuNgay = (this.f_convertDate(this.filterDay.startDate)).toString();
+        //             filter.DenNgay = (this.f_convertDate(this.filterDay.endDate)).toString();
+        //             filter.collect_by = this.column_sort.value;
+
+        //             if (this.idFilter > 0) {
+        //                 filter.id_filter = this.idFilter;
+        //             }
+        //             break;
+        //         }
+        //     case 2: {
+
+        //         if (this.idFilter > 0) {
+        //             filter.id_filter = this.idFilter;
+        //         }
+        //         break;
+        //     }
+        // }
         return filter;
     }
 

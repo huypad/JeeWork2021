@@ -1,7 +1,7 @@
 import { WorkService } from "./../work.service";
 import { ActivatedRoute } from "@angular/router";
 import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
-import {AuthService} from '../../../../modules/auth';
+import { AuthService } from '../../../../modules/auth';
 
 @Component({
   selector: "kt-my-works",
@@ -29,7 +29,8 @@ export class MyWorksComponent implements OnInit {
       if (res && res.id) this.idFilter = res.id;
     });
     this.activatedRoute.data.subscribe((res) => {
-      if (res && res.selectedTab) this.selectedTab = res.selectedTab;
+      if (res && res.selectedTab) 
+      this.selectedTab = res.selectedTab;
     });
     this.route.queryParamMap.subscribe((params) => {
       const pr = params["params"];
@@ -38,7 +39,6 @@ export class MyWorksComponent implements OnInit {
           this.detailWork = pr.detail;
         }
       }
-
     });
     this.LoadFilter();
   }

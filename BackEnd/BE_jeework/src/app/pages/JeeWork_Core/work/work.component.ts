@@ -56,12 +56,12 @@ export class WorkComponent implements OnInit {
 	loadThongTinUser() {
 		let id: any;
 		this.tokenStore.getUserData().subscribe(res => {
-			if(res){
+			if (res) {
 				this.Image = res.Image;
 				this.Ten = res.HoTen;
 				this.ChucVu = res.ChucVu;
 			}
-			else{
+			else {
 				setTimeout(() => {
 					this.loadThongTinUser();
 				}, 1000);
@@ -129,9 +129,9 @@ export class WorkComponent implements OnInit {
 		if (activeLink != "home") {
 			url += activeLink;
 		}
-		
+
 		if (+id != 0) {
-			this.router.navigate([url,id]).then(() => {
+			this.router.navigate([url, id]).then(() => {
 				this.ngOnInit();
 			});
 		}
@@ -188,7 +188,7 @@ export class WorkComponent implements OnInit {
 		// 	if (!res) {
 		// 		return;
 		// 	}
-			
+
 		// });
 		this.layoutUtilsService.showWaitingDiv();
 		this._filterService.Delete_filter(_item.id_row).subscribe(res => {
@@ -208,7 +208,7 @@ export class WorkComponent implements OnInit {
 		});
 	}
 
-	addMileston(){
+	addMileston() {
 		let saveMessageTranslateParam = '';
 		var _item = new MilestoneModel;
 		_item.clear();
@@ -230,7 +230,7 @@ export class WorkComponent implements OnInit {
 		});
 	}
 
-	selectedMileston(_item){
+	selectedMileston(_item) {
 		this.myworkSer.FindDepartmentFromProjectteam(_item.id_project_team).subscribe(res => {
 			if (res && res.status == 1) {
 				const url = 'depts/' + res.data + '/milestones/' + _item.id_row;
@@ -241,7 +241,7 @@ export class WorkComponent implements OnInit {
 
 	getHeight() {
 		let tmp_height = 0;
-		tmp_height = window.innerHeight -this.tokenStore.getHeightHeader();
+		tmp_height = window.innerHeight - this.tokenStore.getHeightHeader();
 		return tmp_height + 'px';
 	}
 }
