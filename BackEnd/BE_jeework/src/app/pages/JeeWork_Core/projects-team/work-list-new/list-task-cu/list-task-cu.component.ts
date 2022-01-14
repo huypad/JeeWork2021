@@ -262,7 +262,6 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
         api_service.subscribe(res => {
             this.layoutUtilsService.OffWaitingDiv();
             if (res && res.status === 1) {
-                debugger
                 this.DanhSachCongViec = res.data;
                 // this.filterDanhSach();
                 this.filteredDanhSachCongViec.next(res.data);
@@ -337,7 +336,6 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
         });
     }
     Forme(val) {
-        debugger
         this.isAssignforme = val;
         this.UpdateInfoProject();
         // this.LoadDataTaskNew();
