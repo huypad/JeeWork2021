@@ -391,6 +391,9 @@ export class WorkListNewComponent implements OnInit, OnChanges {
   }
 
   CheckRoleskeypermit(key) {
+    if (key == "clickup_prioritize") {
+      return true;
+    }
     if (this.list_role) {
       const x = this.list_role.find((x) => x.id_row == this.ID_Project);
       if (x) {

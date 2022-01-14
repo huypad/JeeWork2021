@@ -10,17 +10,17 @@ import {
   styleUrls: ["./list-task-cu-2.component.scss"],
 })
 export class ListTaskCUComponent2 implements OnInit, OnChanges {
-  
+
   constructor() {
-   
+
   }
-  
+
   ngOnInit() {
 
-    
+
   }
 
   ngOnChanges() {
-    
+
   }
 }

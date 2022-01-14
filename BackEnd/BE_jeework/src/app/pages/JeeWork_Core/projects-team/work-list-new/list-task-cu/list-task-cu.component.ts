@@ -194,8 +194,10 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
                 }
             }
             this.DanhSachCongViec = [];
-            // this.LoadWork();
         });
+        this.LoadFilterProject();
+        this.BindDataLite();
+        this.LoadTask();
         this.selection = new SelectionModel<WorkModel>(true, []);
         this.menuServices.GetRoleWeWork('' + this.UserID).subscribe(res => {
             if (res && res.status === 1) {
@@ -203,9 +205,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
                 this.IsAdminGroup = res.data.IsAdminGroup;
             }
         });
-        this.LoadFilterProject();
-        this.BindDataLite();
-        this.LoadTask();
+        this.Forme(true);
         this.changeDetectorRefs.detectChanges();
     }
 
@@ -245,7 +245,6 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
             50,
             true
         );
-        debugger
         var api_service = this._service.ListByFilter(queryParams);
         if (this.selectedTab === 2 && !this.getMystaff) {
             api_service = this._service.ListByFilter(queryParams);
@@ -263,8 +262,10 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
         api_service.subscribe(res => {
             this.layoutUtilsService.OffWaitingDiv();
             if (res && res.status === 1) {
+                debugger
                 this.DanhSachCongViec = res.data;
-                this.filterDanhSach();
+                // this.filterDanhSach();
+                this.filteredDanhSachCongViec.next(res.data);
                 this.changeDetectorRefs.detectChanges();
             }
         });
@@ -336,6 +337,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
         });
     }
     Forme(val) {
+        debugger
         this.isAssignforme = val;
         this.UpdateInfoProject();
         // this.LoadDataTaskNew();
@@ -422,6 +424,9 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
     }
 
     CheckRoleskeypermit(key, id_project_team) {
+        if (key == "clickup_prioritize") {
+            return true;
+        }
         const x = this.list_role.find(x => x.id_row === id_project_team);
         if (x) {
             if (x.locked) {
@@ -492,7 +497,6 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
     }
     filterConfiguration(): any {
         const filter: any = {};
-        debugger
         filter.groupby = this.filter_groupby.value;
         filter.keyword = this.keyword;
         filter.id_nv = this.ID_NV;
@@ -545,10 +549,10 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
         return filter;
     }
 
-    protected filterDanhSach() {
-        // filter the 
-        this.filteredDanhSachCongViec.next(this.DanhSachCongViec);
-    }
+    // protected filterDanhSach() {
+    //     // filter the 
+    //     this.filteredDanhSachCongViec.next(this.DanhSachCongViec);
+    // }
     ChangeData() {
         // this.LoadWork();
         this.LoadTask();

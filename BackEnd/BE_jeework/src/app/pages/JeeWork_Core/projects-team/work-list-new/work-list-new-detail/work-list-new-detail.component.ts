@@ -1184,7 +1184,6 @@ export class WorkListNewDetailComponent implements OnInit {
     }
     chinhsuamota = false;
     UpdateDescription() {
-        debugger
         if (this.item.description.trim() != this.description_tiny.trim()) {
             this.disabledBtn = true;
             // if (!this.KiemTraThayDoiCongViec(this.item, "description")) {
@@ -1211,10 +1210,9 @@ export class WorkListNewDetailComponent implements OnInit {
             this.layoutUtilsService.showWaitingDiv();
             this.projectsTeamService._UpdateByKey(item).subscribe(res => {
                 this.layoutUtilsService.OffWaitingDiv();
-                debugger
                 if (res && res.status == 1) {
                     this.SendMessage(true);
-                    this.LoadDataWorkDetail(item.id_row);
+                    // this.LoadDataWorkDetail(item.id_row);
                     this.is_confirm = false;
                 }
                 else {
@@ -1975,7 +1973,6 @@ export class WorkListNewDetailComponent implements OnInit {
     // gửi giao tiếp tới commponent ngoài
     SendMessage(value) {
         this.communicateService.changeMessage(value);
-        debugger
     }
     imagesUploadHandler = (blobInfo, success, failure) => {
     };

@@ -6,7 +6,7 @@ export class CommunicateService {
 
   constructor() { }
   // khúc này giao tiếp service giữa các component
-	messageSource = new BehaviorSubject<any>(false);
+  messageSource = new BehaviorSubject<any>(false);
   currentMessage = this.messageSource.asObservable();
   changeMessage(message) {
     this.messageSource.next(message);
