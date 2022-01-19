@@ -2187,7 +2187,8 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                 action = action,
                 data = action,
             };
-            logger.LogDebug(JsonConvert.SerializeObject(d2));
+            if (id_action != 16)
+                logger.LogDebug(JsonConvert.SerializeObject(d2));
             Hashtable val = new Hashtable();
             val["id_action"] = id_action;
             val["object_id"] = object_id;

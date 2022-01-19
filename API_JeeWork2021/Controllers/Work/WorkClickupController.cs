@@ -7086,6 +7086,7 @@ where u.disabled = 0 and u.loai = 2";
                 sqlcondQ.Add("disabled", 0);
                 string s = "select * from we_project_team where (where)";
                 DataTable old = cnn.CreateDataTable(s, "(where)", sqlcondQ);
+                string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
                 if (old == null || old.Rows.Count == 0)
                     return JsonResultCommon.KhongTonTai("Dự án");
                 bool rs = Common.CheckRoleByProject(id_project_team, loginData, cnn, ConnectionString);
@@ -7123,11 +7124,11 @@ where u.disabled = 0 and u.loai = 2";
                 }
                 if (string.IsNullOrEmpty(query.filter["task_done"]))
                 {
-                    strW += " and  w.id_row not in ( select id_row from we_work where end_date is not null and id_parent is null )";
+                    strW += " and  w.id_row not in (select id_row from we_work where end_date is not null and id_parent is null)";
                 }
                 if (string.IsNullOrEmpty(query.filter["subtask_done"]))
                 {
-                    strW += " and w.id_row not in ( select id_row from we_work where end_date is not null and id_parent is not null) ";
+                    strW += " and w.id_row not in (select id_row from we_work where end_date is not null and id_parent is not null) ";
                 }
                 if (!string.IsNullOrEmpty(query.filter["forme"]))
                 {
@@ -7164,6 +7165,66 @@ where u.disabled = 0 and u.loai = 2";
                 DataTable dt_value = new DataTable();
                 string column = "status";
                 string field_custom = "", field_type = "";
+                
+                SqlConditions conds = new SqlConditions();
+                if (!rs)
+                {
+                    long userid = loginData.UserID;
+                    strW += @$" and w.id_row in (select id_parent from we_work ww 
+                                    join we_work_user wu on ww.id_row = wu.id_work 
+                                    where ww.disabled = 0 and wu.disabled = 0 
+                                    and id_parent is not null and id_user = {userid}
+                                     union all select id_row 
+                                    from v_wework_new where id_nv = {userid} or createdby = {userid})";
+                }
+                string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
+                if (!string.IsNullOrEmpty(query.filter["displayChild"]))
+                    displayChild = query.filter["displayChild"];
+                string sql = "select iIf(id_group is null,0,id_group) as id_group, '0' as custom" +
+                    ", cast(id_row as varchar) as id_row, cast(status as varchar) as status, * ";
+                sql += $@" from v_wework_new w where w.disabled = 0 " + strW + "";
+                DataTable result = new DataTable();
+                result = cnn.CreateDataTable(sql, Conds);
+                DataTable tmp = new DataTable();
+                string queryTag = @"select a.id_row,a.title,a.color,b.id_work from we_tag a 
+                                        join we_work_tag b on a.id_row=b.id_tag 
+                                        where a.disabled=0 and b.disabled = 0 
+                                        and a.id_project_team = " + id_project_team + "" +
+                                    " and id_work = ";
+                DataColumnCollection columns = result.Columns;
+                if (!columns.Contains("id_nv"))
+                {
+                    result.Columns.Add("id_nv", typeof(string));
+                }
+                result.Columns.Add("list_id_tag", typeof(string));
+                result.Columns.Add("tag_name", typeof(string));
+                result.Columns.Add("color_tag", typeof(string));
+
+                if ("custom".Equals(groupby))
+                {
+                    if (dt_value.Rows.Count > 0)
+                    {
+                        foreach (DataRow item in result.Rows)
+                        {
+                            DataRow[] row = dt_value.Select("WorkID=" + item["id_row"].ToString());
+                            if (row.Length > 0)
+                            {
+                                item["custom"] = row[0]["value"].ToString();
+                            }
+                            else
+                            {
+                                item["custom"] = "0";
+                            }
+                        }
+                    }
+                }
+                if (result.Rows.Count > 0)
+                {
+                    var filterTeam = " id_parent is null and id_project_team = " + id_project_team;
+                    var rows = result.Select(filterTeam);
+                    if (rows.Any())
+                        tmp = rows.CopyToDataTable();
+                }
                 if (!string.IsNullOrEmpty(query.filter["groupby"]))
                 {
                     groupby = query.filter["groupby"];
@@ -7220,29 +7281,54 @@ where u.disabled = 0 and u.loai = 2";
                                 }
                                 break;
                             }
-                        //case "tags":
-                        //    {
-                        //        column = "id_group";
-                        //        tableName = "we_group";
-                        //        querySQL = "select id_row, title as statusname,'' as color, '' as follower, '' as description from " + tableName + " " +
-                        //            "where disabled = 0 and id_project_team  = " + int.Parse(id_project_team) + "";
-                        //        dt_filter = cnn.CreateDataTable(querySQL);
-                        //        DataRow newRow = dt_filter.NewRow();
-                        //        newRow[0] = 0;
-                        //        newRow[1] = "Chưa có nhãn";
-                        //        dt_filter.Rows.InsertAt(newRow, 0);
-                        //        foreach (DataRow row in dt_filter.Rows)
-                        //        {
-                        //            string word = "";
-                        //            if (!string.IsNullOrEmpty(row[1].ToString()))
-                        //            {
-                        //                char[] array = row[1].ToString().Take(1).ToArray();
-                        //                word = array[0].ToString();
-                        //            }
-                        //            row["color"] = JeeWorkLiteController.GetColorName(word);
-                        //        }
-                        //        break;
-                        //    }
+                        case "tags":
+                            {
+                                column = "list_id_tag";
+                                querySQL = @"select id_work, id_tag from we_work_tag
+                                    where disabled = 0 
+                                    and id_work in (select id_row from we_work
+                                    where id_project_team = " + id_project_team + " " +
+                                    "and disabled = 0) order by id_work, id_tag";
+                                dt_value = cnn.CreateDataTable(querySQL);
+                                if (result.Rows.Count > 0)
+                                {
+                                    DataRow _r = dt_filter.NewRow();
+                                    DataTable dt_wt = new DataTable();
+                                    foreach (DataRow item in result.Rows)
+                                    {
+                                        DataRow[] row = dt_value.Select("id_work=" + item["id_row"].ToString());
+                                        if (row.Length > 0)
+                                        {
+                                            dt_wt = new DataTable();
+                                            dt_wt = row.CopyToDataTable();
+                                            foreach (DataRow w_t in dt_wt.Rows)
+                                            {
+                                                item["list_id_tag"] += "," + w_t["id_tag"].ToString();
+                                                item["tag_name"] += ", " + w_t["id_tag"].ToString();
+                                            }
+                                            item["tag_name"] = item["tag_name"].ToString().Substring(1);
+                                            item["list_id_tag"] = item["list_id_tag"].ToString().Substring(1);
+                                        }
+                                        else
+                                        {
+                                            item["list_id_tag"] = "0";
+                                        }
+                                        _r = dt_filter.NewRow();
+                                        _r["id_row"] = item["list_id_tag"];
+                                        _r["statusname"] = item["tag_name"];
+                                        _r["color"] = "#16AB6B";
+                                        _r["Follower"] = "";
+                                        _r["description"] = "";
+                                        dt_filter.Rows.Add(_r);
+                                    }
+                                }
+                                dt_filter = dt_filter.DefaultView.ToTable(true, "id_row", "statusname", "color", "Follower", "description");
+                                DataRow newRow = dt_filter.NewRow();
+                                newRow[0] = 0;
+                                newRow[1] = "Chưa có thẻ";
+                                dt_filter.Rows.InsertAt(newRow, 0);
+                                break;
+                            }
                         //case "deadline":
                         //    {
                         //        column = "id_group";
@@ -7333,64 +7419,11 @@ where u.disabled = 0 and u.loai = 2";
                                 newRow[2] = JeeWorkLiteController.GetColorName(word);
                                 dt_filter.Rows.InsertAt(newRow, 0);
                                 dt_value = cnn.CreateDataTable("select fieldid, workid, typeid, value, id_project_team " +
-                                    "from we_newfileds_values where FieldID = " + field_custom + " and id_project_team =" + id_project_team);
+                                    "from we_newfileds_values where fieldid = " + field_custom + " and id_project_team =" + id_project_team);
                                 break;
                             }
                         default: break;
                     }
-                }
-                SqlConditions conds = new SqlConditions();
-                if (!rs)
-                {
-                    long userid = loginData.UserID;
-                    strW += @$" and w.id_row in (select id_parent from we_work ww 
-                                    join we_work_user wu on ww.id_row = wu.id_work 
-                                    where ww.disabled = 0 and wu.disabled = 0 
-                                    and id_parent is not null and id_user = {userid}
-                                     union all select id_row 
-                                    from v_wework_new where id_nv = {userid} or createdby = {userid} )";
-                }
-                string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
-                if (!string.IsNullOrEmpty(query.filter["displayChild"]))
-                    displayChild = query.filter["displayChild"];
-                string sql = "select iIf(id_group is null,0,id_group) as id_group, '0' as custom" +
-                    ", cast(id_row as varchar) as id_row, cast(status as varchar) as status, * ";
-                sql += $@" from v_wework_new w where w.disabled = 0 " + strW + "";
-                DataTable result = new DataTable();
-                result = cnn.CreateDataTable(sql, Conds);
-                DataTable tmp = new DataTable();
-                string queryTag = @"select a.id_row,a.title,a.color,b.id_work from we_tag a 
-                                        join we_work_tag b on a.id_row=b.id_tag 
-                                        where a.disabled=0 and b.disabled = 0 
-                                        and a.id_project_team = " + id_project_team + "" +
-                                    " and id_work = ";
-                DataColumnCollection columns = result.Columns;
-                if (!columns.Contains("id_nv"))
-                {
-                    result.Columns.Add("id_nv", typeof(string));
-                }
-                if (dt_value.Rows.Count > 0)
-                {
-                    foreach (DataRow item in result.Rows)
-                    {
-                        DataRow[] row = dt_value.Select("WorkID=" + item["id_row"].ToString());
-                        if (row.Length > 0)
-                        {
-                            item["custom"] = row[0]["value"].ToString();
-                        }
-                        else
-                        {
-                            item["custom"] = "0";
-                        }
-                    }
-                }
-                string domain = _configuration.GetValue<string>("Host:JeeWork_API") + "/";
-                if (result.Rows.Count > 0)
-                {
-                    var filterTeam = " id_parent is null and id_project_team = " + id_project_team;
-                    var rows = result.Select(filterTeam);
-                    if (rows.Any())
-                        tmp = rows.CopyToDataTable();
                 }
                 DataTable dt_tag = new DataTable();
                 conds = new SqlConditions();
