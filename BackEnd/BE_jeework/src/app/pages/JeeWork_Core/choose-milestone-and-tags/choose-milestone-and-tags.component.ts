@@ -13,7 +13,7 @@ import { ReplaySubject } from 'rxjs';
 //Models
 
 import * as moment from 'moment';
-import { WeWorkService } from '../services/wework.services';
+import { JeeWorkLiteService } from '../services/wework.services';
 import { ListDepartmentService } from '../department/Services/List-department.service';
 import { UpdateWorkModel } from '../work/work.model';
 import { WorkService } from '../work/work.service';
@@ -55,7 +55,7 @@ export class ChooseMilestoneAndTagComponent implements OnInit, OnChanges {
 		private FormControlFB: FormBuilder,
 		public dialog: MatDialog,
 		private layoutUtilsService: LayoutUtilsService,
-		public weworkService: WeWorkService,
+		public weworkService: JeeWorkLiteService,
 		private _service: WorkService,
 		private TagsService: TagsService,
 		private deptmentServices: ListDepartmentService,

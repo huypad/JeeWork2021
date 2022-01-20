@@ -1,4 +1,4 @@
-import {WeWorkService} from './../services/wework.services';
+import { JeeWorkLiteService } from './../services/wework.services';
 import {MatDialog} from '@angular/material/dialog';
 import {FormBuilder} from '@angular/forms';
 import {Component, OnInit, ChangeDetectorRef, Input, EventEmitter, Output} from '@angular/core';
@@ -34,7 +34,7 @@ export class ColorPicker2Component implements OnInit {
     constructor(
         private FormControlFB: FormBuilder,
         public dialog: MatDialog,
-        public weworkService: WeWorkService,
+        public weworkService: JeeWorkLiteService,
         private changeDetectorRefs: ChangeDetectorRef) {
     }
 

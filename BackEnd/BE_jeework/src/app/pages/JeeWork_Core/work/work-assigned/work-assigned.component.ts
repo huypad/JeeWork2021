@@ -1,6 +1,6 @@
 import { LayoutUtilsService } from "./../../../../_metronic/jeework_old/core/utils/layout-utils.service";
 import { Router } from "@angular/router";
-import { WeWorkService } from "./../../services/wework.services";
+import { JeeWorkLiteService } from "./../../services/wework.services";
 import {
   MatDialog,
   MatDialogRef,
@@ -41,7 +41,7 @@ export class WorkAssignedComponent implements OnInit {
     public dialog: MatDialog,
     public router: Router,
     private layoutUtilsService: LayoutUtilsService,
-    public weworkService: WeWorkService,
+    public weworkService: JeeWorkLiteService,
     private changeDetectorRefs: ChangeDetectorRef
   ) {}
 

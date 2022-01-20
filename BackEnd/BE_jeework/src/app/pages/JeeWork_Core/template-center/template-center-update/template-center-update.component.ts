@@ -4,7 +4,7 @@ import {
   TempalteUserModel,
   StatusListModel,
 } from "./../template-model/template.model";
-import { WeWorkService } from "./../../services/wework.services";
+import { JeeWorkLiteService } from "./../../services/wework.services";
 import { QueryParamsModelNew } from "./../../../../_metronic/jeework_old/core/models/query-models/query-params.model";
 import { LayoutUtilsService, MessageType } from "./../../../../_metronic/jeework_old/core/utils/layout-utils.service";
 import { ListDepartmentService } from "./../../department/Services/List-department.service";
@@ -49,7 +49,7 @@ export class TemplateCenterUpdateComponent implements OnInit {
     private templatecenterService: TemplateCenterService,
     private translateService: TranslateService,
     private departmentServices: ListDepartmentService,
-    public weWorkService: WeWorkService,
+    public weWorkService: JeeWorkLiteService,
     private changeDetectorRefs: ChangeDetectorRef,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) { }

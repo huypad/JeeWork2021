@@ -6,7 +6,7 @@ import { LayoutUtilsService, MessageType } from './../../../../_metronic/jeework
 import { TranslateService } from '@ngx-translate/core';
 import { ReplaySubject, BehaviorSubject, Observable } from 'rxjs';
 import { Router } from '@angular/router';
-import { WeWorkService } from '../../services/wework.services';
+import { JeeWorkLiteService } from '../../services/wework.services';
 import { AuthorizeModel } from '../Model/user.model';
 import { UserService } from '../Services/user.service';
 // import { startWith, map } from 'rxjs/operators';
@@ -35,7 +35,7 @@ export class AuthorizeEditComponent implements OnInit {
 		private _service: UserService,
 		private layoutUtilsService: LayoutUtilsService,
 		private translate: TranslateService,
-		public weworkService: WeWorkService,
+		public weworkService: JeeWorkLiteService,
 		private danhMucChungService: DanhMucChungService,
 		private router: Router,) {
 	}

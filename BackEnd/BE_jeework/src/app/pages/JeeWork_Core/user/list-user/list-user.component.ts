@@ -1,7 +1,7 @@
 import { SortState } from './../../../../_metronic/shared/crud-table/models/sort.model';
 import { PaginatorState } from './../../../../_metronic/shared/crud-table/models/paginator.model';
 import { LayoutUtilsService } from './../../../../_metronic/jeework_old/core/utils/layout-utils.service';
-import { WeWorkService } from './../../services/wework.services';
+import { JeeWorkLiteService } from './../../services/wework.services';
 import { Component, OnInit, ElementRef, ViewChild, ChangeDetectionStrategy, Input, SimpleChange, OnChanges } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 // Material
@@ -52,7 +52,7 @@ export class ListUserComponent implements OnInit, OnChanges {
 		private layoutUtilsService: LayoutUtilsService,
 		private translate: TranslateService,
 		private tokenStorage: TokenStorage,
-		public WeWorkService: WeWorkService,
+		public WeWorkService: JeeWorkLiteService,
 		) {
 	}
 	ngOnInit() {

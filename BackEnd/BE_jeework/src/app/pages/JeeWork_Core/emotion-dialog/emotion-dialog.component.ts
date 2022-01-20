@@ -5,7 +5,7 @@ import { FormBuilder, FormGroup, Validators, FormControl, AbstractControl } from
 import { TranslateService } from '@ngx-translate/core';
 import { Router } from '@angular/router';
 
-import { WeWorkService } from '../services/wework.services';
+import { JeeWorkLiteService } from '../services/wework.services';
 
 @Component({
 	selector: 'kt-emotion-dialog',
@@ -18,12 +18,11 @@ export class EmotionDialogComponent implements OnInit {
 	constructor(public dialogRef: MatDialogRef<EmotionDialogComponent>,
 		@Inject(MAT_DIALOG_DATA) public data: any,
 		public dialog: MatDialog,
-		private service: WeWorkService) { }
+		private service: JeeWorkLiteService) { }
 	/** LOAD DATA */
 	ngOnInit() {
 		this.service.lite_emotion().subscribe(res => {
-			if(res && res.data)
-			{
+			if (res && res.data) {
 				this.ListEmotion = res.data;
 			}
 		})
@@ -35,5 +34,5 @@ export class EmotionDialogComponent implements OnInit {
 	select(key) {
 		this.dialogRef.close(key);
 	}
-	
+
 }

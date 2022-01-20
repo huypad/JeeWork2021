@@ -3,7 +3,7 @@ import {MessageType, LayoutUtilsService} from './../../../../../_metronic/jeewor
 import {ProjectsTeamService} from './../../Services/department-and-project.service';
 import {WorkDuplicateModel} from './../../../work/work.model';
 import {Router} from '@angular/router';
-import {WeWorkService} from './../../../services/wework.services';
+import { JeeWorkLiteService } from './../../../services/wework.services';
 import {TranslateService} from '@ngx-translate/core';
 import {WorkService} from './../../../work/work.service';
 import {FormBuilder} from '@angular/forms';
@@ -28,7 +28,7 @@ export class DuplicateTaskNewComponent implements OnInit {
                 private layoutUtilsService: LayoutUtilsService,
                 private translate: TranslateService,
                 private danhMucChungService: DanhMucChungService,
-                public weworkService: WeWorkService,
+                public weworkService: JeeWorkLiteService,
                 private router: Router,) {
     }
 

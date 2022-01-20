@@ -1,5 +1,5 @@
 import { WorkService } from "./../../../work/work.service";
-import { WeWorkService } from "./../../../services/wework.services";
+import { JeeWorkLiteService } from "./../../../services/wework.services";
 import { TranslateService } from "@ngx-translate/core";
 import { ProjectsTeamService } from "./../../Services/department-and-project.service";
 import { LayoutUtilsService, MessageType } from "./../../../../../_metronic/jeework_old/core/utils/layout-utils.service";
@@ -20,7 +20,7 @@ export class WorkProcessEditComponent implements OnInit {
     private layoutUtilsService: LayoutUtilsService,
     private _service: WorkService,
     private translate: TranslateService,
-    private WeWorkService: WeWorkService,
+    private WeWorkService: JeeWorkLiteService,
     private changeDetectorRefs: ChangeDetectorRef,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) { }

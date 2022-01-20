@@ -43,7 +43,7 @@ import {
   UpdateQuickModel,
 } from "../Model/List-department.model";
 import { PopoverContentComponent } from "ngx-smart-popover";
-import { WeWorkService } from "../../services/wework.services";
+import { JeeWorkLiteService } from "../../services/wework.services";
 
 @Component({
   selector: "kt-department-edit-new",
@@ -125,7 +125,7 @@ export class DepartmentEditNewComponent implements OnInit {
     private layoutUtilsService: LayoutUtilsService,
     private translate: TranslateService,
     private danhMucChungService: DanhMucChungService,
-    public weworkService: WeWorkService,
+    public weworkService: JeeWorkLiteService,
     public TokenStorage: TokenStorage,
     public commonService: CommonService,
     public dialog: MatDialog,

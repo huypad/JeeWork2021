@@ -1,7 +1,7 @@
 import { DialogSelectdayComponent } from "./../../report/dialog-selectday/dialog-selectday.component";
 import { UserProfileService } from "./../../../../_metronic/jeework_old/core/auth/_services/user-profile.service";
 import { TokenStorage } from "./../../../../_metronic/jeework_old/core/auth/_services/token-storage.service";
-import { WeWorkService } from "./../../services/wework.services";
+import { JeeWorkLiteService } from "./../../services/wework.services";
 import {
   Component,
   OnInit,
@@ -66,7 +66,7 @@ export class UserDetailComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     location: PlatformLocation,
     private tokenStore: TokenStorage,
-    public WeWorkService: WeWorkService,
+    public WeWorkService: JeeWorkLiteService,
     private userProfileService: UserProfileService
   ) {
     location.onPopState(() => {

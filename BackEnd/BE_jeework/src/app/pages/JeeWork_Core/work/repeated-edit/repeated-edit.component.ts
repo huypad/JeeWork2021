@@ -27,7 +27,7 @@ import {
   FormGroup,
   Validators,
 } from "@angular/forms";
-import { WeWorkService } from "../../services/wework.services";
+import { JeeWorkLiteService } from "../../services/wework.services";
 import { RepeatedModel, RepeatedTaskModel, UserInfoModel } from "../work.model";
 import { WorkService } from "../work.service";
 import { PopoverContentComponent } from "ngx-smart-popover";
@@ -92,7 +92,7 @@ export class RepeatedEditComponent implements OnInit, OnChanges {
     private fb: FormBuilder,
     @Inject(MAT_DIALOG_DATA) public _data: any,
     private changeDetectorRefs: ChangeDetectorRef,
-    public weworkService: WeWorkService,
+    public weworkService: JeeWorkLiteService,
     private _service: WorkService,
     private layoutUtilsService: LayoutUtilsService,
     private translate: TranslateService,

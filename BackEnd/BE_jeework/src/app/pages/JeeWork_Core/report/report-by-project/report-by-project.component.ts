@@ -18,7 +18,7 @@ const More = require('highcharts/highcharts-more');
 More(Highcharts);
 
 import Histogram from 'highcharts/modules/histogram-bellcurve';
-import { WeWorkService } from '../../services/wework.services';
+import { JeeWorkLiteService } from '../../services/wework.services';
 import { ActivatedRoute } from '@angular/router';
 
 Histogram(Highcharts);
@@ -40,7 +40,7 @@ export class ReportByProjectComponent implements OnInit {
         private detectChange: ChangeDetectorRef,
         private translate: TranslateService,
         private layoutUtilsService: LayoutUtilsService,
-        private weworkService: WeWorkService,
+        private weworkService: JeeWorkLiteService,
         private activatedRoute: ActivatedRoute,
         private tokenStorage: TokenStorage,
         // private TongHopHieuQuaTuyenDungService:TongHopHieuQuaTuyenDungService

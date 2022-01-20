@@ -11,7 +11,7 @@ import {RouterModule, Routes} from '@angular/router';
 //Component
 import {WorkComponent} from './work.component';
 //Service
-import {WeWorkService} from '../services/wework.services';
+import { JeeWorkLiteService } from '../services/wework.services';
 import {DatePipe, CommonModule} from '@angular/common';
 import {JeeWork_CoreModule} from '../JeeWork_Core.module';
 import {HttpClientModule} from '@angular/common/http';
@@ -83,7 +83,7 @@ const routes: Routes = [
         AvatarModule
     ],
     providers: [
-        WeWorkService,
+        JeeWorkLiteService,
         WorkService,
         DatePipe,
         AttachmentService,

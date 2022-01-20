@@ -26,7 +26,7 @@ import { ReplaySubject, BehaviorSubject, Observable } from "rxjs";
 import { Router } from "@angular/router";
 
 
-import { WeWorkService } from "../../services/wework.services";
+import { JeeWorkLiteService } from "../../services/wework.services";
 import { useAnimation } from "@angular/animations";
 import { UserInfoModel, WorkDuplicateModel } from "../work.model";
 import { WorkService } from "../work.service";
@@ -81,7 +81,7 @@ export class DuplicateWorkComponent implements OnInit {
     private _service: WorkService,
     private layoutUtilsService: LayoutUtilsService,
     private translate: TranslateService,
-    public weworkService: WeWorkService,
+    public weworkService: JeeWorkLiteService,
     private router: Router
   ) { }
   /** LOAD DATA */

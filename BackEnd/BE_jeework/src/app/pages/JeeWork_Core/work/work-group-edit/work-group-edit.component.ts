@@ -10,7 +10,7 @@ import { Observable, BehaviorSubject, Subscription, ReplaySubject } from 'rxjs';
 // Service
 //Models
 import { WorkGroupModel } from '../work.model';
-import { WeWorkService } from '../../services/wework.services';
+import { JeeWorkLiteService } from '../../services/wework.services';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { WorkService } from '../work.service';
 import { TranslateService } from '@ngx-translate/core';
@@ -54,7 +54,7 @@ export class WorkGroupEditComponent implements OnInit {
 	constructor(
 		public dialogRef: MatDialogRef<WorkGroupEditComponent>,
 		private FormControlFB: FormBuilder,
-		public weworkService: WeWorkService,
+		public weworkService: JeeWorkLiteService,
 		private workServices: WorkService,
 		private translate: TranslateService,
 		private layoutUtilsService: LayoutUtilsService,

@@ -6,7 +6,7 @@ import { TranslateService } from '@ngx-translate/core';
 // Services
 // Models
 import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { WeWorkService } from '../../../services/wework.services';
+import { JeeWorkLiteService } from '../../../services/wework.services';
 import { ProjectsTeamService } from '../../Services/department-and-project.service';
 import { TranslationService } from 'src/app/modules/i18n/translation.service';
 import { ConfigNotifyModel } from '../../Model/department-and-project.model';
@@ -28,7 +28,7 @@ export class ConfigNotifyComponent {
 		private _service: ProjectsTeamService,
 		private layoutUtilsService: LayoutUtilsService,
 		private translate: TranslateService,
-		public weworkService: WeWorkService,
+		public weworkService: JeeWorkLiteService,
 		private router: Router) { }
 	/** LOAD DATA */
 	ngOnInit() {

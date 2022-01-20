@@ -4,7 +4,7 @@ import { LayoutUtilsService } from './../../../../../_metronic/jeework_old/core/
 import { SubheaderService } from './../../../../../_metronic/partials/layout/subheader/_services/subheader.service';
 import { TokenStorage } from './../../../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
 import { DialogSelectdayComponent } from './../../../report/dialog-selectday/dialog-selectday.component';
-import { WeWorkService } from './../../../services/wework.services';
+import { JeeWorkLiteService } from './../../../services/wework.services';
 import { TranslateService } from '@ngx-translate/core';
 import { FormBuilder } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
@@ -58,7 +58,7 @@ export class AddTaskComponent implements OnInit, AfterViewInit {
     private changeDetectorRefs: ChangeDetectorRef,
     private translate: TranslateService,
     public datepipe: DatePipe,
-    private weworkService: WeWorkService,
+    private weworkService: JeeWorkLiteService,
     private tokenStorage: TokenStorage,
     private danhMucChungService: DanhMucChungService,
   ) {

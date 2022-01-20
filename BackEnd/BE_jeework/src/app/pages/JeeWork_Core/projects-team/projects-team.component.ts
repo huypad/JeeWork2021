@@ -9,7 +9,7 @@ import {
 } from './../../../_metronic/jeework_old/core/utils/layout-utils.service';
 import { DocumentsService } from './../documents/documents.service';
 import { BehaviorSubject, Subject } from 'rxjs';
-import { WeWorkService } from './../services/wework.services';
+import { JeeWorkLiteService } from './../services/wework.services';
 import {
     Component,
     OnInit,
@@ -56,7 +56,7 @@ export class ProjectsTeamComponent implements OnInit {
         public dialog: MatDialog,
         private activatedRoute: ActivatedRoute,
         public menuAsideService: MenuAsideService,
-        public WeWorkService: WeWorkService,
+        public WeWorkService: JeeWorkLiteService,
         private menuServices: MenuPhanQuyenServices,
         private DocumentsService: DocumentsService,
         public commonService: CommonService

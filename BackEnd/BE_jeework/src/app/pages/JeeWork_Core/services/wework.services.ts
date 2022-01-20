@@ -10,7 +10,7 @@ const APIROOTS = environment.APIROOTS;
 
 
 @Injectable()
-export class WeWorkService {
+export class JeeWorkLiteService {
     constructor(private http: HttpClient,
                 private httpUtils: HttpUtilsService) {
     }

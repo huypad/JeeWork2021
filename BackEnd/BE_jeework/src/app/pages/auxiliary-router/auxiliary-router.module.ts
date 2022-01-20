@@ -19,7 +19,7 @@ import {MAT_MOMENT_DATE_ADAPTER_OPTIONS, MatMomentDateModule, MomentDateAdapter}
 import {HttpUtilsService} from '../../_metronic/jeework_old/core/utils/http-utils.service';
 import {TypesUtilsService} from '../../_metronic/jeework_old/core/_base/crud';
 import {LayoutUtilsService} from '../../_metronic/jeework_old/core/utils/layout-utils.service';
-import {WeWorkService} from '../JeeWork_Core/services/wework.services';
+import { JeeWorkLiteService } from '../JeeWork_Core/services/wework.services';
 import {WorkService} from '../JeeWork_Core/work/work.service';
 import {ListDepartmentService} from '../JeeWork_Core/department/Services/List-department.service';
 import {CommentService} from '../JeeWork_Core/comment/comment.service';
@@ -77,7 +77,7 @@ const routes: Routes = [
         HttpUtilsService,
         TypesUtilsService,
         LayoutUtilsService,
-        WeWorkService,
+        JeeWorkLiteService,
         WorkService,
         ListDepartmentService,
         CommentService,

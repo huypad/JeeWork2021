@@ -35,7 +35,7 @@ import { ProjectTeamEditComponent } from "../project-team-edit/project-team-edit
 import { DepartmentProjectDataSource } from "../Model/data-sources/department-and-project.datasource";
 import { ProjectsTeamService } from "../Services/department-and-project.service";
 import { ProjectTeamModel } from "../Model/department-and-project.model";
-import { WeWorkService } from "../../services/wework.services";
+import { JeeWorkLiteService } from "../../services/wework.services";
 
 @Component({
   selector: "kt-department-project-tab",
@@ -83,7 +83,7 @@ export class DepartmentProjectTabComponent implements OnInit, OnChanges {
     private changeDetectorRefs: ChangeDetectorRef,
     private layoutUtilsService: LayoutUtilsService,
     public commonService: CommonService,
-    public WeWorkService: WeWorkService,
+    public WeWorkService: JeeWorkLiteService,
     private translate: TranslateService,
     private tokenStorage: TokenStorage,
     public menuAsideService: MenuAsideService,

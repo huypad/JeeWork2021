@@ -17,7 +17,7 @@ import { MembersComponent } from './members/members.component';
 import { SettingComponent } from './setting/setting.component';
 import { PopoverModule } from 'ngx-smart-popover';
 import { AddUsersDialogComponent } from './add-users-dialog/add-users-dialog.component';
-import { WeWorkService } from '../../services/wework.services';
+import { JeeWorkLiteService } from '../../services/wework.services';
 import { EditorModule } from '@tinymce/tinymce-angular';
 import { RoleComponent } from './role/role.component';
 import { ImportComponent } from './import/import.component';
@@ -46,7 +46,7 @@ import { ConfigNotifyComponent } from './config-notify/config-notify.component';
 
 	],
 	providers: [
-		WeWorkService,
+		JeeWorkLiteService,
 	],
 	entryComponents: [
 		AddUsersDialogComponent,

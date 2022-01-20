@@ -27,7 +27,7 @@ import {
     switchMap,
 } from 'rxjs/operators';
 import { element } from 'protractor';
-import { WeWorkService } from './../../../services/wework.services';
+import { JeeWorkLiteService } from './../../../services/wework.services';
 import { DatePipe, DOCUMENT } from '@angular/common';
 import { TranslateService } from '@ngx-translate/core';
 import { FormBuilder, FormControl } from '@angular/forms';
@@ -137,7 +137,7 @@ export class WorksDashBoardComponent implements OnInit, OnChanges {
         private translate: TranslateService,
         public datepipe: DatePipe,
         private tokenStorage: TokenStorage,
-        private WeWorkService: WeWorkService,
+        private WeWorkService: JeeWorkLiteService,
         private menuServices: MenuPhanQuyenServices,
         private communicateService: CommunicateService,
         private _attservice: AttachmentService

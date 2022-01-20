@@ -1,4 +1,4 @@
-import {WeWorkService} from './../../services/wework.services';
+import { JeeWorkLiteService } from './../../services/wework.services';
 import {element} from 'protractor';
 import {
     Component,
@@ -73,7 +73,7 @@ export class TopicViewComponent {
                 private translate: TranslateService,
                 private activatedRoute: ActivatedRoute,
                 private changeDetectorRefs: ChangeDetectorRef,
-                public WeWorkService: WeWorkService,
+                public WeWorkService: JeeWorkLiteService,
                 private router: Router,
                 private tokenStorage: TokenStorage,) {
     }

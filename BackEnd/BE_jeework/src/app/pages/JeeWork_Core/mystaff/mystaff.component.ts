@@ -10,7 +10,7 @@ import { Observable, BehaviorSubject, Subscription, ReplaySubject } from 'rxjs';
 //Models
 
 import * as moment from 'moment';
-import { WeWorkService } from '../services/wework.services';
+import { JeeWorkLiteService } from '../services/wework.services';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -29,7 +29,7 @@ export class MyStaffComponent implements OnInit {
 		private router: Router,
 		private FormControlFB: FormBuilder,
 		private layoutUtilsService: LayoutUtilsService,
-		public WeWorkService: WeWorkService,
+		public WeWorkService: JeeWorkLiteService,
 		private changeDetectorRefs: ChangeDetectorRef) { }
 
 	/**

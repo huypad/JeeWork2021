@@ -8,7 +8,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { ReplaySubject, BehaviorSubject, Observable } from 'rxjs';
 import { Router } from '@angular/router';
 
-import { WeWorkService } from '../../services/wework.services';
+import { JeeWorkLiteService } from '../../services/wework.services';
 import { useAnimation } from '@angular/animations';
 import { ProjectTeamModel } from '../Model/department-and-project.model';
 import { ProjectsTeamService } from '../Services/department-and-project.service';
@@ -58,7 +58,7 @@ export class UpdateStatusProjectComponent implements OnInit {
 		private layoutUtilsService: LayoutUtilsService,
 		private translate: TranslateService,
 		private danhMucChungService: DanhMucChungService,
-		public weworkService: WeWorkService,
+		public weworkService: JeeWorkLiteService,
 		private router: Router,) { }
 	/** LOAD DATA */
 	ngOnInit() {

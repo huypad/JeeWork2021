@@ -14,7 +14,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { RepeatedListComponent } from './repeated-list.component';
 // import { JeeHRSubModule } from '../../../JeeHRSub.module';
 import { WorkService } from '../work.service';
-import { WeWorkService } from '../../services/wework.services';
+import { JeeWorkLiteService } from '../../services/wework.services';
 const routes: Routes = [
 	{
 		path: '',
@@ -38,7 +38,7 @@ const routes: Routes = [
 	],
 	providers: [
 		DatePipe,
-		WeWorkService,
+		JeeWorkLiteService,
 		WorkService,
 	],
 	entryComponents: [

@@ -5,7 +5,7 @@ import { FormBuilder, FormGroup, Validators, FormControl, AbstractControl } from
 import { TranslateService } from '@ngx-translate/core';
 import { ReplaySubject, BehaviorSubject, Observable } from 'rxjs';
 import { Router } from '@angular/router';
-import { WeWorkService } from '../../services/wework.services';
+import { JeeWorkLiteService } from '../../services/wework.services';
 import { useAnimation } from '@angular/animations';
 import { DatePipe } from '@angular/common';
 
@@ -20,7 +20,7 @@ export class previewlistComponent implements OnInit {
 		private changeDetectorRefs: ChangeDetectorRef,
 		private layoutUtilsService: LayoutUtilsService,
 		private translate: TranslateService,
-		public weworkService: WeWorkService,
+		public weworkService: JeeWorkLiteService,
 		public datepipe: DatePipe,
 		private router: Router,) { }
 	/** LOAD DATA */

@@ -1,12 +1,10 @@
 <div class="it item-chart">
     <div class="crossbar">
-        <div class="h-100" *ngIf="chart != null"> 
-            <div *ngFor="let item of chart" class="bar-item" [matTooltip]="item.title"
-            [ngStyle] = "{
+        <div class="h-100" *ngIf="chart != null">
+            <div *ngFor="let item of chart" class="bar-item" [matTooltip]="item.title" [ngStyle]="{
                 'backgroundColor' : item.color,
                 'width' : item.width
-              }"
-            ></div>
+              }"></div>
         </div>
 
     </div>

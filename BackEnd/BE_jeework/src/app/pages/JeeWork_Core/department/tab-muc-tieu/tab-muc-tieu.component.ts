@@ -3,7 +3,7 @@ import { PaginatorState } from './../../../../_metronic/shared/crud-table/models
 import { MessageType, LayoutUtilsService } from './../../../../_metronic/jeework_old/core/utils/layout-utils.service';
 import { milestoneDetailEditComponent } from './../milestone-detail-edit/milestone-detail-edit.component';
 import { MilestoneModel } from './../../projects-team/Model/department-and-project.model';
-import { WeWorkService } from './../../services/wework.services';
+import { JeeWorkLiteService } from './../../services/wework.services';
 import { Component, OnInit, ElementRef, ViewChild, ChangeDetectionStrategy, Input, SimpleChange, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 // Material
@@ -56,7 +56,7 @@ export class TabMucTieuComponent implements OnInit {
 	@Input() Values: any;
 	flag: boolean = true;
 	constructor(public deptService: ListDepartmentService,
-		public WeWorkService: WeWorkService,
+		public WeWorkService: JeeWorkLiteService,
 		public dialog: MatDialog,
 		private router: Router,
 		private route: ActivatedRoute,

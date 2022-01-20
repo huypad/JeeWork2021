@@ -20,7 +20,7 @@ import {
     ChecklistItemModel,
 } from './../../../update-by-keys/update-by-keys.model';
 import { MatDialog } from '@angular/material/dialog';
-import { WeWorkService } from './../../../services/wework.services';
+import { JeeWorkLiteService } from './../../../services/wework.services';
 import { AttachmentService } from './../../../services/attachment.service';
 import { UpdateByKeyService } from './../../../update-by-keys/update-by-keys.service';
 import { DatePipe } from '@angular/common';
@@ -86,7 +86,7 @@ export class WorkListNewDetailComponent implements OnInit {
         private changeDetectorRefs: ChangeDetectorRef,
         private translate: TranslateService,
         public datepipe: DatePipe,
-        public weworkService: WeWorkService,
+        public weworkService: JeeWorkLiteService,
         public jeeCommentService: JeeCommentService,
         private updatebykeyService: UpdateByKeyService,
         private _attservice: AttachmentService,

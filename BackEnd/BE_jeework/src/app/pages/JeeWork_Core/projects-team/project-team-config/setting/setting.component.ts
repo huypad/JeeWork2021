@@ -33,7 +33,7 @@ import {
     FormGroup,
     Validators,
 } from '@angular/forms';
-import { WeWorkService } from '../../../services/wework.services';
+import { JeeWorkLiteService } from '../../../services/wework.services';
 import {
     ProjectTeamModel,
     TagsModel,
@@ -88,7 +88,7 @@ export class SettingComponent {
         private translate: TranslateService,
         public dialog: MatDialog,
         private danhMucChungService: DanhMucChungService,
-        public weworkService: WeWorkService,
+        public weworkService: JeeWorkLiteService,
         private router: Router
     ) {
     }

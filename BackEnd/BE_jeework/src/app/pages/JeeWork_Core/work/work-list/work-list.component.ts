@@ -20,7 +20,7 @@ import { filterEditComponent } from '../../filter/filter-edit/filter-edit.compon
 import { filterService } from '../../filter/filter.service';
 import { LayoutUtilsService, MessageType } from './../../../../_metronic/jeework_old/core/utils/layout-utils.service';
 import { ProjectsTeamService } from '../../projects-team/Services/department-and-project.service';
-import { WeWorkService } from '../../services/wework.services';
+import { JeeWorkLiteService } from '../../services/wework.services';
 //Model
 
 @Component({
@@ -69,7 +69,7 @@ export class WorkListComponent implements OnInit {
 		private tokenStore: TokenStorage,
 		private userProfileService: UserProfileService,
 		private _filterService: filterService,
-		private weworkService: WeWorkService,
+		private weworkService: JeeWorkLiteService,
 		location: PlatformLocation) {
 		activatedRoute.params.subscribe(val => {
 			this.ngOnInit();

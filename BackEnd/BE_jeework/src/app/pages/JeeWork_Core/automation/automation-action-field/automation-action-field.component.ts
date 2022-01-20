@@ -1,5 +1,5 @@
 import { filter } from "rxjs/operators";
-import { WeWorkService } from "./../../services/wework.services";
+import { JeeWorkLiteService } from "./../../services/wework.services";
 import { ListDepartmentService } from "./../../department/Services/List-department.service";
 import { TranslateService } from "@ngx-translate/core";
 import { TemplateCenterService } from "./../../template-center/template-center.service";
@@ -55,10 +55,10 @@ export class AutomationActionFieldComponent implements OnInit, OnChanges {
     private layoutUtilsService: LayoutUtilsService,
     private projectsTeamService: ProjectsTeamService,
     private templatecenterService: TemplateCenterService,
-    private weworkService: WeWorkService,
+    private weworkService: JeeWorkLiteService,
     private automationService: AutomationService,
     private changeDetectorRefs: ChangeDetectorRef,
-    private weWorkService: WeWorkService
+    private weWorkService: JeeWorkLiteService
   ) {
     this.listPriority = weWorkService.list_priority;
   }

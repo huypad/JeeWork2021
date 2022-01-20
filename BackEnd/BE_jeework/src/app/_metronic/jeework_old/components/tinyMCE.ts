@@ -77,7 +77,6 @@ const tinyMCE = {
         var xhr, formData;
         xhr = new XMLHttpRequest();
         xhr.withCredentials = false;
-        debugger
         xhr.open('POST', environment.APIROOTS + '/api/attachment/upload-img');
         xhr.onload = function () {
             var json;
@@ -120,9 +119,8 @@ const tinyMCE = {
                     .trim();
                 if (e.target.editorUpload.blobCache.getByUri(s)) {
                     let size = e.target.editorUpload.blobCache.getByUri(s).blob().size;
-                    const allowedSize = 2048000; // KB
+                    const allowedSize = 2048; // KB
                     size = size / 1024; // KB
-                    debugger
                     if (size > allowedSize) {
                         // alert('Hình ảnh đã vượt qua kích thước tối đa.');
                         editor.windowManager.alert('Hình ảnh đã vượt qua kích thước tối đa');
@@ -135,29 +133,6 @@ const tinyMCE = {
                     }
                 }
             }
-        });
-    },
-    function(ed) {
-        ed.onInit.add(function (ed) {
-            ed.on('init', function (e) {
-            });
-            // Get position before an execCommand is processed
-            ed.on('BeforeExecCommand', function (e) {
-                var cmd = e.command.toLowerCase();
-
-                if (cmd !== 'undo' && cmd !== 'redo' && cmd !== 'mcerepaint') {
-                    // endTyping();
-                    // self.beforeChange();
-                }
-            });
-            // Add undo level after an execCommand call was made
-            ed.on('ExecCommand', function (e) {
-                var cmd = e.command.toLowerCase();
-
-                if (cmd !== 'undo' && cmd !== 'redo' && cmd !== 'mcerepaint') {
-                    // addNonTypingUndoLevel(e);
-                }
-            });
         });
     },
 };

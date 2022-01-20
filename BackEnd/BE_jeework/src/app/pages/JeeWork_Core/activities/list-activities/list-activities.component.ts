@@ -28,7 +28,7 @@ import { QueryParamsModelNew } from './../../../../_metronic/jeework_old/core/mo
 import { TokenStorage } from './../../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
 import { LogActivitiesComponent } from '../log-activities/log-activities.component';
 import { ActivitiesService } from '../activities.service';
-import { WeWorkService } from '../../services/wework.services';
+import { JeeWorkLiteService } from '../../services/wework.services';
 import { FormControl } from '@angular/forms';
 import { DialogSelectdayComponent } from '../../report/dialog-selectday/dialog-selectday.component';
 import { SearchBoxCustomComponent } from '../../projects-team/work-list-new/field-custom/search-box-custom/search-box-custom.component';
@@ -77,7 +77,7 @@ export class ListActivitiesComponent {
     constructor(public _actServices: ActivitiesService,
         public dialog: MatDialog,
         private layoutUtilsService: LayoutUtilsService,
-        private weworkService: WeWorkService,
+        private weworkService: JeeWorkLiteService,
         private translate: TranslateService,
         private activatedRoute: ActivatedRoute,
         private changeDetectorRefs: ChangeDetectorRef,

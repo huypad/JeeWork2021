@@ -35,7 +35,7 @@ import { BehaviorSubject, fromEvent, merge, throwError } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 // Models
 import { DepartmentModel } from '../../List-department/Model/List-department.model';
-import { WeWorkService } from '../../services/wework.services';
+import { JeeWorkLiteService } from '../../services/wework.services';
 
 
 @Component({
@@ -55,7 +55,7 @@ export class PageWorkDepartmentComponent implements OnInit, OnChanges {
     private changeDetectorRefs: ChangeDetectorRef,
     private layoutUtilsService: LayoutUtilsService,
     public commonService: CommonService,
-    public WeWorkService: WeWorkService,
+    public WeWorkService: JeeWorkLiteService,
     private translate: TranslateService,
     private tokenStorage: TokenStorage,
     public menuAsideService: MenuAsideService,

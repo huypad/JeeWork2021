@@ -1,5 +1,5 @@
 import { WorkListNewDetailComponent } from './../work-list-new/work-list-new-detail/work-list-new-detail.component';
-import { WeWorkService } from './../../services/wework.services';
+import { JeeWorkLiteService } from './../../services/wework.services';
 import { QuickStatusComponent } from './quick-status/quick-status.component';
 import { DialogData } from './../../report/report-tab-dashboard/report-tab-dashboard.component';
 import { TokenStorage } from './../../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
@@ -156,7 +156,7 @@ export class GanttChart2Component implements OnInit {
 		private changeDetectorRefs: ChangeDetectorRef,
 		private router: Router,
 		private _workservice: WorkService,
-		private WeWorkService: WeWorkService
+		private WeWorkService: JeeWorkLiteService
 	) {
 		if ((new Date()).getMonth() < 5) {
 			this.fromDate = ((new Date()).getFullYear() - 1) + '/05/01';

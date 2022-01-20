@@ -5,7 +5,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { FormControl } from "@angular/forms";
 import { Component, OnInit, Inject, ChangeDetectorRef } from "@angular/core";
 import { TranslateService } from "@ngx-translate/core";
-import { WeWorkService } from "../../services/wework.services";
+import { JeeWorkLiteService } from "../../services/wework.services";
 
 @Component({
   selector: "kt-status-dynamic-dialog",
@@ -23,7 +23,7 @@ export class StatusDynamicDialogComponent implements OnInit {
     private layoutUtilsService: LayoutUtilsService,
     private _service: ProjectsTeamService,
     private translate: TranslateService,
-    private WeWorkService: WeWorkService,
+    private WeWorkService: JeeWorkLiteService,
     private changeDetectorRefs: ChangeDetectorRef,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {}

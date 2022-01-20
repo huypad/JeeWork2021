@@ -6,7 +6,7 @@ import { TranslateService } from '@ngx-translate/core';
 // Services
 // Models
 import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { WeWorkService } from '../../../services/wework.services';
+import { JeeWorkLiteService } from '../../../services/wework.services';
 import { WorkService } from '../../../work/work.service';
 import { SelectionModel } from '@angular/cdk/collections';
 
@@ -67,7 +67,7 @@ export class ImportComponent {
 		private layoutUtilsService: LayoutUtilsService,
 		private translate: TranslateService,
 		private danhMucChungService: DanhMucChungService,
-		public weworkService: WeWorkService,
+		public weworkService: JeeWorkLiteService,
 		private router: Router) { }
 	/** LOAD DATA */
 	ngOnInit() {

@@ -10,7 +10,7 @@ import { MatDialog,MatDialogRef,MAT_DIALOG_DATA } from '@angular/material/dialog
 import { SelectionModel } from '@angular/cdk/collections';
 // Services
 // Models 
-import { WeWorkService } from '../../../services/wework.services';
+import { JeeWorkLiteService } from '../../../services/wework.services';
 import { PopoverContentComponent } from 'ngx-smart-popover';
 @Component({
 	selector: 'kt-add-users-dialog',
@@ -31,7 +31,7 @@ export class AddUsersDialogComponent {
 	constructor(
 		public dialogRef: MatDialogRef<AddUsersDialogComponent>,
 		@Inject(MAT_DIALOG_DATA) public data: any,
-		public weworkService: WeWorkService,
+		public weworkService: JeeWorkLiteService,
 		public dialog: MatDialog,
 		private layoutUtilsService: LayoutUtilsService,
 		private changeDetectorRefs: ChangeDetectorRef,

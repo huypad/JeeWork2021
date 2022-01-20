@@ -26,7 +26,7 @@ import {TranslateService} from '@ngx-translate/core';
 import {ReplaySubject, BehaviorSubject, Observable} from 'rxjs';
 import {Router} from '@angular/router';
 
-import {WeWorkService} from '../../services/wework.services';
+import { JeeWorkLiteService } from '../../services/wework.services';
 import {useAnimation} from '@angular/animations';
 import {DiscussionsService} from '../discussions.service';
 import {TopicModel, TopicUserModel} from '../Model/Topic.model';
@@ -101,7 +101,7 @@ export class TopicEditComponent implements OnInit {
         private layoutUtilsService: LayoutUtilsService,
         private translate: TranslateService,
         private tokenStorage: TokenStorage,
-        public weworkService: WeWorkService,
+        public weworkService: JeeWorkLiteService,
         private router: Router
     ) {
     }

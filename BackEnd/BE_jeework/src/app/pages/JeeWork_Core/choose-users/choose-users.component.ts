@@ -10,7 +10,7 @@ import { ReplaySubject } from 'rxjs';
 // Service
 //Models
 
-import { WeWorkService } from '../services/wework.services';
+import { JeeWorkLiteService } from '../services/wework.services';
 
 @Component({
 	selector: 'kt-choose-users',
@@ -38,7 +38,7 @@ export class ChooseUsersComponent implements OnInit, OnChanges {
 		private FormControlFB: FormBuilder,
 		public dialog: MatDialog,
 		private layoutUtilsService: LayoutUtilsService,
-		public weworkService: WeWorkService,
+		public weworkService: JeeWorkLiteService,
 		private changeDetectorRefs: ChangeDetectorRef) { }
 
 	/**

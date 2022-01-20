@@ -7,7 +7,7 @@ import { RouterModule, Routes } from '@angular/router';
 //Share
 //Component
 //Service
-import { WeWorkService } from '../../services/wework.services';
+import { JeeWorkLiteService } from '../../services/wework.services';
 // import { WorkListComponent } from '../work-list/work-list.component';
 // import { WorkEditPageComponent } from '../work-edit-page/work-edit-page.component';
 import { DynamicComponentModule } from 'dps-lib';
@@ -46,7 +46,7 @@ const routes: Routes = [
 		// JeeHRSubModule,
 	],
 	providers: [
-		WeWorkService,
+		JeeWorkLiteService,
 		WorkService,
 		DatePipe,
 		SubheaderService

@@ -7,7 +7,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { ReplaySubject, BehaviorSubject, Observable } from 'rxjs';
 import { Router } from '@angular/router';
 
-import { WeWorkService } from '../../services/wework.services';
+import { JeeWorkLiteService } from '../../services/wework.services';
 import { ProjectTeamModel, ProjectTeamUserModel } from '../Model/department-and-project.model';
 import { ProjectsTeamService } from '../Services/department-and-project.service';
 import { PopoverContentComponent } from 'ngx-smart-popover';
@@ -66,7 +66,7 @@ export class ProjectTeamEditComponent implements OnInit {
 		private _service: ProjectsTeamService,
 		private layoutUtilsService: LayoutUtilsService,
 		private translate: TranslateService,
-		public weworkService: WeWorkService,
+		public weworkService: JeeWorkLiteService,
 		private router: Router,) { }
 	/** LOAD DATA */
 	ngOnInit() {

@@ -4,7 +4,7 @@ import { AuthorizeModel } from './../Model/user.model';
 import { QueryParamsModelNew } from "./../../../../_metronic/jeework_old/core/models/query-models/query-params.model";
 import { BehaviorSubject } from "rxjs";
 import { TokenStorage } from "src/app/_metronic/jeework_old/core/auth/_services";
-import { WeWorkService } from "./../../services/wework.services";
+import { JeeWorkLiteService } from "./../../services/wework.services";
 import { TranslateService } from "@ngx-translate/core";
 import { LayoutUtilsService } from "./../../../../_metronic/jeework_old/core/utils/layout-utils.service";
 import { DanhMucChungService } from "./../../../../_metronic/jeework_old/core/services/danhmuc.service";
@@ -49,7 +49,7 @@ export class UyquyenComponent implements OnInit {
     private layoutUtilsService: LayoutUtilsService,
     private translate: TranslateService,
     private tokenStorage: TokenStorage,
-    public WeWorkService: WeWorkService
+    public WeWorkService: JeeWorkLiteService
   ) { }
 
   ngOnInit(): void {

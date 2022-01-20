@@ -5,7 +5,7 @@ import {ProjectsTeamService} from '../../projects-team/Services/department-and-p
 import {WorkService} from '../work.service';
 import {MatDialog} from '@angular/material/dialog';
 import {TranslateService} from '@ngx-translate/core';
-import {WeWorkService} from '../../services/wework.services';
+import { JeeWorkLiteService } from '../../services/wework.services';
 import {TokenStorage, UserProfileService} from '../../../../_metronic/jeework_old/core/auth/_services';
 import {filterService} from '../../filter/filter.service';
 import {LayoutUtilsService, MessageType} from '../../../../_metronic/jeework_old/core/utils/layout-utils.service';
@@ -44,7 +44,7 @@ export class SummaryComponent implements OnInit {
       public dialog: MatDialog,
       private changeDetect: ChangeDetectorRef,
       private translate: TranslateService,
-      private weworkService: WeWorkService,
+      private weworkService: JeeWorkLiteService,
       private tokenStore: TokenStorage,
       private userProfileService: UserProfileService,
       private _filterService: filterService,

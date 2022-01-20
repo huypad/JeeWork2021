@@ -10,7 +10,7 @@ import { LayoutUtilsService } from './../../../_metronic/jeework_old/core/utils/
 
 //Models
 
-import { WeWorkService } from '../services/wework.services';
+import { JeeWorkLiteService } from '../services/wework.services';
 
 @Component({
 	selector: 'kt-color-picker',
@@ -40,7 +40,7 @@ export class ColorPickerComponent implements OnInit, OnChanges {
 		private FormControlFB: FormBuilder,
 		public dialog: MatDialog,
 		private layoutUtilsService: LayoutUtilsService,
-		public weworkService: WeWorkService,
+		public weworkService: JeeWorkLiteService,
 		private changeDetectorRefs: ChangeDetectorRef) { }
 
 	/**

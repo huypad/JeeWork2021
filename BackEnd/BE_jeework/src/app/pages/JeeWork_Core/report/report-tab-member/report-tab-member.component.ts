@@ -1,7 +1,7 @@
 import {LayoutUtilsService} from './../../../../_metronic/jeework_old/core/utils/layout-utils.service';
 import {MatDialog} from '@angular/material/dialog';
 import {DialogSelectdayComponent} from './../dialog-selectday/dialog-selectday.component';
-import {WeWorkService} from './../../services/wework.services';
+import { JeeWorkLiteService } from './../../services/wework.services';
 import {tap} from 'rxjs/operators';
 import {QueryParamsModelNew} from './../../../../_metronic/jeework_old/core/models/query-models/query-params.model';
 import {ReportService} from './../report.service';
@@ -23,7 +23,7 @@ export class ReportTabMemberComponent implements OnInit {
     constructor(
         public reportService: ReportService,
         private detectChange: ChangeDetectorRef,
-        public weworkService: WeWorkService,
+        public weworkService: JeeWorkLiteService,
         private layoutUtilsService: LayoutUtilsService,
         public dialog: MatDialog,
     ) {

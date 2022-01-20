@@ -40,7 +40,7 @@ import {
   distinctUntilChanged,
 } from "rxjs/operators";
 import { element } from "protractor";
-import { WeWorkService } from "./../../services/wework.services";
+import { JeeWorkLiteService } from "./../../services/wework.services";
 import { DatePipe, DOCUMENT } from "@angular/common";
 import { TranslateService } from "@ngx-translate/core";
 import { FormBuilder, FormControl } from "@angular/forms";
@@ -72,16 +72,17 @@ import { workAddFollowersComponent } from "../../work/work-add-followers/work-ad
 import { WorkAssignedComponent } from "../../work/work-assigned/work-assigned.component";
 import { DuplicateWorkComponent } from "../../work/work-duplicate/work-duplicate.component";
 import { OverlayContainer } from "@angular/cdk/overlay";
-import { BehaviorSubject, fromEvent, Observable, of, SubscriptionLike, throwError } from "rxjs";
+import { BehaviorSubject, fromEvent, Observable, of, ReplaySubject, SubscriptionLike, throwError } from "rxjs";
 import { CommunicateService } from "./work-list-new-service/communicate.service";
 import { AuthService } from "../../../../modules/auth";
+import { C } from "@angular/cdk/keycodes";
 
 @Component({
   selector: "kt-work-list-new",
   templateUrl: "./work-list-new.component.html",
   styleUrls: ["./work-list-new.component.scss"],
 })
-export class WorkListNewComponent implements OnInit, OnChanges {
+export class WorkListNewComponent implements OnInit {
   constructor(
     private CommunicateService: CommunicateService,
     @Inject(DOCUMENT) private document: Document, // multi level
@@ -89,19 +90,15 @@ export class WorkListNewComponent implements OnInit, OnChanges {
     private WorkService: WorkService,
     private router: Router,
     public dialog: MatDialog,
-    private route: ActivatedRoute,
-    private itemFB: FormBuilder,
     public subheaderService: SubheaderService,
     private layoutUtilsService: LayoutUtilsService,
     private changeDetectorRefs: ChangeDetectorRef,
     private translate: TranslateService,
     public datepipe: DatePipe,
     private tokenStorage: TokenStorage,
-    private weworkService: WeWorkService,
+    private weworkService: JeeWorkLiteService,
     private menuServices: MenuPhanQuyenServices,
-    private overlayContainer: OverlayContainer,
     private auth: AuthService,
-    private _attservice: AttachmentService,
   ) {
     this.taskinsert.clear();
     this.filter_groupby = this.listFilter_Groupby[0];
@@ -205,11 +202,11 @@ export class WorkListNewComponent implements OnInit, OnChanges {
       value: "priority",
       isdefault: true,
     },
-    // {
-    //     title: 'tags',
-    //     value: 'tags',
-    //     isdefault: true,
-    // },
+    {
+      title: 'tags',
+      value: 'tags',
+      isdefault: true,
+    },
     // {
     //     title: 'deadline',
     //     value: 'deadline',
@@ -285,13 +282,13 @@ export class WorkListNewComponent implements OnInit, OnChanges {
         this.LoadDetailProject();
       });
 
-    this.weworkService.lite_milestone(this.ID_Project).subscribe((res) => {
-      this.changeDetectorRefs.detectChanges();
-      if (res && res.status == 1) {
-        this.list_milestone = res.data;
-        this.changeDetectorRefs.detectChanges();
-      }
-    });
+    // this.weworkService.lite_milestone(this.ID_Project).subscribe((res) => {
+    //   this.changeDetectorRefs.detectChanges();
+    //   if (res && res.status == 1) {
+    //     this.list_milestone = res.data;
+    //     this.changeDetectorRefs.detectChanges();
+    //   }
+    // });
     this.GetCustomFields();
     // this.text$ = fromEvent(this.searchElemRef.nativeElement, 'keyup').pipe(
     //   map((e: Event) => (e.target as HTMLInputElement).value),
@@ -307,8 +304,6 @@ export class WorkListNewComponent implements OnInit, OnChanges {
       this.subscription.unsubscribe();
     }
   }
-
-  ngOnChanges() { }
 
   LoadDetailProject() {
     this._service.Detail(this.ID_Project).subscribe((res) => {
@@ -524,9 +519,11 @@ export class WorkListNewComponent implements OnInit, OnChanges {
       (res) => {
         if (res && res.status === 1) {
           this.listStatus = res.data;
+          console.log("list status data", this.listStatus);
           var itemPush = [];
           this.listStatus.forEach((element) => {
             itemPush = itemPush.concat(element.datawork);
+            element.statusAndColors = this.GetStatusNameAndColor(element.statusname, element.color);
           });
           this.ListTasks = itemPush;
           this.prepareDragDrop(this.ListTasks);
@@ -538,6 +535,41 @@ export class WorkListNewComponent implements OnInit, OnChanges {
       (err) => this.layoutUtilsService.OffWaitingDiv()
     );
   }
+	filteredUsers: ReplaySubject<any[]> = new ReplaySubject<any[]>(1);
+	UsersFilterCtrl: string = '';
+  SearchTask() {
+		if (!this.listStatus) {
+			return;
+		}
+    debugger
+		let search = this.keyword;
+		if (!search) {
+			this.filteredUsers.next(this.listStatus.slice());
+			return;
+		} else {
+			search = search.toLowerCase();
+		}
+		this.filteredUsers.next(
+			this.listStatus.filter(ts =>
+				ts.title.toLowerCase().indexOf(search) > -1)
+		);
+		this.changeDetectorRefs.detectChanges();
+	}
+  GetStatusNameAndColor(name: string, color: string): { name: string, color: string }[] {
+    let lst: { name: string, color: string }[] = [];
+    if (name != null) {
+      let names = name.split(';');
+      let colors = color.split(';');
+
+      names.forEach((name, index) => {
+        let item = { name: name, color: colors[index] }
+        lst.push(item);
+      });
+      return lst;
+    }
+
+  }
+
   ReloadTask(item: UpdateWorkModel) {
     const queryParams = new QueryParamsModelNew(
       this.filterConfiguration(),

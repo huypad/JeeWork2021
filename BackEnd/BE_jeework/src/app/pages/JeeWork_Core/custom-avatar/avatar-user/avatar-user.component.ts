@@ -1,4 +1,4 @@
-import { WeWorkService } from './../../services/wework.services';
+import { JeeWorkLiteService } from './../../services/wework.services';
 import { Component, OnInit, Input } from '@angular/core';
 
 @Component({
@@ -15,7 +15,7 @@ export class AvatarUserComponent implements OnInit {
   @Input() textcolor:any = 'black';
   @Input() showFull:boolean = false;
   constructor(
-    public WeWorkService:WeWorkService,
+    public WeWorkService:JeeWorkLiteService,
   ) { }
 
   ngOnInit() {

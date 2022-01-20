@@ -7196,10 +7196,19 @@ where u.disabled = 0 and u.loai = 2";
                 {
                     result.Columns.Add("id_nv", typeof(string));
                 }
-                result.Columns.Add("list_id_tag", typeof(string));
-                result.Columns.Add("tag_name", typeof(string));
-                result.Columns.Add("color_tag", typeof(string));
-                result.Columns["list_id_tag"].DefaultValue = "0";
+                //result.Columns.Add("list_id_tag", typeof(string));
+                //result.Columns.Add("tag_name", typeof(string));
+                //result.Columns.Add("color_tag", typeof(string));
+                //result.Columns["list_id_tag"].DefaultValue = "0";
+                DataColumn list_id_tag = new DataColumn("list_id_tag", typeof(string));
+                DataColumn tag_name = new DataColumn("tag_name", typeof(string));
+                DataColumn color_tag = new DataColumn("color_tag", typeof(string));
+                list_id_tag.DefaultValue = "0";
+                tag_name.DefaultValue = "CHƯA CÓ THẺ";
+                color_tag.DefaultValue = "rgb(27, 188, 156)";
+                result.Columns.Add(list_id_tag);
+                result.Columns.Add(tag_name);
+                result.Columns.Add(color_tag);
                 if ("custom".Equals(groupby))
                 {
                     if (dt_value.Rows.Count > 0)
@@ -7296,22 +7305,23 @@ where u.disabled = 0 and u.loai = 2";
                                 {
                                     DataRow _r = dt_filter.NewRow();
                                     DataTable dt_wt = new DataTable();
-                                    foreach (DataRow item in result.Rows)
+                                   foreach (DataRow item in result.Rows)
                                     {
-                                        item["list_id_tag"] = "0";
+                                        //item["list_id_tag"] = "0";
                                         DataRow[] row = dt_value.Select("id_work=" + item["id_row"].ToString());
                                         if (row.Length > 0)
                                         {
+                                            item["list_id_tag"] = item["tag_name"] = item["color_tag"] = "";
                                             dt_wt = new DataTable();
                                             dt_wt = row.CopyToDataTable();
                                             foreach (DataRow w_t in dt_wt.Rows)
                                             {
                                                 item["list_id_tag"] += "," + w_t["id_tag"].ToString();
-                                                item["tag_name"] += "," + w_t["tag_name"].ToString();
+                                                item["tag_name"] += ";, " + w_t["tag_name"].ToString();
                                                 item["color_tag"] += ";" + w_t["color"].ToString();
                                             }
                                             item["list_id_tag"] = item["list_id_tag"].ToString().Substring(1);
-                                            item["tag_name"] = item["tag_name"].ToString().Substring(1);
+                                            item["tag_name"] = item["tag_name"].ToString().Substring(3);
                                             item["color_tag"] = item["color_tag"].ToString().Substring(1);
                                         }
                                         _r = dt_filter.NewRow();
@@ -7324,11 +7334,11 @@ where u.disabled = 0 and u.loai = 2";
                                     }
                                 }
                                 dt_filter = dt_filter.DefaultView.ToTable(true, "id_row", "statusname", "color", "Follower", "description");
-                                DataRow newRow = dt_filter.NewRow();
-                                newRow[0] = "0";
-                                newRow[1] = "Chưa có thẻ";
-                                newRow[2] = "rgb(27, 188, 156)";
-                                dt_filter.Rows.InsertAt(newRow, 0);
+                                //DataRow newRow = dt_filter.NewRow();
+                                //newRow[0] = "0";
+                                //newRow[1] = "Chưa có thẻ";
+                                //newRow[2] = "rgb(27, 188, 156)";
+                                //dt_filter.Rows.InsertAt(newRow, 0);
                                 break;
                             }
                         //case "deadline":
@@ -7434,7 +7444,7 @@ where u.disabled = 0 and u.loai = 2";
                 conds.Add("tag.disabled", 0);
                 string select_tag = "select tag.title, tag.color, w_tag.id_row, w_tag.id_tag, w_tag.id_work " +
                     "from we_work_tag w_tag join we_tag tag on tag.id_row = w_tag.id_tag " +
-                    "where (where)";
+                    "where (where) order by w_tag.id_work, w_tag.id_tag";
                 dt_tag = cnn.CreateDataTable(select_tag, "(where)", conds);
                 var data = from p in dt_filter.AsEnumerable()
                            select new

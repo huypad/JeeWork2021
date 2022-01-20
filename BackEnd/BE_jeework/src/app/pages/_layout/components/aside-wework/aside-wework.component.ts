@@ -2,7 +2,7 @@ import { CreatQuickFolderComponent } from './../../../JeeWork_Core/department/cr
 import { AutomationComponent } from './../../../JeeWork_Core/automation/automation.component';
 import { TemplateCenterComponent } from './../../../JeeWork_Core/template-center/template-center.component';
 import { TemplateCenterUpdateComponent } from './../../../JeeWork_Core/template-center/template-center-update/template-center-update.component';
-import { WeWorkService } from './../../../JeeWork_Core/services/wework.services';
+import { JeeWorkLiteService } from './../../../JeeWork_Core/services/wework.services';
 import {
     LayoutUtilsService,
     MessageType,
@@ -69,7 +69,7 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
         public _Services: ProjectsTeamService,
         private changeDetectorRefs: ChangeDetectorRef,
         public commonService: CommonService,
-        public WeWorkService: WeWorkService,
+        public WeWorkService: JeeWorkLiteService,
         private menuPhanQuyenServices: MenuPhanQuyenServices,
     ) {
     }

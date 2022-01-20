@@ -19,7 +19,7 @@ const More = require('highcharts/highcharts-more');
 More(Highcharts);
 
 import Histogram from 'highcharts/modules/histogram-bellcurve';
-import { WeWorkService } from '../../services/wework.services';
+import { JeeWorkLiteService } from '../../services/wework.services';
 import { ActivatedRoute } from '@angular/router';
 import { MatTreeNestedDataSource } from '@angular/material/tree';
 import { BehaviorSubject } from 'rxjs';
@@ -59,7 +59,7 @@ export class ReportTabDashboardComponent implements OnInit {
         private translate: TranslateService,
         private layoutUtilsService: LayoutUtilsService,
         private _deptServices: ListDepartmentService,
-        public weworkService: WeWorkService,
+        public weworkService: JeeWorkLiteService,
         private activatedRoute: ActivatedRoute,
         // private TongHopHieuQuaTuyenDungService:TongHopHieuQuaTuyenDungService
     ) {

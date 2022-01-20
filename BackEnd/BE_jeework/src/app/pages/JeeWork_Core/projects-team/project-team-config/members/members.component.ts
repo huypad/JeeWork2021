@@ -23,7 +23,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { PopoverContentComponent } from 'ngx-smart-popover';
 import { AddUsersDialogComponent } from '../add-users-dialog/add-users-dialog.component';
 import { ProjectsTeamService } from '../../Services/department-and-project.service';
-import { WeWorkService } from '../../../services/wework.services';
+import { JeeWorkLiteService } from '../../../services/wework.services';
 import { UserChatBox } from '../../../../../_metronic/partials/layout/extras/jee-chat/my-chat/models/user-chatbox';
 import { ChatService } from '../../../../../_metronic/partials/layout/extras/jee-chat/my-chat/services/chat.service';
 import { MenuAsideService, MenuPhanQuyenServices } from '../../../../../_metronic/jeework_old/core/_base/layout';
@@ -45,7 +45,7 @@ export class MembersComponent {
         private router: Router, private conversation_sevices: ConversationService,
         private _service: ProjectsTeamService,
         private chatService: ChatService,
-        public WeWorkService: WeWorkService,
+        public WeWorkService: JeeWorkLiteService,
         private tokenStorage: TokenStorage) {
     }
 

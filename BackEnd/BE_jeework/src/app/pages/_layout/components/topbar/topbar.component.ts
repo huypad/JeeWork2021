@@ -16,7 +16,7 @@ import KTLayoutHeaderTopbar from '../../../../../assets/js/layout/base/header-to
 import {KTUtil} from '../../../../../assets/js/components/util';
 import objectPath from 'object-path';
 import {SocketioService} from 'src/app/modules/auth/_services/socketio.service';
-import {WeWorkService} from '../../../JeeWork_Core/services/wework.services';
+import { JeeWorkLiteService } from '../../../JeeWork_Core/services/wework.services';
 import {RemindService} from '../../../../modules/auth/_services/remind.service';
 
 @Component({
@@ -48,7 +48,7 @@ export class TopbarComponent implements OnInit, AfterViewInit {
     constructor(
         private layout: LayoutService, private auth: AuthService,
         private layoutConfigService: LayoutConfigService,
-        private weworkService: WeWorkService,
+        private weworkService: JeeWorkLiteService,
         private tokenStorage: TokenStorage,
         private changeDetectorRefs: ChangeDetectorRef,
         private remind_sevices: RemindService,

@@ -6,7 +6,7 @@ import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms'
 import { MatDialog } from '@angular/material/dialog';
 // RxJS
 //Models
-import { WeWorkService } from '../services/wework.services';
+import { JeeWorkLiteService } from '../services/wework.services';
 import { UpdateWorkModel } from '../work/work.model';
 import { WorkService } from '../work/work.service';
 import { Router } from '@angular/router';
@@ -30,7 +30,7 @@ export class ChooseTimeComponent implements OnInit, OnChanges {
 		private FormControlFB: FormBuilder,
 		public dialog: MatDialog,
 		private layoutUtilsService: LayoutUtilsService,
-		public weworkService: WeWorkService,
+		public weworkService: JeeWorkLiteService,
 		private _service: WorkService,
 		private router: Router,
 		private changeDetectorRefs: ChangeDetectorRef) { }

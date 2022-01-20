@@ -6,7 +6,7 @@ import { LayoutUtilsService, MessageType } from './../../../../_metronic/jeework
  import { TranslateService } from '@ngx-translate/core';
  import { Router } from '@angular/router';
  
-import { WeWorkService } from '../../services/wework.services';
+import { JeeWorkLiteService } from '../../services/wework.services';
   import { UserInfoModel, WorkDuplicateModel, WorkModel } from '../work.model';
 import { WorkService } from '../work.service';
  import { PopoverContentComponent } from 'ngx-smart-popover';
@@ -37,7 +37,7 @@ export class workAddFollowersComponent implements OnInit {
 		private _service: WorkService,
 		private layoutUtilsService: LayoutUtilsService,
 		private translate: TranslateService,
-		public weworkService: WeWorkService,
+		public weworkService: JeeWorkLiteService,
 		private router: Router,) { }
 	/** LOAD DATA */
 	ngOnInit() {

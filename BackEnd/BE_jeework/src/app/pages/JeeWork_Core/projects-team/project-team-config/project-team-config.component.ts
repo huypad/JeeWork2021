@@ -1,5 +1,5 @@
 import { ProjectsTeamService } from './../Services/department-and-project.service';
-import { WeWorkService } from './../../services/wework.services';
+import { JeeWorkLiteService } from './../../services/wework.services';
 import { TokenStorage } from 'src/app/_metronic/jeework_old/core/auth/_services';
 import {
     Component,

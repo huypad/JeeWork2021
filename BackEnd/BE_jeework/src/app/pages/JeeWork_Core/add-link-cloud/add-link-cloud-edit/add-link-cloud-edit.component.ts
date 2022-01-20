@@ -5,7 +5,7 @@ import { FormBuilder, FormGroup, Validators, FormControl, AbstractControl } from
 import { TranslateService } from '@ngx-translate/core';
 import { ReplaySubject, BehaviorSubject, Observable } from 'rxjs';
 import { Router } from '@angular/router';
-import { WeWorkService } from '../../services/wework.services';
+import { JeeWorkLiteService } from '../../services/wework.services';
 import { useAnimation } from '@angular/animations';
 import { FilterModel, FilterDetailModel } from '../add-link-cloud.model';
 import { filterService } from '../add-link-cloud.service';
@@ -32,7 +32,7 @@ export class addlinkcloudEditComponent implements OnInit {
 		private _service: AttachmentService,
 		private layoutUtilsService: LayoutUtilsService,
 		private translate: TranslateService,
-		public weworkService: WeWorkService,
+		public weworkService: JeeWorkLiteService,
 		public datepipe: DatePipe,
 		private router: Router,) { }
 	/** LOAD DATA */

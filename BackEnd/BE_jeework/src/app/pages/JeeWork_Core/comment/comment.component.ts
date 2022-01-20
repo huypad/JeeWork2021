@@ -33,7 +33,7 @@ import {CommentService} from './comment.service';
 import {EmotionDialogComponent} from '../emotion-dialog/emotion-dialog.component';
 import {CommentEditDialogComponent} from './comment-edit-dialog/comment-edit-dialog.component';
 import {PopoverContentComponent} from 'ngx-smart-popover';
-import {WeWorkService} from '../services/wework.services';
+import { JeeWorkLiteService } from '../services/wework.services';
 import {DomSanitizer} from '@angular/platform-browser';
 import {UserProfileService} from 'src/app/_metronic/jeework_old/core/auth/_services';
 
@@ -114,7 +114,7 @@ export class CommentComponent implements OnInit, OnDestroy, AfterViewInit {
         private tokenStorage: TokenStorage,
         private service: CommentService,
         private translate: TranslateService,
-        public weworkService: WeWorkService,
+        public weworkService: JeeWorkLiteService,
         private elementRef: ElementRef,
         private userProfileService: UserProfileService,
         private sanitized: DomSanitizer) {

@@ -1,4 +1,4 @@
-import { WeWorkService } from "./../../services/wework.services";
+import { JeeWorkLiteService } from "./../../services/wework.services";
 import { ListDepartmentService } from "./../../department/Services/List-department.service";
 import { TranslateService } from "@ngx-translate/core";
 import { TemplateCenterService } from "./../../template-center/template-center.service";
@@ -40,7 +40,7 @@ export class AutomationTriggerStateConditionComponent
     private translateService: TranslateService,
     private departmentServices: ListDepartmentService,
     private changeDetectorRefs: ChangeDetectorRef,
-    private weWorkService: WeWorkService
+    private weWorkService: JeeWorkLiteService
   ) {
     this.listPriority = weWorkService.list_priority;
   }

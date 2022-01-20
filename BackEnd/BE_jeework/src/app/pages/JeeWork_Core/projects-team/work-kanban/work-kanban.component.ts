@@ -3,7 +3,7 @@ import { TokenStorage } from './../../../../_metronic/jeework_old/core/auth/_ser
 import { MenuPhanQuyenServices } from './../../../../_metronic/jeework_old/core/_base/layout/services/menu-phan-quyen.service';
 import { StatusDynamicDialogComponent } from './../../status-dynamic/status-dynamic-dialog/status-dynamic-dialog.component';
 import { FormControl } from '@angular/forms';
-import { WeWorkService } from './../../services/wework.services';
+import { JeeWorkLiteService } from './../../services/wework.services';
 import { WorkGroupEditComponent } from './../../work/work-group-edit/work-group-edit.component';
 import {
     WorkModel,
@@ -85,7 +85,7 @@ export class WorkKanBanComponent implements OnInit {
     constructor(
         public _service: ProjectsTeamService,
         private danhMucService: DanhMucChungService,
-        private WeWorkService: WeWorkService,
+        private WeWorkService: JeeWorkLiteService,
         private menuServices: MenuPhanQuyenServices,
         public dialog: MatDialog,
         private route: ActivatedRoute,

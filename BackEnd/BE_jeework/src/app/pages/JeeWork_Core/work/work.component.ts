@@ -7,7 +7,7 @@ import { LayoutUtilsService, MessageType } from './../../../_metronic/jeework_ol
 import { filterService } from './../filter/filter.service';
 import { Component, OnInit, Injectable, ChangeDetectorRef } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { WeWorkService } from '../services/wework.services';
+import { JeeWorkLiteService } from '../services/wework.services';
 import { WorkService } from './work.service';
 import { MyMilestoneModel, FilterModel, MyWorkModel, CountModel, MoiDuocGiaoModel, GiaoQuaHanModel, LuuYModel, UserInfoModel } from './work.model';
 import { Router } from '@angular/router';
@@ -46,7 +46,7 @@ export class WorkComponent implements OnInit {
 		public dialog: MatDialog,
 		private changeDetect: ChangeDetectorRef,
 		private translate: TranslateService,
-		private weworkService: WeWorkService,
+		private weworkService: JeeWorkLiteService,
 		private tokenStore: TokenStorage,
 		private userProfileService: UserProfileService,
 		private _filterService: filterService,

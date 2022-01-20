@@ -31,7 +31,7 @@ import {
   DepartmentOwnerModel,
 } from "../Model/List-department.model";
 import { PopoverContentComponent } from "ngx-smart-popover";
-import { WeWorkService } from "../../services/wework.services";
+import { JeeWorkLiteService } from "../../services/wework.services";
 @Component({
   selector: "kt-List-department-edit",
   templateUrl: "./List-department-edit.component.html",
@@ -82,7 +82,7 @@ export class DepartmentEditComponent implements OnInit {
     private layoutUtilsService: LayoutUtilsService,
     private translate: TranslateService,
     private danhMucChungService: DanhMucChungService,
-    public weworkService: WeWorkService,
+    public weworkService: JeeWorkLiteService,
     private router: Router
   ) {
     this.UserId = localStorage.getItem("idUser");

@@ -3,7 +3,7 @@ import { CommentEditDialogComponent } from './../../../comment/comment-edit-dial
 import { EmotionDialogComponent } from './../../../emotion-dialog/emotion-dialog.component';
 import { GlobalVariable } from 'src/app/pages/global';
 import { DomSanitizer } from '@angular/platform-browser';
-import { WeWorkService } from './../../../services/wework.services';
+import { JeeWorkLiteService } from './../../../services/wework.services';
 import { TranslateService } from '@ngx-translate/core';
 import { CommentService } from './../../../comment/comment.service';
 import { PopoverContentComponent } from 'ngx-smart-popover';
@@ -90,7 +90,7 @@ export class CommentNewComponent implements OnInit {
 		private tokenStorage: TokenStorage,
 		private service: CommentService,
 		private translate: TranslateService,
-		public weworkService: WeWorkService,
+		public weworkService: JeeWorkLiteService,
 		private elementRef: ElementRef,
 		private sanitized: DomSanitizer) { }
 	transform(value) {

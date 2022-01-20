@@ -14,7 +14,7 @@ import { Observable, BehaviorSubject, Subscription, ReplaySubject, merge } from 
 //Models
 import { Moment } from 'moment';
 import * as moment from 'moment';
-import { WeWorkService } from '../../services/wework.services';
+import { JeeWorkLiteService } from '../../services/wework.services';
 import { TranslateService } from '@ngx-translate/core';
 import { Router } from '@angular/router';
 import { UserDataSource } from '../../user/data-sources/user.datasource';
@@ -65,7 +65,7 @@ export class MyStaffReportComponent implements OnInit {
 		private changeDetect: ChangeDetectorRef,
 		private translate: TranslateService,
 		private router: Router,
-		public weworkService: WeWorkService,
+		public weworkService: JeeWorkLiteService,
 		private _service: WorkService,
 		private datePipe: DatePipe,
 		private layoutUtilsService: LayoutUtilsService,

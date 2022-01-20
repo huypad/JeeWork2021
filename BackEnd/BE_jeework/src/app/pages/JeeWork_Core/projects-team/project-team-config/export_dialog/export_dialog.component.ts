@@ -8,7 +8,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatDialog,MatDialogRef,MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { SelectionModel } from '@angular/cdk/collections';
 
-import { WeWorkService } from '../../../services/wework.services';
+import { JeeWorkLiteService } from '../../../services/wework.services';
 import { PopoverContentComponent } from 'ngx-smart-popover';
 import * as moment  from 'moment';
 @Component({
@@ -23,7 +23,7 @@ export class ExportDialogComponent {
 	constructor(
 		public dialogRef: MatDialogRef<ExportDialogComponent>,
 		@Inject(MAT_DIALOG_DATA) public data: any,
-		public weworkService: WeWorkService,
+		public weworkService: JeeWorkLiteService,
 		public dialog: MatDialog,
 		private route: ActivatedRoute,
 		private changeDetectorRefs: ChangeDetectorRef,

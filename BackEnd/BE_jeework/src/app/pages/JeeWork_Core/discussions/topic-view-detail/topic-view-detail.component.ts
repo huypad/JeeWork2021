@@ -41,7 +41,7 @@ import {
     TopicModel,
     TopicUserModel,
 } from '../Model/Topic.model';
-import { WeWorkService } from '../../services/wework.services';
+import { JeeWorkLiteService } from '../../services/wework.services';
 import { DiscussionsService } from '../discussions.service';
 import { TopicEditComponent } from '../topic-edit/topic-edit.component';
 import { AttachmentService } from '../../services/attachment.service';
@@ -106,7 +106,7 @@ export class ViewTopicDetailComponent implements OnInit, OnDestroy {
         private translate: TranslateService,
         public datepipe: DatePipe,
         private activatedRoute: ActivatedRoute,
-        public WeWorkService: WeWorkService,
+        public WeWorkService: JeeWorkLiteService,
         private router: Router
     ) {
     }

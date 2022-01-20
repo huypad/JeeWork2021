@@ -1,4 +1,4 @@
-import { WeWorkService } from './../../../../../../pages/JeeWork_Core/services/wework.services';
+import { JeeWorkLiteService } from './../../../../../../pages/JeeWork_Core/services/wework.services';
 import { Router } from '@angular/router';
 import { TokenStorage } from './../../../../../jeework_old/core/auth/_services/token-storage.service';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
@@ -25,7 +25,7 @@ export class UserOffcanvasComponent implements OnInit {
         private tokenStorage: TokenStorage,
         private changeDetectorRefs: ChangeDetectorRef,
         private auth: AuthService,
-        private weWorkService: WeWorkService,
+        private weWorkService: JeeWorkLiteService,
         private router: Router,
         private remindSevices: RemindService,
     ) {

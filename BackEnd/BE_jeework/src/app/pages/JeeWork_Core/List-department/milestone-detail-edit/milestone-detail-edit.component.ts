@@ -9,7 +9,7 @@ import { ReplaySubject, BehaviorSubject, Observable } from 'rxjs';
 import { Router } from '@angular/router';
 import { ListDepartmentService } from '../Services/List-department.service';
 import { DanhMucChungService } from './../../../../_metronic/jeework_old/core/services/danhmuc.service'; import { DepartmentModel, MilestoneModel } from '../Model/List-department.model';
-import { WeWorkService } from '../../services/wework.services';
+import { JeeWorkLiteService } from '../../services/wework.services';
 // import { startWith, map } from 'rxjs/operators';
 @Component({
 	selector: 'kt-milestone-detail-edit',
@@ -45,7 +45,7 @@ export class milestoneDetailEditComponent implements OnInit {
 		private ObjectService: ListDepartmentService,
 		private layoutUtilsService: LayoutUtilsService,
 		private translate: TranslateService,
-		public weworkService: WeWorkService,
+		public weworkService: JeeWorkLiteService,
 		private router: Router,) {
 	}
 	/** LOAD DATA */

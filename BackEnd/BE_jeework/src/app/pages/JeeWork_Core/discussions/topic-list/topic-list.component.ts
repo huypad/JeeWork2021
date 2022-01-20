@@ -36,7 +36,7 @@ import {PlatformLocation} from '@angular/common';
 import {TopicEditComponent} from '../topic-edit/topic-edit.component';
 import {TopicModel} from '../../projects-team/Model/department-and-project.model';
 import {FormControl} from '@angular/forms';
-import {WeWorkService} from '../../services/wework.services';
+import { JeeWorkLiteService } from '../../services/wework.services';
 import {SearchBoxCustomComponent} from '../../projects-team/work-list-new/field-custom/search-box-custom/search-box-custom.component';
 
 @Component({
@@ -56,7 +56,7 @@ export class TopicListComponent {
         private router: Router,
         private translate: TranslateService,
         private tokenStorage: TokenStorage,
-        public weworkService: WeWorkService,
+        public weworkService: JeeWorkLiteService,
         location: PlatformLocation
     ) {
         this.sortfield = this.listSort[0];

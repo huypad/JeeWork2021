@@ -6,7 +6,7 @@ import { LayoutUtilsService, MessageType } from './../../../../_metronic/jeework
 import { TranslateService } from '@ngx-translate/core';
 import { ReplaySubject, BehaviorSubject, Observable } from 'rxjs';
 import { Router } from '@angular/router';
-import { WeWorkService } from '../../services/wework.services';
+import { JeeWorkLiteService } from '../../services/wework.services';
 import { WorkGroupModel } from '../work.model';
 import { WorkService } from '../work.service';
 // import { startWith, map } from 'rxjs/operators';
@@ -33,7 +33,7 @@ export class ChangeReivewerComponent implements OnInit {
 		private _service: WorkService,
 		private layoutUtilsService: LayoutUtilsService,
 		private translate: TranslateService,
-		public weworkService: WeWorkService,
+		public weworkService: JeeWorkLiteService,
 		private danhMucChungService: DanhMucChungService,
 		private router: Router,) {
 	}

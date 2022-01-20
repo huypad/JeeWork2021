@@ -56,7 +56,7 @@
             <ng-container>
                 <div class="cu-search-filter cu-search-filter_v5" style="    padding: 0 10px;">
                     <input class="cu-search-filter__input ng-pristine ng-valid ng-touched" style="border:0;outline:0"
-                        (keypress)="LoadDataTaskNew()" [(ngModel)]="keyword" type="text"
+                        (keyup.enter)="SearchTask()" [(ngModel)]="keyword" type="text"
                         placeholder="{{ 'work.filterbytaskname' | translate }}">
                     <div class="cu-search-filter__extra">
                         <div class="cu-filter-value-list-dropdown ng-star-inserted">
@@ -216,9 +216,6 @@
                                     <div class="task-list-header__actions d-none">
                                         <div class="cu-task-list-header__actions-icon" icon="cu2-angle-right"
                                             [ngStyle]="{'color': status.color,'fill':status.color}">
-                                            <!-- <svg xml:base="https://app.clickup.com/3785555/v/l/s/5737733" class="ng-star-inserted">
-                                                <use xlink:href="#svg-sprite-cu2-angle-right"></use>
-                                            </svg> -->
                                         </div>
                                     </div>
                                     <div class="task-list-header__item task-list-header__item_main"
@@ -236,38 +233,37 @@
                                                 </div>
                                             </div>
                                             <div class="cu-task-list-header__item-label-body cu-task-list-header__item-label-body-fill ng-star-inserted"
-                                                style="background-color: #ffffff45;"
-                                                [ngStyle]="{'color': status.color}">
+                                                style="background-color: #ffffff45;">
                                                 <div class="cu-task-list-header__item-label-body-inner">
                                                     <div class="cu-group-header__header-status ng-star-inserted url"
-                                                        [ngStyle]="{'color': status.color}"
                                                         style="font-weight: 500;font-size: 11pt;">
                                                         <div class="row ">
-                                                            <span class=" text-uppercase" style="padding-right: 5px;">
-                                                                {{status.statusname ? status.statusname : 'Chưa giao
-                                                                việc'}}
-
-                                                                <ng-container *ngIf="IsAdmin()">
-                                                                    <div class="cu-action-header d-none">
-                                                                        <i class="fas fa-pencil-alt"
-                                                                            matTooltipPosition="above"
-                                                                            *ngIf="isUpdateStatusname(status.id_row)"
-                                                                            (click)="chinhsuanoidung(status)"
-                                                                            matTooltip="{{ (this.filter_groupby.value == 'status'?'work.chinhsuatrangthai':'work.chinhnhomcongviec') | translate }}"></i>
-                                                                        <i *ngIf="status.datawork?.length > 0"
-                                                                            class="fas fa-check-double"
-                                                                            (click)="Chontatca(status)"
-                                                                            matTooltipPosition="above"
-                                                                            matTooltip="{{ 'work.selectedall' | translate }}"></i>
-                                                                        <i class="fas fa-plus"
-                                                                            (click)="chinhsuanoidung({})"
-                                                                            *ngIf="isUpdateStatusname()"
-                                                                            matTooltipPosition="above"
-                                                                            matTooltip="{{ (this.filter_groupby.value == 'status'?'work.themtrangthai':'work.themnhomcongviec') | translate }}"></i>
-                                                                    </div>
-                                                                </ng-container>
-                                                            </span>
-
+                                                            <ng-container *ngFor="let item of status.statusAndColors">
+                                                                <span [ngStyle]="{'color': item.color}"
+                                                                    class="text-uppercase"
+                                                                    style="padding-left: 0; padding-right: 4px; padding-top: 2px; padding-bottom: 2px;">
+                                                                    {{item.name ? item.name : 'Chưa giao việc'}}
+                                                                    <ng-container *ngIf="IsAdmin()">
+                                                                        <div class="cu-action-header d-none">
+                                                                            <i class="fas fa-pencil-alt"
+                                                                                matTooltipPosition="above"
+                                                                                *ngIf="isUpdateStatusname(status.id_row)"
+                                                                                (click)="chinhsuanoidung(status)"
+                                                                                matTooltip="{{ (this.filter_groupby.value == 'status'?'work.chinhsuatrangthai':'work.chinhnhomcongviec') | translate }}"></i>
+                                                                            <i *ngIf="status.datawork?.length > 0"
+                                                                                class="fas fa-check-double"
+                                                                                (click)="Chontatca(status)"
+                                                                                matTooltipPosition="above"
+                                                                                matTooltip="{{ 'work.selectedall' | translate }}"></i>
+                                                                            <i class="fas fa-plus"
+                                                                                (click)="chinhsuanoidung({})"
+                                                                                *ngIf="isUpdateStatusname()"
+                                                                                matTooltipPosition="above"
+                                                                                matTooltip="{{ (this.filter_groupby.value == 'status'?'work.themtrangthai':'work.themnhomcongviec') | translate }}"></i>
+                                                                        </div>
+                                                                    </ng-container>
+                                                                </span>
+                                                            </ng-container>
                                                         </div>
                                                     </div>
                                                 </div>

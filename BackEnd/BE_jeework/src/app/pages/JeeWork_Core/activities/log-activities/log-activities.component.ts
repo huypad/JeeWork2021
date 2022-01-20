@@ -6,7 +6,7 @@ import { LayoutUtilsService, MessageType } from './../../../../_metronic/jeework
 import { TranslateService } from '@ngx-translate/core';
 import { ReplaySubject, BehaviorSubject, Observable } from 'rxjs';
 import { Router } from '@angular/router';
-import { WeWorkService } from '../../services/wework.services';
+import { JeeWorkLiteService } from '../../services/wework.services';
 import { useAnimation } from '@angular/animations';
 import { ActivitiesService } from '../activities.service';
 
@@ -41,7 +41,7 @@ export class LogActivitiesComponent implements OnInit {
 		private changeDetectorRefs: ChangeDetectorRef,
 		private _Logservice: ActivitiesService,
 		private translate: TranslateService,
-		public weworkService: WeWorkService,
+		public weworkService: JeeWorkLiteService,
 		private router: Router,) { }
 	/** LOAD DATA */
 	ngOnInit() {

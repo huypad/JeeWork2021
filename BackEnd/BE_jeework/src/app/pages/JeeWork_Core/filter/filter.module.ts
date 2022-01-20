@@ -1,7 +1,7 @@
 import { PartialsModule } from './../../../_metronic/jeework_old/partials/partials.module';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { WeWorkService } from '../services/wework.services';
+import { JeeWorkLiteService } from '../services/wework.services';
 import { DatePipe, CommonModule } from '@angular/common';
 import { JeeWork_CoreModule } from '../JeeWork_Core.module';
 import { HttpClientModule } from '@angular/common/http';
@@ -28,7 +28,7 @@ const routes: Routes = [
 		JeeWork_CoreModule
 	],
 	providers: [
-		WeWorkService,
+		JeeWorkLiteService,
 		filterService,
 		DatePipe,
 	],

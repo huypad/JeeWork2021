@@ -1,6 +1,6 @@
 import { LayoutUtilsService, MessageType } from './../../../../../_metronic/jeework_old/core/utils/layout-utils.service';
 import { ProjectsTeamService } from './../../Services/department-and-project.service';
-import { WeWorkService } from "./../../../services/wework.services";
+import { JeeWorkLiteService } from "./../../../services/wework.services";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { Component, OnInit, Inject } from "@angular/core";
 import { OptionsModel } from "../drap-drop-item.model";
@@ -33,7 +33,7 @@ export class AddNewFieldsComponent implements OnInit {
 		"rgb(255, 0, 255)",
 	];
 	constructor(
-		public weworkService: WeWorkService,
+		public weworkService: JeeWorkLiteService,
 		public dialogRef: MatDialogRef<AddNewFieldsComponent>,
 		public LayoutUtilsService: LayoutUtilsService,
 		public _service: ProjectsTeamService,

@@ -7,7 +7,7 @@ import {ReplaySubject, BehaviorSubject, Observable} from 'rxjs';
 import {Router} from '@angular/router';
 import {useAnimation} from '@angular/animations';
 import {WorkService} from '../work/work.service';
-import {WeWorkService} from '../services/wework.services';
+import { JeeWorkLiteService } from '../services/wework.services';
 
 @Component({
     selector: 'kt-log-work-description',
@@ -31,7 +31,7 @@ export class LogWorkDescriptionComponent implements OnInit {
                 private changeDetectorRefs: ChangeDetectorRef,
                 private _service: WorkService,
                 private translate: TranslateService,
-                public WeWorkService: WeWorkService,
+                public WeWorkService: JeeWorkLiteService,
                 private router: Router,) {
     }
 

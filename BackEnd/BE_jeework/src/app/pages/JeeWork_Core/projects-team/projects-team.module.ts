@@ -6,7 +6,7 @@ import { PartialsModule } from './../../../_metronic/jeework_old/partials/partia
 import { CommonService } from './../../../_metronic/jeework_old/core/services/common.service';
 import { PopoverModule } from 'ngx-smart-popover';
 import { AvatarModule } from 'ngx-avatar';
-import { WeWorkService } from './../services/wework.services';
+import { JeeWorkLiteService } from './../services/wework.services';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -72,7 +72,7 @@ import { ActivitiesService } from '../activities/activities.service';
     ListDepartmentService,
     WorkService,
     CommonService,
-    WeWorkService,
+    JeeWorkLiteService,
     SubheaderService,
   ],
   entryComponents: [

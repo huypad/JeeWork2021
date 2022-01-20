@@ -50,7 +50,7 @@ import { OwlNativeDateTimeModule, OwlDateTimeModule } from 'ng-pick-datetime';
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { NgbModule, NgbProgressbarModule } from '@ng-bootstrap/ng-bootstrap';
 import { DropdownTreeModule, DynamicComponentModule, ImageControlModule } from 'dps-lib';
-import { WeWorkService } from './services/wework.services';
+import { JeeWorkLiteService } from './services/wework.services';
 import { AngularMultiSelectModule } from 'angular2-multiselect-dropdown';
 
 import { DepartmentEditComponent } from './department/department-edit/department-edit.component';
@@ -269,7 +269,7 @@ import { ConfirmationDialogComponent } from 'src/app/_metronic/jeework_old/_shar
         DanhMucChungService,
         TypesUtilsService,
         LayoutUtilsService,
-        WeWorkService,
+        JeeWorkLiteService,
         WorkService,
         ListDepartmentService,
         // ProjectsTeamService,

@@ -15,7 +15,7 @@ import { DialogSelectdayComponent } from './../../../report/dialog-selectday/dia
 import { DropInfo } from './../work-list-new.component';
 import { WorkModel, UserInfoModel, UpdateWorkModel, WorkDuplicateModel, FilterModel } from './../../../work/work.model';
 import { SelectionModel } from '@angular/cdk/collections';
-import { WeWorkService } from './../../../services/wework.services';
+import { JeeWorkLiteService } from './../../../services/wework.services';
 import { TranslateService } from '@ngx-translate/core';
 import { FormBuilder } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
@@ -53,7 +53,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
         private translate: TranslateService,
         public datepipe: DatePipe,
         private tokenStorage: TokenStorage,
-        private WeWorkService: WeWorkService,
+        private WeWorkService: JeeWorkLiteService,
         private menuServices: MenuPhanQuyenServices
     ) {
         this.taskinsert.clear();
@@ -183,8 +183,10 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
         this.filter_groupby = this.getMystaff ? this.listFilter_Groupby[1] : this.listFilter_Groupby[0];
         const today = new Date();
         this.filterDay = {
-            endDate: new Date(today.setMonth(today.getMonth())),
-            startDate: new Date(today.getFullYear(), today.getMonth() - 3, 1),
+            // endDate: new Date(today.setMonth(today.getMonth())),
+            // startDate: new Date(today.getFullYear(), today.getMonth() - 3, 1),
+            endDate: new Date(today.setMonth(today.getMonth() + 1)),
+            startDate: new Date(today.getFullYear(), today.getMonth() - 6, 1),
         };
         this.column_sort = this.sortField[0];
         this.route.params.subscribe(res => {

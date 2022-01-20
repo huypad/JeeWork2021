@@ -4,7 +4,7 @@ import {CommonService} from './../../../../_metronic/jeework_old/core/services/c
 import {milestoneDetailEditComponent} from './../milestone-detail-edit/milestone-detail-edit.component';
 import {AddStatusComponent} from './../../projects-team/work-list-new/add-status/add-status.component';
 import {ProjectTeamModel, MilestoneModel} from './../../projects-team/Model/department-and-project.model';
-import {WeWorkService} from './../../services/wework.services';
+import { JeeWorkLiteService } from './../../services/wework.services';
 import {Component, OnInit, ElementRef, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 // Material
@@ -52,7 +52,7 @@ export class DepartmentTabComponent implements OnInit {
         private activatedRoute: ActivatedRoute,
         public menuAsideService: MenuAsideService,
         private changeDetectorRefs: ChangeDetectorRef,
-        public WeWorkService: WeWorkService,
+        public WeWorkService: JeeWorkLiteService,
         // private dynamicSearchFormService: DynamicSearchFormService,
         public commonService: CommonService,
     ) {

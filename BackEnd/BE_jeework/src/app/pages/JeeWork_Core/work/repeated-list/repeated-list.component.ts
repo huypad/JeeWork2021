@@ -36,7 +36,7 @@ import {WorkDataSource} from '../work.datasource';
 import {FormControl} from '@angular/forms';
 import {DepartmentModel} from '../../department/Model/List-department.model';
 import {LayoutUtilsService, MessageType} from './../../../../_metronic/jeework_old/core/utils/layout-utils.service';
-import {WeWorkService} from '../../services/wework.services';
+import { JeeWorkLiteService } from '../../services/wework.services';
 import {RepeatedEditComponent} from '../repeated-edit/repeated-edit.component';
 
 //Model
@@ -90,7 +90,7 @@ export class RepeatedListComponent implements OnInit {
         private router: Router,
         private translate: TranslateService,
         private subheaderService: SubheaderService,
-        public weworkService: WeWorkService,
+        public weworkService: JeeWorkLiteService,
         private _service: WorkService,
         private datePipe: DatePipe,
         private tokenStorage: TokenStorage,

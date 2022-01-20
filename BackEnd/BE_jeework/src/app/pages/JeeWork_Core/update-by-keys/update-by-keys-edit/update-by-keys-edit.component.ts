@@ -5,7 +5,7 @@ import { LayoutUtilsService, MessageType } from './../../../../_metronic/jeework
  import { TranslateService } from '@ngx-translate/core';
 import { ReplaySubject, BehaviorSubject, Observable } from 'rxjs';
 import { Router } from '@angular/router';
-import { DanhMucChungService } from './../../../../_metronic/jeework_old/core/services/danhmuc.service';import { WeWorkService } from '../../services/wework.services';
+import { DanhMucChungService } from './../../../../_metronic/jeework_old/core/services/danhmuc.service';import { JeeWorkLiteService } from '../../services/wework.services';
 import { useAnimation } from '@angular/animations';
  import { UpdateByKeyService } from '../update-by-keys.service';
 import { UpdateByKeyModel } from '../update-by-keys.model';
@@ -58,7 +58,7 @@ export class UpdateByKeysComponent implements OnInit {
 		private layoutUtilsService: LayoutUtilsService,
 		private translate: TranslateService,
 		private danhMucChungService: DanhMucChungService,
-		public weworkService: WeWorkService,
+		public weworkService: JeeWorkLiteService,
 		private router: Router,) { }
 	/** LOAD DATA */
 	ngOnInit() {
