@@ -10,7 +10,7 @@ pipeline {
 
         ASPNETCORE_ENVIRONMENT = "Production"
         VAULT_ENDPOINT = "http://vault:8200"
-        VAULT_TOKEN = "s.F2Ds4Bv6q1KxIO6uk58k9Tfu"
+        VAULT_TOKEN = "s.oaprfBHC6b5nsxC2otxPsxi7"
         KAFKA_BROKER = "kafka1:9999,kafka2:9999,kafka3:9999"
         HOST_CDN = "cdn.jee.vn"
         HOST_JEEWORK_BE = "https://jeework.jee.vn"
