@@ -7199,7 +7199,7 @@ where u.disabled = 0 and u.loai = 2";
                 result.Columns.Add("list_id_tag", typeof(string));
                 result.Columns.Add("tag_name", typeof(string));
                 result.Columns.Add("color_tag", typeof(string));
-
+                result.Columns["list_id_tag"].DefaultValue = "0";
                 if ("custom".Equals(groupby))
                 {
                     if (dt_value.Rows.Count > 0)
@@ -7284,18 +7284,21 @@ where u.disabled = 0 and u.loai = 2";
                         case "tags":
                             {
                                 column = "list_id_tag";
-                                querySQL = @"select id_work, id_tag from we_work_tag
-                                    where disabled = 0 
+                                querySQL = @"select id_work, id_tag, tag.title as tag_name, color
+                                    from we_work_tag w_tag join we_tag tag
+                                    on tag.id_row = w_tag.id_tag
+                                    where tag.disabled = 0 and w_tag.disabled = 0 
                                     and id_work in (select id_row from we_work
                                     where id_project_team = " + id_project_team + " " +
                                     "and disabled = 0) order by id_work, id_tag";
-                                dt_value = cnn.CreateDataTable(querySQL);
+                                 dt_value = cnn.CreateDataTable(querySQL);
                                 if (result.Rows.Count > 0)
                                 {
                                     DataRow _r = dt_filter.NewRow();
                                     DataTable dt_wt = new DataTable();
                                     foreach (DataRow item in result.Rows)
                                     {
+                                        item["list_id_tag"] = "0";
                                         DataRow[] row = dt_value.Select("id_work=" + item["id_row"].ToString());
                                         if (row.Length > 0)
                                         {
@@ -7304,19 +7307,17 @@ where u.disabled = 0 and u.loai = 2";
                                             foreach (DataRow w_t in dt_wt.Rows)
                                             {
                                                 item["list_id_tag"] += "," + w_t["id_tag"].ToString();
-                                                item["tag_name"] += ", " + w_t["id_tag"].ToString();
+                                                item["tag_name"] += "," + w_t["tag_name"].ToString();
+                                                item["color_tag"] += ";" + w_t["color"].ToString();
                                             }
-                                            item["tag_name"] = item["tag_name"].ToString().Substring(1);
                                             item["list_id_tag"] = item["list_id_tag"].ToString().Substring(1);
-                                        }
-                                        else
-                                        {
-                                            item["list_id_tag"] = "0";
+                                            item["tag_name"] = item["tag_name"].ToString().Substring(1);
+                                            item["color_tag"] = item["color_tag"].ToString().Substring(1);
                                         }
                                         _r = dt_filter.NewRow();
                                         _r["id_row"] = item["list_id_tag"];
                                         _r["statusname"] = item["tag_name"];
-                                        _r["color"] = "#16AB6B";
+                                        _r["color"] = item["color_tag"];
                                         _r["Follower"] = "";
                                         _r["description"] = "";
                                         dt_filter.Rows.Add(_r);
@@ -7324,8 +7325,9 @@ where u.disabled = 0 and u.loai = 2";
                                 }
                                 dt_filter = dt_filter.DefaultView.ToTable(true, "id_row", "statusname", "color", "Follower", "description");
                                 DataRow newRow = dt_filter.NewRow();
-                                newRow[0] = 0;
+                                newRow[0] = "0";
                                 newRow[1] = "Chưa có thẻ";
+                                newRow[2] = "rgb(27, 188, 156)";
                                 dt_filter.Rows.InsertAt(newRow, 0);
                                 break;
                             }
