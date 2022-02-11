@@ -109,8 +109,8 @@ namespace JeeWork_Core2021.Controllers
         [Route("testAuto")]
         public string testAuto()
         {
-            string topic = _config.GetValue<string>("KafkaConfig:TopicProduce:JeeWorkAutomationService");
-            _producer.PublishAsync(topic, "{\"CustomerID\":31,\"AppCode\":[\"HR\",\"ADMIN\",\"Land\",\"REQ\",\"WF\",\"jee-doc\",\"OFFICE\",\"WW\",\"WMS\",\"TEST\",\"AMS\",\"ACC\"],\"UserID\":76745,\"Username\":\"powerplus.admin\"}");
+            //string topic = _config.GetValue<string>("KafkaConfig:TopicProduce:JeeWorkAutomationService");
+            //_producer.PublishAsync(topic, "{\"CustomerID\":31,\"AppCode\":[\"HR\",\"ADMIN\",\"Land\",\"REQ\",\"WF\",\"jee-doc\",\"OFFICE\",\"WW\",\"WMS\",\"TEST\",\"AMS\",\"ACC\"],\"UserID\":76745,\"Username\":\"powerplus.admin\"}");
             return "Oke";
         }
         [HttpGet("XinChao")]

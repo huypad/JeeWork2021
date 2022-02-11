@@ -50,7 +50,6 @@ namespace API_JeeWork2021.Classes
             }, cancellationToken);
             await Task.CompletedTask;
         }
-
         public async Task StopAsync(CancellationToken cancellationToken)
         {
             await testSoLuong.closeAsync();
@@ -644,7 +643,6 @@ join Automation_SubActionList sublist on sub.SubActionID = sublist.RowID  where 
             }
             return true;
         }
-
         public bool CreatedTask(string AutoID, long userid, DpsConnection cnn, string ConnectionString, long CustomerID)
         {
             string sqlq = @"select at.* from Automation_Task at
@@ -784,7 +782,6 @@ where AutoID = " + AutoID + " order by RowID desc";
             SendNotifyAndMailAssign(10, ConnectionString, users, weworkID, CustomerID, "ww_assign");
             return true;
         }
-
         public void SendNotifyAndMail(long id_project_team, string ConnectionString, long id_user, long id_work, long CustemerID, bool isAssign, string workname)
         {
             UserJWT loginData = new UserJWT();
@@ -841,7 +838,6 @@ where AutoID = " + AutoID + " order by RowID desc";
             #endregion
 
         }
-
         public void SendNotifyAndMailAssign(int idtemplatemail, string ConnectionString, List<long> users, long id_work, long CustemerID, string TitleLanguageKey)
         {
             UserJWT loginData = new UserJWT();

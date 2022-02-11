@@ -365,8 +365,14 @@ namespace JeeWork_Core2021.Controllers.Wework
                     pageModel.Page = query.page;
                     var dtNew = temp.Skip((query.page - 1) * query.record).Take(query.record);
                     var dtChild = ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] != DBNull.Value).AsEnumerable();
+                    //dtNew = dtNew.Concat(dtChild);
+                    if (dtChild.Any())
+                        dtNew = dtNew.Concat(dtChild);
+                    //DataTable dt_child = new DataTable();
+                    //dt_child = dtChild.CopyToDataTable();
+                    //tmp = rows.CopyToDataTable();
                     Func<DateTime, int> weekProjector = d => CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(d, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
-                    var data = from r in dtNew.AsEnumerable()
+                    var data = from r in dtNew.CopyToDataTable().AsEnumerable()
                                select new
                                {
                                    id_parent = r["id_parent"],
@@ -464,7 +470,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                    //             IsDefault = s["Isdefault"],
                                    //             IsToDo = s["istodo"]
                                    //         },
-                                   Childs = displayChild == "0" ? new List<string>() : getChild(domain, loginData.CustomerID, columnName, displayChild == "1" ? "0" : "2", 0, dtChild.CopyToDataTable().AsEnumerable(), tags, DataAccount, loginData, ConnectionString, r["id_row"])
+                                   Childs = displayChild == "0" ? new List<string>() : getChild(domain, loginData.CustomerID, columnName, displayChild == "1" ? "0" : "2", 0, dtNew.CopyToDataTable().AsEnumerable(), tags, DataAccount, loginData, ConnectionString, r["id_row"])
                                };
                     return JsonResultCommon.ThanhCong(data, pageModel, Visible);
                 }
@@ -830,6 +836,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     //DataTable dt_test = ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] != DBNull.Value);
                     //DataTable dt_test = ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] != DBNull.Value).CopyToDataTable();
                     dtNew = dtNew.Concat(dtChild);
+                    
                     var Children = from rr in dtG.AsEnumerable()
                                    select new
                                    {
