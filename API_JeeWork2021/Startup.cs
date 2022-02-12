@@ -38,7 +38,7 @@ namespace JeeWork_Core2021
     public class Startup
     {
         static AutoSendMail sendmail;
-        static NhacNho nhacnho;
+        //static NhacNho nhacnho;
         public Startup(IConfiguration configuration)
         {
             //_notifier = notifier;
@@ -167,8 +167,8 @@ namespace JeeWork_Core2021
         {
             sendmail = new AutoSendMail(_cache, Configuration, notifier);
             sendmail.Start();
-            nhacnho = new NhacNho(_cache, Configuration, notifier, producer);
-            nhacnho.Start();
+            //nhacnho = new NhacNho(_cache, Configuration, notifier, producer);
+            //nhacnho.Start();
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

@@ -29,7 +29,7 @@ namespace API_JeeWork2021.Classes
         public NhacNho(IConnectionCache _cache, IConfiguration configuration, INotifier notifier, IProducer producer)
         {
             //10p chạy 1 lần 600000
-            Timer10Minute = new System.Timers.Timer(60000);
+            Timer10Minute = new System.Timers.Timer(3600000);
             Timer10Minute.Elapsed += new System.Timers.ElapsedEventHandler(Timer10Minute_Elapsed);
             _configuration = configuration;
             ConnectionCache = _cache;
