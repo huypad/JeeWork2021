@@ -24,16 +24,12 @@ export class CommentDTO {
   TotalLengthReaction: number;
   MostLengthReaction: number[];
   MostTypeReaction: string[];
+  Tag: TagComment[] = [];
 }
 
-export class TopicCommnet {
-  Id: string;
-  Comments: Comment[];
-
-  constructor() {
-    this.Id = '';
-    this.Comments = [];
-  }
+export class TagComment {
+  Display: string;
+  Username: string;
 }
 
 export class PostCommentModel {
@@ -42,12 +38,27 @@ export class PostCommentModel {
   ReplyCommentID: string;
   Text: string;
   Attachs: Attach;
+  Tag: TagComment[];
   constructor() {
     this.TopicCommentID = '';
     this.CommentID = '';
     this.ReplyCommentID = '';
     this.Text = '';
     this.Attachs = new Attach();
+    this.Tag = [];
+  }
+}
+
+export class Attach {
+  Images: string[];
+  Files: string[];
+  Videos: string[];
+  FileNames: string[];
+  constructor() {
+    this.Images = [];
+    this.Files = [];
+    this.Videos = [];
+    this.FileNames = [];
   }
 }
 
@@ -63,17 +74,6 @@ export class ReactionCommentModel {
     this.ReplyCommentID = '';
     this.UserReaction = '';
     this.UserOldReaction = '';
-  }
-}
-
-export class Attach {
-  Images: string[];
-  Files: string[];
-  Videos: string[];
-  constructor() {
-    this.Images = [];
-    this.Files = [];
-    this.Videos = [];
   }
 }
 
@@ -95,13 +95,16 @@ export class Reaction {
 }
 
 export class UserCommentInfo {
+  UserId: number;
   Username: string;
   FullName: string;
   Jobtitle: string;
   AvartarImgURL: string;
   PhoneNumber: string;
   Email: string;
-  Display: string;
+  Display: string = '';
+  FirstName: string;
+  BgColor: string;
 }
 
 export class QueryFilterComment {
@@ -112,12 +115,17 @@ export class QueryFilterComment {
     this.ViewLengthComment = 10;
     this.Date = new Date();
   }
-
 }
-export interface ReturnFilterComment {
-  LstCreate: ChangeComment[];
-  LstEdit: ChangeComment[];
-  LstDelete: ChangeComment[];
+export class ReturnFilterComment {
+  LstCreate: ChangeComment[] = [];
+  LstEdit: ChangeComment[] = [];
+  LstDelete: ChangeComment[] = [];
+}
+
+export class ShowChangeComment {
+  lstCreate: ChangeComment[] = [];
+  lstEdit: ChangeComment[] = [];
+  lstDelete: ChangeComment[] = [];
 }
 
 export class ChangeComment {

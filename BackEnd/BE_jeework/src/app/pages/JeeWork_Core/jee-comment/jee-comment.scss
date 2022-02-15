@@ -4,12 +4,9 @@ $font-color-header: black;
 $hover-color: #f2f2f2;
 $background-comment: white;
 
-app-jee-comment{
-  .card-body {
-    padding: 0px 10px 20px 10px;
-  }
+.card-body {
+  padding: 0px 10px 20px 10px;
 }
-
 
 .comment-container {
   ul {
@@ -138,7 +135,7 @@ app-jee-comment{
   background-color: $hover-color;
   font-family: 'Roboto';
   border-radius: 18px;
-  padding-top: 10px;
+  padding-top: 6px;
   padding-bottom: 6px;
   min-height: 36px;
   display: flex;
@@ -147,25 +144,6 @@ app-jee-comment{
   position: relative;
   padding-right: 10px;
   padding-left: 10px;
-}
-
-.textarea-input {
-  font-weight: 400;
-  width: 100%;
-  resize: none;
-  border: none;
-  width: 100%;
-  height: 100%;
-  display: block;
-  border: 0;
-  box-sizing: border-box;
-  box-shadow: none;
-  outline: none;
-  overflow: hidden;
-  background-color: $hover-color;
-  flex-grow: 1;
-  flex-shrink: 1;
-  text-overflow: ellipsis;
 }
 
 .comment-icon {
@@ -184,7 +162,7 @@ app-jee-comment{
   .icon {
     margin-left: 6px;
     margin-right: 6px;
-    margin-bottom: 2px;
+    margin-bottom: 6px;
     width: 16px;
     height: 16px;
   }

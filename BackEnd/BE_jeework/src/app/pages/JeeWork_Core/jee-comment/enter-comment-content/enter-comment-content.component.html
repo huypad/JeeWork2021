@@ -1,24 +1,27 @@
 <ng-container>
   <div class="enter-post-comment post-comment" *ngIf="service.mainUser$ | async">
-    <div class="post-comment-avatar pr-2">
+    <div class="post-comment-avatar">
       <img id="img-avatar" src="{{ (service.mainUser$ | async).AvartarImgURL }}" />
     </div>
-    <div class="post-comment-input">
+    <div class="post-comment-input" style="align-items: center; position: relative">
       <textarea
         #txtarea
         (focus)="focusFunction()"
         (focusout)="focusOutFunction()"
         (keyup.escape)="cancleComment()"
-        (keydown)="onKeydown($event)"
+        (keyup)="onKeydown($event)"
         (keyup.enter)="validateCommentAndPost()"
         [(ngModel)]="inputTextArea"
-        placeholder="Viết bình luận"
+        placeholder="{{ 'JEECOMMENT.VIETBINHLUAN' | translate }}"
         class="textarea-input"
         cdkTextareaAutosize
       >
       </textarea>
+      <div class="tag-comment-show" #tagcommentshow>
+        <tag-comment-show [sreach]="sreachTag$" (ItemSelected)="ItemSelected($event)"> </tag-comment-show>
+      </div>
       <ul class="comment-icon">
-        <li class="icon" *ngIf="!showonpopup">
+        <li class="icon">
           <span>
             <div (click)="toggleEmojiPicker()" role="button" tabindex="0"><i id="emotion-icon"></i></div>
           </span>
@@ -46,26 +49,48 @@
             #img
             (change)="previewFileInput(img.files)"
             id="input-flie"
-            accept="image/*, image/heic, image/heif"
+            accept="video/*, video/x-m4v, video/webm, video/x-ms-wmv, video/x-msvideo, video/3gpp, video/flv, video/x-flv, video/mp4, video/quicktime, video/mpeg, video/ogv, .ts, .mkv, image/*, image/heic, image/heif"
             type="file"
             [multiple]="true"
           />
         </li>
+        <li (click)="files.click()" class="icon" style="margin-left: 2px !important">
+          <mat-icon>attach_file</mat-icon>
+        </li>
+        <input #files (change)="previewFileInput(files.files)" id="input-flie" accept="*" type="file" [multiple]="true" />
       </ul>
     </div>
+  </div>
+  <div class="post-comment-file">
+    <ng-container *ngFor="let file of filesUrl; let i = index">
+      <div>
+        <img height="27px" src="https://cdn.jee.vn/jee-comment/icons/attach_clip_file_save_icon.png" />
+        <span> {{ filesName[i] }} </span>
+        <span (click)="deletePreviewFile(i)" class="delete-preview-image"></span>
+      </div>
+    </ng-container>
   </div>
   <div class="enter-post-comment-image">
     <ng-container *ngFor="let imageUrl of imagesUrl; let i = index">
       <div class="img-preview"><img [src]="imageUrl" /><span (click)="deletePreviewImage(i)" class="delete-preview-image"></span></div>
     </ng-container>
   </div>
-  <div class="post-comment-cancle">
-    <span *ngIf="isLoading$ | async" class="click-show-spinner" [class.spinner]="isLoading$ | async"> </span>
-    <ng-container *ngIf="showSpanCancelFocus">
-      Nhấn
-      <span> Esc </span>
-      để <span class="span-cancel-comment"> huỷ bình luận</span>
+  <div class="enter-post-comment-video">
+    <ng-container *ngFor="let videoUrl of videosUrl; let i = index">
+      <div class="video-preview">
+        <video [src]="videoUrl" controls></video><span (click)="deletePreviewVideo(i)" class="delete-preview-image"></span>
+      </div>
     </ng-container>
-    <span (click)="cancleComment()" *ngIf="showSpanCancelNoFocus" class="span-cancel-comment-not-in-textarea">Huỷ bình luận</span>
+  </div>
+  <div class="post-comment-cancle">
+    <span *ngIf="isLoading$ | async" class="click-show-spinner" [class.spinner]="true"> </span>
+    <ng-container *ngIf="showSpanCancelFocus">
+      {{ 'JEECOMMENT.NHAN' | translate }}
+      <span> Esc </span>
+      {{ 'JEECOMMENT.DE' | translate }} <span class="span-cancel-comment">{{ 'JEECOMMENT.HUYBINHLUAN' | translate }}</span>
+    </ng-container>
+    <span (click)="cancleComment()" *ngIf="showSpanCancelNoFocus" class="span-cancel-comment-not-in-textarea">{{
+      'JEECOMMENT.HUYBINHLUAN' | translate
+    }}</span>
   </div>
 </ng-container>

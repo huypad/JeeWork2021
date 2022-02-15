@@ -179,7 +179,7 @@ export const DefaultLayoutConfig = {
     // Search
     search: {
       display: true,
-      layout: 'dropdown', // offcanvas, dropdown,
+      layout: 'offcanvas', // offcanvas, dropdown,
       offcanvas: {
         direction: 'right',
       },

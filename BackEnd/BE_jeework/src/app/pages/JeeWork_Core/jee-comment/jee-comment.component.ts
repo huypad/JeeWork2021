@@ -1,45 +1,23 @@
-import { BehaviorSubject, of, Subject, interval } from "rxjs";
-import {
-  Component,
-  Input,
-  OnInit,
-  ViewChild,
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  ElementRef,
-  OnChanges,
-  Output,
-  EventEmitter,
-} from "@angular/core";
-import { JeeCommentService } from "./jee-comment.service";
-import { CdkTextareaAutosize } from "@angular/cdk/text-field";
-import {
-  catchError,
-  finalize,
-  takeUntil,
-  tap,
-  share,
-  switchMap,
-} from "rxjs/operators";
-import {
-  CommentDTO,
-  QueryFilterComment,
-  ReturnFilterComment,
-  TopicCommentDTO,
-  ChangeComment,
-} from "./jee-comment.model";
+import { TranslateService } from '@ngx-translate/core';
 import { JeeCommentSignalrService } from './jee-comment-signalr.service';
+import { HubConnection } from '@microsoft/signalr';
+import { BehaviorSubject, of, Subject, interval } from 'rxjs';
+import { Component, Input, OnInit, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef, ElementRef, Output, EventEmitter } from '@angular/core';
+import { JeeCommentService } from './jee-comment.service';
+import { CdkTextareaAutosize } from '@angular/cdk/text-field';
+import { catchError, finalize, takeUntil, tap, share, switchMap } from 'rxjs/operators';
+import { CommentDTO, QueryFilterComment, ReturnFilterComment, TopicCommentDTO, ChangeComment } from './jee-comment.model';
 
 @Component({
-  selector: "app-jee-comment",
-  templateUrl: "./jee-comment.component.html",
-  styleUrls: ["jee-comment.scss"],
+  selector: 'app-jee-comment',
+  templateUrl: './jee-comment.component.html',
+  styleUrls: ['jee-comment.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class JeeCommentComponent implements OnInit {
   private readonly onDestroy = new Subject<void>();
   private _isLoading$ = new BehaviorSubject<boolean>(false);
-  private _errorMessage$ = new BehaviorSubject<string>("");
+  private _errorMessage$ = new BehaviorSubject<string>('');
   get isLoading$() {
     return this._isLoading$.asObservable();
   }
@@ -47,22 +25,19 @@ export class JeeCommentComponent implements OnInit {
     return this._errorMessage$.asObservable();
   }
 
-
   item: TopicCommentDTO;
   hiddenLike: boolean = true;
   hiddenShare: boolean = true;
   isFirstTime: boolean = true;
   ShowSpinner$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   ShowFilter$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  ShowSpinnerViewMore$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
-    false
-  );
-
+  ShowSpinnerViewMore$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  currentLengthViewComment: number = 10;
+  labelFilterComment: string = '';
   //filter
   filterDate: Date = new Date();
 
-  @Input() isDeteachChange$?: BehaviorSubject<boolean> =
-    new BehaviorSubject<boolean>(false);
+  @Input() isDeteachChange$?: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   @Input() objectID: string;
   @Input() showCommentDefault?: boolean;
   @Input() number: number;
@@ -73,17 +48,19 @@ export class JeeCommentComponent implements OnInit {
 
   //demo
   @Input() img: any;
-  @ViewChild("autosize") autosize: CdkTextareaAutosize;
+  @ViewChild('autosize') autosize: CdkTextareaAutosize;
+  @Output() Close = new EventEmitter();
 
   constructor(
     public service: JeeCommentService,
     public cd: ChangeDetectorRef,
-    public signalrService: JeeCommentSignalrService,
-    private elementRef: ElementRef
-  ) {
-  }
+    private elementRef: ElementRef,
+    private signalrService: JeeCommentSignalrService,
+    private translate: TranslateService
+  ) {}
 
   ngOnInit() {
+    this.labelFilterComment = this.translate.instant('JEECOMMENT.BINHLUANMOINHAT');
     if (this.objectID) {
       this.lstObjectID.push(this.objectID);
       if (this.showCommentDefault) {
@@ -96,13 +73,7 @@ export class JeeCommentComponent implements OnInit {
       this.LoadObjectID();
     }
   }
-  hubConnectionShowChangeTopic() {
-    if (this.objectID) {
-      this.signalrService.connectToken(this.objectID);
-    } else {
-      this._errorMessage$.next('Topic comment là bắt buộc');
-    }
-  }
+
   clickButtonComment() {
     if (this.isFirstTime) {
       this.ShowSpinner$.next(true);
@@ -127,9 +98,9 @@ export class JeeCommentComponent implements OnInit {
                     }
                     this.filterDate = new Date();
                     this.isDeteachChange$.next(true);
+                    this.Close.emit();
                   }
                 }
-                this.cd.detectChanges();
               }),
               catchError((err) => {
                 this._isLoading$.next(false);
@@ -158,12 +129,7 @@ export class JeeCommentComponent implements OnInit {
       .showTopicCommentByObjectID(this.objectID, this.filter())
       .pipe(
         tap((topic: TopicCommentDTO) => {
-          if (this.isFirstTime) {
-            this.item = topic;
-          } else {
-            this.pushItemIndex(this.item.Comments, topic.Comments);
-            topic.TotalLengthComment = topic.TotalLengthComment;
-          }
+          this.item = topic;
           if (topic.ViewLengthComment < topic.TotalLengthComment) {
             this.ShowFilter$.next(true);
           } else {
@@ -171,6 +137,7 @@ export class JeeCommentComponent implements OnInit {
           }
         }),
         catchError((err) => {
+          console.log(err);
           this._errorMessage$.next(err);
           return of();
         }),
@@ -188,76 +155,21 @@ export class JeeCommentComponent implements OnInit {
       .subscribe();
   }
 
-  getShowChangeTopic() {
-    this.changeValue.emit(true);
-    this._isLoading$.next(true);
-    this.service
-      .showChangeTopicCommentByObjectID(this.objectID, this.filter())
-      .pipe(
-        tap(async (result: ReturnFilterComment) => {
-          if (
-            result.LstCreate.length > 0 ||
-            result.LstEdit.length > 0 ||
-            result.LstDelete.length > 0
-          ) {
-            if (result.LstCreate.length > 0) {
-              this.pushItemCommentInTopicComemnt(this.item, result.LstCreate);
-            }
-            if (result.LstEdit.length > 0) {
-              this.editItemCommentInTopicComemnt(this.item, result.LstEdit);
-            }
-            if (result.LstDelete.length > 0) {
-              this.deleteItemCommentInTopicComemnt(this.item, result.LstDelete);
-            }
-            this.filterDate = new Date();
-            this.isDeteachChange$.next(true);
-          }
-        }),
-        catchError((err) => {
-          this._isLoading$.next(false);
-          this._errorMessage$.next(err);
-          return of();
-        }),
-        finalize(() => {
-          this._isLoading$.next(false);
-          this.cd.detectChanges();
-        }),
-        takeUntil(this.onDestroy),
-        share()
-      )
-      .subscribe();
-  }
-
-  pushItemIndex(
-    lstCommentDTO_current: CommentDTO[],
-    lstCommentDTO_new: CommentDTO[]
-  ) {
-    lstCommentDTO_new.forEach((comment, pos) => {
-      const index = lstCommentDTO_current.findIndex(
-        (item) => item.Id === comment.Id
-      );
-      if (index === -1) {
-        lstCommentDTO_current.splice(pos, 0, comment);
-      }
-    });
+  hubConnectionShowChangeTopic() {
+    if (this.objectID) {
+      this.signalrService.connectToken(this.objectID);
+    } else {
+      this._errorMessage$.next('Topic comment là bắt buộc');
+    }
   }
 
   updateLengCreate(currentLength: number, lengthLstCreate: number) {
     currentLength = currentLength + lengthLstCreate;
   }
 
-  pushItemCommentInTopicComemnt(
-    topicComment: TopicCommentDTO,
-    lstChange: ChangeComment[]
-  ) {
+  pushItemCommentInTopicComemnt(topicComment: TopicCommentDTO, lstChange: ChangeComment[]) {
     lstChange.forEach((element) => {
-      this.pushItem(
-        topicComment.Id,
-        topicComment.Comments,
-        element,
-        topicComment.TotalLengthComment,
-        topicComment.ViewLengthComment
-      );
+      this.pushItem(topicComment.Id, topicComment.Comments, element, topicComment.TotalLengthComment, topicComment.ViewLengthComment);
     });
   }
 
@@ -271,9 +183,6 @@ export class JeeCommentComponent implements OnInit {
     if (objectID_current === changeComment.parentObjectID) {
       this.updateLengCreate(totalLength, changeComment.LstChange.length);
       this.updateLengCreate(viewLength, changeComment.LstChange.length);
-      // changeComment.LstChange.forEach((comment) => {
-      //   lstCommentDTO_current.push(comment);
-      // });
       changeComment.LstChange.forEach((comment) => {
         const index = lstCommentDTO_current.findIndex((item) => item.Id === comment.Id);
         if (index === -1) {
@@ -282,36 +191,21 @@ export class JeeCommentComponent implements OnInit {
       });
     } else {
       lstCommentDTO_current.forEach((comment) => {
-        this.pushItem(
-          comment.Id,
-          comment.Replies,
-          changeComment,
-          comment.TotalLengthComment,
-          comment.ViewLengthComment
-        );
+        this.pushItem(comment.Id, comment.Replies, changeComment, comment.TotalLengthComment, comment.ViewLengthComment);
       });
     }
   }
 
-  editItemCommentInTopicComemnt(
-    topicComment: TopicCommentDTO,
-    lstChange: ChangeComment[]
-  ) {
+  editItemCommentInTopicComemnt(topicComment: TopicCommentDTO, lstChange: ChangeComment[]) {
     lstChange.forEach((comment) => {
       this.editItem(topicComment.Id, topicComment.Comments, comment);
     });
   }
 
-  editItem(
-    objectID_current: string,
-    lstCommentDTO_current: CommentDTO[],
-    changeComment: ChangeComment
-  ) {
+  editItem(objectID_current: string, lstCommentDTO_current: CommentDTO[], changeComment: ChangeComment) {
     if (objectID_current === changeComment.parentObjectID) {
       changeComment.LstChange.forEach((comment) => {
-        const index = lstCommentDTO_current.findIndex(
-          (item) => item.Id === comment.Id
-        );
+        const index = lstCommentDTO_current.findIndex((item) => item.Id === comment.Id);
         if (index !== -1) {
           this.copyComment(lstCommentDTO_current[index], comment);
         }
@@ -323,25 +217,16 @@ export class JeeCommentComponent implements OnInit {
     }
   }
 
-  deleteItemCommentInTopicComemnt(
-    topicComment: TopicCommentDTO,
-    lstChange: ChangeComment[]
-  ) {
+  deleteItemCommentInTopicComemnt(topicComment: TopicCommentDTO, lstChange: ChangeComment[]) {
     lstChange.forEach((comment) => {
       this.deleteItem(topicComment.Id, topicComment.Comments, comment);
     });
   }
 
-  deleteItem(
-    objectID_current: string,
-    lstCommentDTO_current: CommentDTO[],
-    changeComment: ChangeComment
-  ) {
+  deleteItem(objectID_current: string, lstCommentDTO_current: CommentDTO[], changeComment: ChangeComment) {
     if (objectID_current === changeComment.parentObjectID) {
       changeComment.LstChange.forEach((comment) => {
-        const index = lstCommentDTO_current.findIndex(
-          (item) => item.Id === comment.Id
-        );
+        const index = lstCommentDTO_current.findIndex((item) => item.Id === comment.Id);
         if (index !== -1) {
           lstCommentDTO_current.splice(index, 1);
         }
@@ -354,30 +239,21 @@ export class JeeCommentComponent implements OnInit {
   }
 
   copyComment(mainCommentDTO: CommentDTO, newCommentDTO: CommentDTO) {
-    if (mainCommentDTO.Text !== newCommentDTO.Text)
-      mainCommentDTO.Text = newCommentDTO.Text;
-    if (mainCommentDTO.Attachs !== newCommentDTO.Attachs)
-      mainCommentDTO.Attachs = newCommentDTO.Attachs;
-    if (mainCommentDTO.IsEdit !== newCommentDTO.IsEdit)
-      mainCommentDTO.IsEdit = newCommentDTO.IsEdit;
-    if (mainCommentDTO.DateCreated !== newCommentDTO.DateCreated)
-      mainCommentDTO.DateCreated = newCommentDTO.DateCreated;
-    if (mainCommentDTO.IsUserReply !== newCommentDTO.IsUserReply)
-      mainCommentDTO.IsUserReply = newCommentDTO.IsUserReply;
-    if (mainCommentDTO.LengthReply !== newCommentDTO.LengthReply)
-      mainCommentDTO.LengthReply = newCommentDTO.LengthReply;
+    if (mainCommentDTO.Text !== newCommentDTO.Text) mainCommentDTO.Text = newCommentDTO.Text;
+    if (mainCommentDTO.Attachs !== newCommentDTO.Attachs) mainCommentDTO.Attachs = newCommentDTO.Attachs;
+    if (mainCommentDTO.IsEdit !== newCommentDTO.IsEdit) mainCommentDTO.IsEdit = newCommentDTO.IsEdit;
+    if (mainCommentDTO.DateCreated !== newCommentDTO.DateCreated) mainCommentDTO.DateCreated = newCommentDTO.DateCreated;
+    if (mainCommentDTO.IsUserReply !== newCommentDTO.IsUserReply) mainCommentDTO.IsUserReply = newCommentDTO.IsUserReply;
+    if (mainCommentDTO.LengthReply !== newCommentDTO.LengthReply) mainCommentDTO.LengthReply = newCommentDTO.LengthReply;
     if (mainCommentDTO.MostLengthReaction !== newCommentDTO.MostLengthReaction)
       mainCommentDTO.MostLengthReaction = newCommentDTO.MostLengthReaction;
     if (mainCommentDTO.MostTypeReaction !== newCommentDTO.MostTypeReaction)
       mainCommentDTO.MostTypeReaction = newCommentDTO.MostTypeReaction;
     if (mainCommentDTO.TotalLengthComment !== newCommentDTO.TotalLengthComment)
       mainCommentDTO.TotalLengthComment = newCommentDTO.TotalLengthComment;
-    if (
-      mainCommentDTO.TotalLengthReaction !== newCommentDTO.TotalLengthReaction
-    )
+    if (mainCommentDTO.TotalLengthReaction !== newCommentDTO.TotalLengthReaction)
       mainCommentDTO.TotalLengthReaction = newCommentDTO.TotalLengthReaction;
-    if (mainCommentDTO.UserReaction !== newCommentDTO.UserReaction)
-      mainCommentDTO.UserReaction = newCommentDTO.UserReaction;
+    if (mainCommentDTO.UserReaction !== newCommentDTO.UserReaction) mainCommentDTO.UserReaction = newCommentDTO.UserReaction;
     if (mainCommentDTO.UserReactionColor !== newCommentDTO.UserReactionColor)
       mainCommentDTO.UserReactionColor = newCommentDTO.UserReactionColor;
     this.cd.detectChanges();
@@ -392,6 +268,7 @@ export class JeeCommentComponent implements OnInit {
 
   viewMoreComment() {
     this.item.ViewLengthComment += 10;
+    this.currentLengthViewComment = this.item.ViewLengthComment;
     this.getShowTopic();
     this.ShowSpinnerViewMore$.next(true);
     setTimeout(() => {
@@ -409,6 +286,18 @@ export class JeeCommentComponent implements OnInit {
     const rect = this.elementRef.nativeElement.getBoundingClientRect();
     const isVisible = rect.top < window.innerHeight && rect.bottom >= 0;
     return isVisible;
+  }
+
+  showAllComment() {
+    this.item.ViewLengthComment = this.item.TotalLengthComment;
+    this.labelFilterComment = this.translate.instant('JEECOMMENT.TOANBOBINHLUAN');
+    this.getShowTopic();
+  }
+
+  showNewComment() {
+    this.item.ViewLengthComment = this.currentLengthViewComment;
+    this.labelFilterComment = this.translate.instant('JEECOMMENT.BINHLUANMOINHAT');
+    this.getShowTopic();
   }
 
   LoadObjectID() {
@@ -429,10 +318,5 @@ export class JeeCommentComponent implements OnInit {
         .subscribe();
     }
 
-  }
-
-  GetValueComment(event) {
-    this.getShowChangeTopic();
-    this.getShowTopic();
   }
 }

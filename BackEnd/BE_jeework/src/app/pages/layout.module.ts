@@ -28,7 +28,7 @@ import { AsideDynamicComponent } from './_layout/components/aside-dynamic/aside-
 import { HeaderMenuDynamicComponent } from './_layout/components/header/header-menu-dynamic/header-menu-dynamic.component';
 import { AsideWeworkComponent } from './_layout/components/aside-wework/aside-wework.component';
 import { AvatarModule } from 'ngx-avatar';
-import { ChatService } from '../modules/my-chat/services/chat.service';
+import { ChatService, MessageService } from 'lib-chat-box-dps';
 @NgModule({
   declarations: [
     LayoutComponent,
@@ -48,7 +48,8 @@ import { ChatService } from '../modules/my-chat/services/chat.service';
   providers: [
     TokenStorage,
     ProjectsTeamService,
-    ChatService
+    ChatService,
+    MessageService 
   ],
   imports: [
     CommonModule,

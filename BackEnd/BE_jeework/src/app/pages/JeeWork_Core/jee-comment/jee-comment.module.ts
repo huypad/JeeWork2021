@@ -1,3 +1,5 @@
+import { AvatarModule } from 'ngx-avatar'; 
+import { JeeCommentSignalrService } from './jee-comment-signalr.service';
 import { JeeCommentReactionShowComponent } from './reaction-comment-show/reaction-comment-show.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -12,11 +14,16 @@ import { InlineSVGModule } from 'ng-inline-svg';
 import { JeeCommentPostContentComponent } from './post-comment-content/post-comment-content.component';
 import { JeeCommentReactionContentComponent } from './reaction-comment-content/reaction-comment-content.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { PickerModule } from '@ctrl/ngx-emoji-mart';
 import { JeeCommentEnterCommentContentComponent } from './enter-comment-content/enter-comment-content.component';
 import { ClickOutsideDirective } from './enter-comment-content/click-outside.directive';
-import {JeeCommentSignalrService} from './jee-comment-signalr.service';
+import { MatMenuModule } from '@angular/material/menu';
+import { TagCommentShowComponent } from './tag-comment-show/tag-comment-show.component';
+import { EmojiModule } from '@ctrl/ngx-emoji-mart/ngx-emoji';
+import { JeecommentPopoverDirective } from './bottom-info-reaction-comment-show/jeecomment-popover.directive';
+import { BottomInfoReactionCommentShowComponent } from './bottom-info-reaction-comment-show/bottom-info-reaction-comment-show.component';
+import { TranslationModule } from 'src/app/modules/i18n/translation.module';
 
 @NgModule({
   declarations: [
@@ -25,14 +32,44 @@ import {JeeCommentSignalrService} from './jee-comment-signalr.service';
     JeeCommentReactionContentComponent,
     JeeCommentEnterCommentContentComponent,
     JeeCommentReactionShowComponent,
-    ClickOutsideDirective
+    ClickOutsideDirective,
+    TagCommentShowComponent,
+    JeecommentPopoverDirective,
+    BottomInfoReactionCommentShowComponent,
   ],
-  imports: [CommonModule, MatChipsModule, NgxMatSelectSearchModule, InlineSVGModule, MatIconModule, MatInputModule,
-    MatFormFieldModule, MatTooltipModule, FormsModule, PickerModule
+  imports: [
+    CommonModule,
+    MatChipsModule,
+    NgxMatSelectSearchModule,
+    InlineSVGModule,
+    MatIconModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatTooltipModule,
+    FormsModule,
+    PickerModule,
+    MatMenuModule,
+    TranslationModule,
+    AvatarModule,
+    ReactiveFormsModule,
+    EmojiModule,
   ],
-  providers: [
-    JeeCommentService, JeeCommentSignalrService],
-  entryComponents: [JeeCommentComponent, JeeCommentPostContentComponent, JeeCommentReactionContentComponent, JeeCommentReactionShowComponent],
-  exports: [JeeCommentComponent, JeeCommentPostContentComponent, JeeCommentReactionContentComponent, JeeCommentEnterCommentContentComponent, JeeCommentReactionShowComponent],
+  providers: [JeeCommentService, JeeCommentSignalrService],
+  entryComponents: [
+    JeeCommentComponent,
+    JeeCommentPostContentComponent,
+    JeeCommentReactionContentComponent,
+    JeeCommentReactionShowComponent,
+    TagCommentShowComponent,
+    BottomInfoReactionCommentShowComponent,
+  ],
+  exports: [
+    JeeCommentComponent,
+    JeeCommentPostContentComponent,
+    JeeCommentReactionContentComponent,
+    JeeCommentEnterCommentContentComponent,
+    JeeCommentReactionShowComponent,
+    TagCommentShowComponent,
+  ],
 })
-export class JeeCommentModule { }
+export class JeeCommentModule {}

@@ -27,17 +27,18 @@ import { ProjectsTeamService } from './../../Services/department-and-project.ser
 import { DOCUMENT, DatePipe } from '@angular/common';
 import { DrapDropItem, ColumnWorkModel } from './../drap-drop-item.model';
 import { CdkDragDrop, moveItemInArray, CdkDropList, CdkDragStart } from '@angular/cdk/drag-drop';
-import { Component, OnInit, Input, Inject, ChangeDetectorRef, ViewChild, OnChanges, HostListener } from '@angular/core';
+import { Component, OnInit, Input, Inject, ChangeDetectorRef, ViewChild, OnChanges, HostListener, OnDestroy } from '@angular/core';
 import * as moment from 'moment';
-import { BehaviorSubject, of, ReplaySubject, SubscriptionLike } from 'rxjs';
+import { BehaviorSubject, of, ReplaySubject, Subscription, SubscriptionLike } from 'rxjs';
 import { CommunicateService } from '../work-list-new-service/communicate.service';
+import { ListTasksStore } from './list-task-cu.store';
 
 @Component({
     selector: 'kt-list-task-cu',
     templateUrl: './list-task-cu.component.html',
     styleUrls: ['./list-task-cu.component.scss']
 })
-export class ListTaskCUComponent implements OnInit, OnChanges {
+export class ListTaskCUComponent implements OnInit, OnChanges, OnDestroy {
     constructor(
         @Inject(DOCUMENT) private document: Document, // multi level
         private _service: ProjectsTeamService,
@@ -54,7 +55,9 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
         public datepipe: DatePipe,
         private tokenStorage: TokenStorage,
         private WeWorkService: JeeWorkLiteService,
-        private menuServices: MenuPhanQuyenServices
+        private menuServices: MenuPhanQuyenServices,
+        public store: ListTasksStore
+
     ) {
         this.taskinsert.clear();
         // this.filter_groupby = this.getMystaff?this.listFilter_Groupby[1]:this.listFilter_Groupby[0];
@@ -172,46 +175,56 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
         },
     ];
     ngOnInit() {
-        // giao tiếp service
-        this.subscription = this.CommunicateService.currentMessage.subscribe(message => {
-            if (message) {
-                // this.LoadWork();
+        this.subscription = this.store.updateEvent$.subscribe(res => {
+            if (res) {
+                this.LoadData();
             }
-        });
-        // end giao tiếp service
-        // get filter groupby
-        this.filter_groupby = this.getMystaff ? this.listFilter_Groupby[1] : this.listFilter_Groupby[0];
-        const today = new Date();
-        this.filterDay = {
-            // endDate: new Date(today.setMonth(today.getMonth())),
-            // startDate: new Date(today.getFullYear(), today.getMonth() - 3, 1),
-            endDate: new Date(today.setMonth(today.getMonth() + 1)),
-            startDate: new Date(today.getFullYear(), today.getMonth() - 6, 1),
-        };
-        this.column_sort = this.sortField[0];
-        this.route.params.subscribe(res => {
-            if (this.selectedTab === 2) {
-                if (res && res.id) {
-                    this.idFilter = res.id;
-                }
+            else {
+                // giao tiếp service
+                this.subscription = this.CommunicateService.currentMessage.subscribe(message => {
+                    if (message) {
+                        // this.LoadWork();
+                    }
+                });
+                // end giao tiếp service
+                // get filter groupby
+                this.filter_groupby = this.getMystaff ? this.listFilter_Groupby[1] : this.listFilter_Groupby[0];
+                const today = new Date();
+                this.filterDay = {
+                    // endDate: new Date(today.setMonth(today.getMonth())),
+                    // startDate: new Date(today.getFullYear(), today.getMonth() - 3, 1),
+                    endDate: new Date(today.setMonth(today.getMonth() + 1)),
+                    startDate: new Date(today.getFullYear(), today.getMonth() - 2, 1),
+                };
+                this.column_sort = this.sortField[0];
+                this.route.params.subscribe(res => {
+                    if (this.selectedTab === 2) {
+                        if (res && res.id) {
+                            this.idFilter = res.id;
+                        }
+                    }
+                    this.DanhSachCongViec = [];
+                });
+                this.LoadFilterProject();
+                this.BindDataLite();
+                this.selection = new SelectionModel<WorkModel>(true, []);
+                this.menuServices.GetRoleWeWork('' + this.UserID).subscribe(res => {
+                    if (res && res.status === 1) {
+                        this.list_role = res.data.dataRole;
+                        this.IsAdminGroup = res.data.IsAdminGroup;
+                    }
+                });
+                this.Forme(true);
+                this.LoadData();
             }
-            this.DanhSachCongViec = [];
-        });
-        this.LoadFilterProject();
-        this.BindDataLite();
-        this.LoadTask();
-        this.selection = new SelectionModel<WorkModel>(true, []);
-        this.menuServices.GetRoleWeWork('' + this.UserID).subscribe(res => {
-            if (res && res.status === 1) {
-                this.list_role = res.data.dataRole;
-                this.IsAdminGroup = res.data.IsAdminGroup;
-            }
-        });
-        this.Forme(true);
+        })
         this.changeDetectorRefs.detectChanges();
     }
-
+    async LoadData(loading = true) {
+        await this.LoadTask();
+    }
     ngOnChanges() {
+        this.store.updateEvent = true;
         if (this.detailWork > 0) {
             this._service.WorkDetail(this.detailWork).subscribe(res => {
                 if (res && res.status === 1) {
@@ -231,11 +244,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
         }
     }
     ngOnDestroy(): void {
-        // Called once, before the instance is destroyed.
-        // Add 'implements OnDestroy' to the class.
-        if (this.subscription) {
-            this.subscription.unsubscribe();
-        }
+        this.subscription.unsubscribe();
     }
     LoadTask() {
         this.clearList();
@@ -555,6 +564,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
     // }
     ChangeData() {
         // this.LoadWork();
+
         this.LoadTask();
     }
     getColorStatus(id_project_team, val) {
@@ -747,7 +757,9 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
     }
 
     OpenDetail(item) {
+        this.store.updateEvent = false;
         this.router.navigate(['', { outlets: { auxName: 'aux/detail/' + item.id_row }, }]);
+        this.store.updateEvent = true;
     }
     f_convertDate(v: any) {
         if (v != '' && v != undefined) {
@@ -1116,8 +1128,14 @@ export class ListTaskCUComponent implements OnInit, OnChanges {
     }
 
     ReloadData(event) {
+
         // this.ngOnInit();
+        if (event) {
+            this.ngOnInit();
+        }
         this.LoadTask();
+        this.store.updateEvent = true;
+
     }
 
     RemoveTag(tag, item) {

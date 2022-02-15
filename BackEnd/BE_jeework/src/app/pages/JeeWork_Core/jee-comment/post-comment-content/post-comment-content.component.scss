@@ -88,7 +88,7 @@ ul {
   background-color: $hover-color;
   font-family: 'Roboto';
   border-radius: 18px;
-  padding-top: 10px;
+  padding-top: 6px;
   padding-bottom: 6px;
   min-height: 36px;
   display: flex;
@@ -99,25 +99,6 @@ ul {
   padding-left: 15px;
 }
 
-.textarea-input {
-  font-weight: 400;
-  width: 100%;
-  resize: none;
-  border: none;
-  width: 100%;
-  height: 100%;
-  display: block;
-  border: 0;
-  box-sizing: border-box;
-  box-shadow: none;
-  outline: none;
-  overflow: hidden;
-  background-color: $hover-color;
-  flex-grow: 1;
-  flex-shrink: 1;
-  text-overflow: ellipsis;
-}
-
 .comment-icon {
   direction: ltr;
   display: flex;
@@ -126,9 +107,10 @@ ul {
   cursor: pointer;
 
   .icon {
+    margin-top: 6px;
     margin-left: 6px;
     margin-right: 6px;
-    margin-bottom: 2px;
+    margin-bottom: 6px;
     width: 16px;
     height: 16px;
   }
@@ -182,12 +164,10 @@ ul {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  //align-items: end;
   .input-comment-span {
     font-weight: normal;
     font-family: 'Roboto';
     text-align: left;
-    word-break: break-word;
   }
 }
 

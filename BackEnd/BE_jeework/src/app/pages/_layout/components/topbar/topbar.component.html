@@ -51,8 +51,7 @@
 </ng-container>
 
 <ng-container *ngIf="extraSearchDisplay">
-	<ng-container *ngIf="extrasSearchLayout === 'offcanvas'">
-		<!--begin::Search-->
+	<!-- <ng-container *ngIf="extrasSearchLayout === 'offcanvas'">
 		<div class="topbar-item">
 			<div class="btn btn-icon btn-icon-mobile btn-clean btn-lg mr-1 pulse pulse-primary"
 				id="kt_quick_search_toggle">
@@ -61,11 +60,13 @@
 				<span *ngIf="this.unread>0" class="badge">{{this.unread}}</span>
 			</div>
 		</div>
-		<!--end::Search-->
-	</ng-container>
+		<app-quick-panel-offcanvas></app-quick-panel-offcanvas>
+	</ng-container> -->
 
 	<ng-container *ngIf="extrasQuickPanelDisplay">
 		<!--begin::Quick panel-->
+		<!-- 2 -->
+
 		<div class="topbar-item">
 			<div class="btn btn-icon btn-icon-mobile btn-clean btn-lg mr-1 pulse pulse-primary"
 				id="kt_quick_panel_toggle">
@@ -75,7 +76,7 @@
 			</div>
 		</div>
 
-		<app-quick-panel-offcanvas></app-quick-panel-offcanvas>
+		<!-- <app-quick-panel-offcanvas></app-quick-panel-offcanvas> -->
 		<!--end::Quick panel-->
 	</ng-container>
 </ng-container>

@@ -39,15 +39,8 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MAT_DIALOG_DEFAULT_OPTIONS, MatDialogModule } from '@angular/material/dialog';
 import { NgxAutoScrollModule } from 'ngx-auto-scroll';
 import { RemindService } from 'src/app/modules/auth/_services/remind.service';
-import { CreateConversationUserComponent } from './jee-chat/create-conversation-user/create-conversation-user.component';
-import { CreateConvesationGroupComponent } from './jee-chat/create-convesation-group/create-convesation-group.component';
-import { ChatBoxComponent } from './jee-chat/chat-box/chat-box.component';
-import { ThanhVienGroupComponent } from './jee-chat/thanh-vien-group/thanh-vien-group.component';
-import { EditGroupNameComponent } from './jee-chat/edit-group-name/edit-group-name.component';
-import { InsertThanhvienComponent } from './jee-chat/insert-thanhvien/insert-thanhvien.component';
-import { TimeAgoPipe } from './time-ago.pipe';
+
 import { TimeLastPipe } from './time-lastmess.pipe';
-import { MessengerComponent } from './jee-chat/messenger/messenger.component';
 import { QuillModule } from 'ngx-quill';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
@@ -56,16 +49,14 @@ import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatTabsModule } from '@angular/material/tabs';
 import { LightboxModule } from 'ng-gallery/lightbox';
-import { ShareMessageComponent } from './share-message/share-message.component';
 import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
-
+import { LibChatBoxModule } from 'lib-chat-box-dps';
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     suppressScrollX: true,
 };
 
 @NgModule({
     declarations: [
-        CreateConversationUserComponent,
         FilterPipe,
         TimeMessPipe,
         SearchDropdownInnerComponent,
@@ -82,16 +73,10 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
         UserOffcanvasComponent,
         ScrollTopComponent,
         ToolbarComponent,
-        CreateConvesationGroupComponent,
-        ChatBoxComponent,
-        MessengerComponent,
+ 
         FilterPipe,//Dùng cho JeeChat
-        TimeAgoPipe,
         TimeLastPipe,
-        InsertThanhvienComponent,//Dùng cho JeeChat
-        EditGroupNameComponent,//Dùng cho JeeChat
-        ThanhVienGroupComponent,//Dùng cho JeeChat
-        ShareMessageComponent,
+      
     ],
     imports: [
         CKEditorModule,
@@ -121,6 +106,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
         LightboxModule,
         MatTabsModule,
         TranslateModule,
+        LibChatBoxModule
     ],
     providers: [
         {
@@ -130,9 +116,9 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
         SocketioService,
         RemindService,
     ],
-    entryComponents: [ShareMessageComponent,CreateConvesationGroupComponent,EditGroupNameComponent,CreateConversationUserComponent,InsertThanhvienComponent,ThanhVienGroupComponent],
 
     exports: [
+        LibChatBoxModule,
         SearchDropdownInnerComponent,
         NotificationsDropdownInnerComponent,
         QuickActionsDropdownInnerComponent,
@@ -146,11 +132,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
         UserOffcanvasComponent,
         ToolbarComponent,
         ScrollTopComponent,
-        CreateConvesationGroupComponent,
-        ChatBoxComponent,
-        MessengerComponent,
         FilterPipe,//Dùng cho JeeChat
-        TimeAgoPipe,
         TimeLastPipe,
     ],
 })

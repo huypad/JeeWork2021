@@ -18,7 +18,7 @@ export class JeeCommentReactionContentComponent implements OnInit {
   @Input() commentID: string = '';
   @Input() replyCommentID: string = '';
   @Input() userOldReaction?: string;
-  @Output() changeValue = new EventEmitter<any>();
+
   @Output() reactionEventEmitter = new EventEmitter<any>();
   private _isLoading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   get isLoading$() { return this._isLoading$.asObservable(); }
@@ -53,11 +53,11 @@ export class JeeCommentReactionContentComponent implements OnInit {
           setTimeout(() => {
             this._isLoading$.next(false);
           }, 1000);
-          console.log(err); return of();
+          console.log(err); return of()
         }),
       ),
       takeUntil(this.onDestroy),
-    ).subscribe(() =>     this.changeValue.emit(true) );
+    ).subscribe();
   }
 
   prepareModel(): ReactionCommentModel {

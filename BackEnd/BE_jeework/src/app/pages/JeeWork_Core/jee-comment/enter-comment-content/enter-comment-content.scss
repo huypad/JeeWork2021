@@ -1,95 +1,139 @@
 $color-x-button: black;
 $color-hover-x-button: #1ebcc5;
-
+$hover-color: #f2f2f2;
 .enter-post-comment {
-  padding-right: 16px;
+    padding-right: 16px;
 }
 
 .show-icon {
-  position: absolute;
-  bottom: 100%;
-  // left: 72%;
-  right: 0;
+    position: absolute;
+    bottom: 100%;
+    z-index: 99;
 }
 
 .enter-post-comment-image {
-  padding-top: 0px;
-  img {
-    border: 0;
-    max-height: 37.5vh;
-    max-width: 25vw;
-    padding-bottom: 5px;
-    padding-right: 5px;
-    border-radius: 18px;
-  }
+    padding-top: 0px;
+    img {
+        border: 0;
+        max-height: 37.5vh;
+        max-width: 25vw;
+        padding-bottom: 5px;
+        padding-right: 5px;
+        border-radius: 18px;
+    }
+}
+
+.enter-post-comment-video {
+    padding-top: 0px;
+    video {
+        border: 0;
+        max-height: 47.5vh;
+        max-width: 80vw;
+        padding-bottom: 5px;
+        padding-right: 5px;
+        border-radius: 18px;
+    }
+}
+
+.video-preview {
+    display: inline-flex;
+    margin-right: 20px;
+    vertical-align: top;
 }
 
 .img-preview {
-  display: inline-flex;
-  margin-right: 20px;
-  vertical-align: top;
+    display: inline-flex;
+    margin-right: 20px;
+    vertical-align: top;
 }
 
 .delete-preview-image {
-  cursor: pointer;
-  vertical-align: top;
+    cursor: pointer;
+    vertical-align: top;
 }
+
 .delete-preview-image {
-  position: relative;
-  display: inline-block;
-  width: 10px;
-  height: 20px;
-  overflow: hidden;
-  &:hover {
+    position: relative;
+    display: inline-block;
+    width: 10px;
+    height: 20px;
+    overflow: hidden;
+    &:hover {
+        &::before,
+        &::after {
+            background: $color-hover-x-button;
+        }
+    }
     &::before,
     &::after {
-      background: $color-hover-x-button;
+        content: '';
+        position: absolute;
+        height: 2px;
+        width: 100%;
+        top: 50%;
+        left: 0;
+        margin-top: -1px;
+        background: $color-x-button;
     }
-  }
-
-  &::before,
-  &::after {
-    content: '';
-    position: absolute;
-    height: 2px;
-    width: 100%;
-    top: 50%;
-    left: 0;
-    margin-top: -1px;
-    background: $color-x-button;
-  }
-  &::before {
-    transform: rotate(45deg);
-  }
-  &::after {
-    transform: rotate(-45deg);
-  }
+    &::before {
+        transform: rotate(45deg);
+    }
+    &::after {
+        transform: rotate(-45deg);
+    }
 }
 
 .post-comment-cancle {
-  font-family: 'Roboto';
-  padding-left: 48px;
-  text-align: start;
+    font-family: 'Roboto';
+    padding-left: 48px;
+    text-align: start;
 }
 
 .span-cancel-comment {
-  font-weight: 600;
-  color: #1ebcc5;
+    font-weight: 600;
+    color: #1ebcc5;
 }
 
 .span-cancel-comment-not-in-textarea {
-  font-weight: 600;
-  color: black;
+    font-weight: 600;
+    color: black;
 }
 
 .span-cancel-comment-not-in-textarea:hover {
-  font-weight: 600;
-  text-decoration: underline;
-  cursor: pointer;
-  color: black;
+    font-weight: 600;
+    text-decoration: underline;
+    cursor: pointer;
+    color: black;
 }
 
 .textarea-input {
-  margin: 0;
-  padding: 0;
+    margin: 0;
+    font-weight: 400;
+    width: 100%;
+    resize: none;
+    border: none;
+    height: 100%;
+    display: block;
+    border: 0;
+    box-sizing: border-box;
+    box-shadow: none;
+    outline: none;
+    overflow: hidden;
+    background-color: $hover-color;
+}
+
+.text-normal {
+    font-weight: 500;
+    color: red;
+}
+
+.comment-zone {
+    position: relative;
+}
+
+.tag-comment-show {
+    position: absolute;
+    left: 50%;
+    margin-left: -134px;
+    bottom: 55px;
 }

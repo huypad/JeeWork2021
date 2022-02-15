@@ -1,5 +1,3 @@
-import { ConversationService } from './../../../../../_metronic/partials/layout/extras/jee-chat/my-chat/services/conversation.service';
-import { ConversationModel } from './../../../../../_metronic/partials/layout/extras/jee-chat/my-chat/models/conversation';
 import { LayoutUtilsService, MessageType } from './../../../../../_metronic/jeework_old/core/utils/layout-utils.service';
 import { TokenStorage } from './../../../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
 import { TranslateService } from '@ngx-translate/core';
@@ -24,8 +22,6 @@ import { PopoverContentComponent } from 'ngx-smart-popover';
 import { AddUsersDialogComponent } from '../add-users-dialog/add-users-dialog.component';
 import { ProjectsTeamService } from '../../Services/department-and-project.service';
 import { JeeWorkLiteService } from '../../../services/wework.services';
-import { UserChatBox } from '../../../../../_metronic/partials/layout/extras/jee-chat/my-chat/models/user-chatbox';
-import { ChatService } from '../../../../../_metronic/partials/layout/extras/jee-chat/my-chat/services/chat.service';
 import { MenuAsideService, MenuPhanQuyenServices } from '../../../../../_metronic/jeework_old/core/_base/layout';
 
 @Component({
@@ -42,9 +38,8 @@ export class MembersComponent {
         private menuAsideService: MenuAsideService,
         private translate: TranslateService,
         private changeDetectorRefs: ChangeDetectorRef,
-        private router: Router, private conversation_sevices: ConversationService,
+        private router: Router, 
         private _service: ProjectsTeamService,
-        private chatService: ChatService,
         public WeWorkService: JeeWorkLiteService,
         private tokenStorage: TokenStorage) {
     }
@@ -85,7 +80,7 @@ export class MembersComponent {
                 this.menuAsideService.loadMenu();
             }
         });
-        this.GetDanhBa();
+        // this.GetDanhBa();
     }
 
     CheckAdmin(data) {
@@ -202,53 +197,53 @@ export class MembersComponent {
 
     chatWith(user) {
         // this.layoutUtilsService.showInfo('chatWith ' + user.username);
-        this.chatService.GetChatWithFriend(user.username).subscribe(res => {
-            if (res && res.status === 1) {
-                if (res.data?.length > 0) {
-                    this.selectUser(res.data[0]);
-                } else {
-                    this.CreateConverSation(user);
-                }
-            }
-        })
+        // this.chatService.GetChatWithFriend(user.username).subscribe(res => {
+        //     if (res && res.status === 1) {
+        //         if (res.data?.length > 0) {
+        //             this.selectUser(res.data[0]);
+        //         } else {
+        //             this.CreateConverSation(user);
+        //         }
+        //     }
+        // })
     }
-    listDanhBa = [];
-    GetDanhBa() {
-        this.conversation_sevices.GetDanhBaNotConversation().subscribe(res => {
-            this.listDanhBa = res.data;
-            this.changeDetectorRefs.detectChanges();
-        })
-    }
-    ItemConversation(ten_group: string, data: any): ConversationModel {
-        var listUser = [];
-        listUser.push(data);
-        const item = new ConversationModel();
-        item.GroupName = ten_group;
-        item.IsGroup = false;
+    // listDanhBa = [];
+    // GetDanhBa() {
+    //     this.conversation_sevices.GetDanhBaNotConversation().subscribe(res => {
+    //         this.listDanhBa = res.data;
+    //         this.changeDetectorRefs.detectChanges();
+    //     })
+    // }
+    // ItemConversation(ten_group: string, data: any): ConversationModel {
+    //     var listUser = [];
+    //     listUser.push(data);
+    //     const item = new ConversationModel();
+    //     item.GroupName = ten_group;
+    //     item.IsGroup = false;
 
-        item.ListMember = listUser.slice();
+    //     item.ListMember = listUser.slice();
 
 
-        return item
-    }
+    //     return item
+    // }
 
-    CreateConverSation(item) {
-        if (this.listDanhBa) {
-            var user = this.listDanhBa.find(x => x.UserID = item.id_nv);
-            if (user) {
-                let it = this.ItemConversation(user.FullName, user);
-                this.conversation_sevices.CreateConversation(it).subscribe(res => {
-                    if (res && res.status === 1) {
-                        if (res.data?.length > 0) {
-                            this.selectUser(res.data[0]);
-                        }
-                        // this.listUser = []
-                        // this.CloseDia(res.data);
-                    }
-                })
-            }
-        }
-    }
+    // CreateConverSation(item) {
+    //     if (this.listDanhBa) {
+    //         var user = this.listDanhBa.find(x => x.UserID = item.id_nv);
+    //         if (user) {
+    //             let it = this.ItemConversation(user.FullName, user);
+    //             this.conversation_sevices.CreateConversation(it).subscribe(res => {
+    //                 if (res && res.status === 1) {
+    //                     if (res.data?.length > 0) {
+    //                         this.selectUser(res.data[0]);
+    //                     }
+    //                     // this.listUser = []
+    //                     // this.CloseDia(res.data);
+    //                 }
+    //             })
+    //         }
+    //     }
+    // }
     viewProfile(id_nv) {
         this.layoutUtilsService.showInfo('viewProfile ' + id_nv);
     }
@@ -282,64 +277,64 @@ export class MembersComponent {
         // this.layoutUtilsService.showInfo("updateRule " + id_row + ", " + admin);
     }
 
-    selectUser(user: any) {
-        const userChatBox: UserChatBox[] = JSON.parse(localStorage.getItem('chatboxusers'));
-        if (userChatBox) {
-            this.chatBoxUsers = userChatBox;
-        } else {
-            this.chatBoxUsers = [];
-        }
+    // selectUser(user: any) {
+    //     const userChatBox: UserChatBox[] = JSON.parse(localStorage.getItem('chatboxusers'));
+    //     if (userChatBox) {
+    //         this.chatBoxUsers = userChatBox;
+    //     } else {
+    //         this.chatBoxUsers = [];
+    //     }
 
-        // if (user.UnreadMess > 0) {
-        // 	this.UpdateUnreadMess(user.IdGroup, user.UserId, user.UnreadMess);
-        // }
-        // this.usernameActived = user.IdGroup;
+    //     // if (user.UnreadMess > 0) {
+    //     // 	this.UpdateUnreadMess(user.IdGroup, user.UserId, user.UnreadMess);
+    //     // }
+    //     // this.usernameActived = user.IdGroup;
 
-        switch (this.chatBoxUsers.length) {
+    //     switch (this.chatBoxUsers.length) {
 
-            case 2: {
-                const u = this.chatBoxUsers.find(x => x.user.IdGroup === user.IdGroup);
-                if (u != undefined) {
-                    this.chatBoxUsers = this.chatBoxUsers.filter(x => x.user.IdGroup !== user.IdGroup);
-                    this.chatBoxUsers.push(u);
-                } else {
-                    this.chatBoxUsers.push(new UserChatBox(user, 625 + 325));
-                    this.chatService.OpenMiniChat$.next(new UserChatBox(user, 625 + 325));
-                }
-                localStorage.setItem('chatboxusers', JSON.stringify(this.chatBoxUsers));
-                break;
-            }
-            case 1: {
-                const u = this.chatBoxUsers.find(x => x.user.IdGroup === user.IdGroup);
-                if (u != undefined) {
-                    this.chatBoxUsers = this.chatBoxUsers.filter(x => x.user.IdGroup !== user.IdGroup);
-                    this.chatBoxUsers.push(u);
-                } else {
-                    this.chatBoxUsers.push(new UserChatBox(user, 300 + 325));
-                    this.chatService.OpenMiniChat$.next(new UserChatBox(user, 300 + 325));
-                }
-                localStorage.setItem('chatboxusers', JSON.stringify(this.chatBoxUsers));
-                break;
-            }
-            default: {// 0 nó vào đây trc nếu có 1 hội thoại để xem thử
-                const u = this.chatBoxUsers.find(x => x.user.IdGroup === user.IdGroup);
-                if (u != undefined) {
-                    this.chatBoxUsers = this.chatBoxUsers.filter(x => x.user.IdGroup !== user.IdGroup);
-                    this.chatBoxUsers.push(u);
-                } else {
-                    this.chatBoxUsers.push(new UserChatBox(user, 300));
-                    const item = new UserChatBox(user, 300);
-                    // this.chatService.ChangeDatachat(new UserChatBox(user, 625 + 325));
-                    this.chatService.OpenMiniChat$.next(item);
-                }
-                localStorage.setItem('chatboxusers', JSON.stringify(this.chatBoxUsers));
-                break;
-            }
-        }
-        // this.searchText = "";
-        this.chatService.search$.next('activechat');
-        this.changeDetectorRefs.detectChanges();
-    }
+    //         case 2: {
+    //             const u = this.chatBoxUsers.find(x => x.user.IdGroup === user.IdGroup);
+    //             if (u != undefined) {
+    //                 this.chatBoxUsers = this.chatBoxUsers.filter(x => x.user.IdGroup !== user.IdGroup);
+    //                 this.chatBoxUsers.push(u);
+    //             } else {
+    //                 this.chatBoxUsers.push(new UserChatBox(user, 625 + 325));
+    //                 this.chatService.OpenMiniChat$.next(new UserChatBox(user, 625 + 325));
+    //             }
+    //             localStorage.setItem('chatboxusers', JSON.stringify(this.chatBoxUsers));
+    //             break;
+    //         }
+    //         case 1: {
+    //             const u = this.chatBoxUsers.find(x => x.user.IdGroup === user.IdGroup);
+    //             if (u != undefined) {
+    //                 this.chatBoxUsers = this.chatBoxUsers.filter(x => x.user.IdGroup !== user.IdGroup);
+    //                 this.chatBoxUsers.push(u);
+    //             } else {
+    //                 this.chatBoxUsers.push(new UserChatBox(user, 300 + 325));
+    //                 this.chatService.OpenMiniChat$.next(new UserChatBox(user, 300 + 325));
+    //             }
+    //             localStorage.setItem('chatboxusers', JSON.stringify(this.chatBoxUsers));
+    //             break;
+    //         }
+    //         default: {// 0 nó vào đây trc nếu có 1 hội thoại để xem thử
+    //             const u = this.chatBoxUsers.find(x => x.user.IdGroup === user.IdGroup);
+    //             if (u != undefined) {
+    //                 this.chatBoxUsers = this.chatBoxUsers.filter(x => x.user.IdGroup !== user.IdGroup);
+    //                 this.chatBoxUsers.push(u);
+    //             } else {
+    //                 this.chatBoxUsers.push(new UserChatBox(user, 300));
+    //                 const item = new UserChatBox(user, 300);
+    //                 // this.chatService.ChangeDatachat(new UserChatBox(user, 625 + 325));
+    //                 this.chatService.OpenMiniChat$.next(item);
+    //             }
+    //             localStorage.setItem('chatboxusers', JSON.stringify(this.chatBoxUsers));
+    //             break;
+    //         }
+    //     }
+    //     // this.searchText = "";
+    //     this.chatService.search$.next('activechat');
+    //     this.changeDetectorRefs.detectChanges();
+    // }
 
     LoadParent(value): void {
         this._service.changeMessage(value);

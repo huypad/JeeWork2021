@@ -1,4 +1,3 @@
-import { ChatService } from './../../../../_metronic/partials/layout/extras/jee-chat/my-chat/services/chat.service';
 import {TokenStorage} from './../../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
 import {LayoutConfigService} from './../../../../_metronic/jeework_old/core/_base/layout/services/layout-config.service';
 import {Component, OnInit, AfterViewInit, ChangeDetectorRef} from '@angular/core';
@@ -18,6 +17,7 @@ import objectPath from 'object-path';
 import {SocketioService} from 'src/app/modules/auth/_services/socketio.service';
 import { JeeWorkLiteService } from '../../../JeeWork_Core/services/wework.services';
 import {RemindService} from '../../../../modules/auth/_services/remind.service';
+import { ChatService } from 'lib-chat-box-dps';
 
 @Component({
     selector: 'app-topbar',

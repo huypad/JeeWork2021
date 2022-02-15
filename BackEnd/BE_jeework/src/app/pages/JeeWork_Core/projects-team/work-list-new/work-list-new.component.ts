@@ -7,11 +7,6 @@ import { SubheaderService } from "./../../../../_metronic/partials/layout/subhea
 import { TokenStorage } from "./../../../../_metronic/jeework_old/core/auth/_services/token-storage.service";
 import { QueryParamsModelNew } from "./../../../../_metronic/jeework_old/core/models/query-models/query-params.model";
 import { MenuPhanQuyenServices } from "./../../../../_metronic/jeework_old/core/_base/layout/services/menu-phan-quyen.service";
-import { AttachmentService } from "./../../services/attachment.service";
-import {
-  AttachmentModel,
-  FileUploadModel,
-} from "./../Model/department-and-project.model";
 import { AddNewFieldsComponent } from "./add-new-fields/add-new-fields.component";
 import { StatusDynamicDialogComponent } from "./../../status-dynamic/status-dynamic-dialog/status-dynamic-dialog.component";
 import { WorkService } from "./../../work/work.service";
@@ -39,7 +34,6 @@ import {
   map,
   distinctUntilChanged,
 } from "rxjs/operators";
-import { element } from "protractor";
 import { JeeWorkLiteService } from "./../../services/wework.services";
 import { DatePipe, DOCUMENT } from "@angular/common";
 import { TranslateService } from "@ngx-translate/core";
@@ -462,11 +456,8 @@ export class WorkListNewComponent implements OnInit {
     }
   }
   /** Selects all rows if they are not all selected; otherwise clear selection. */
-  masterToggle() { }
-
   async LoadData(loading = true) {
     this.clearList();
-
     this.data = [];
     // get option new field
     this.GetOptions_NewField();
@@ -535,26 +526,30 @@ export class WorkListNewComponent implements OnInit {
       (err) => this.layoutUtilsService.OffWaitingDiv()
     );
   }
-	filteredUsers: ReplaySubject<any[]> = new ReplaySubject<any[]>(1);
-	UsersFilterCtrl: string = '';
+  filteredUsers: ReplaySubject<any[]> = new ReplaySubject<any[]>(1);
+  UsersFilterCtrl: string = '';
   SearchTask() {
-		if (!this.listStatus) {
-			return;
-		}
-    debugger
-		let search = this.keyword;
-		if (!search) {
-			this.filteredUsers.next(this.listStatus.slice());
-			return;
-		} else {
-			search = search.toLowerCase();
-		}
-		this.filteredUsers.next(
-			this.listStatus.filter(ts =>
-				ts.title.toLowerCase().indexOf(search) > -1)
-		);
-		this.changeDetectorRefs.detectChanges();
-	}
+		const result: any[] = [];
+    if (!this.listStatus) {
+      return;
+    }
+    let search = this.keyword;
+    if (!search) {
+      this.filteredUsers.next(this.listStatus.slice());
+      return;
+    } else {
+      search = search.toLowerCase();
+    }
+    
+    this.filteredUsers.next(
+      this.listStatus.forEach(work => {
+        work.datawork.find(ts =>
+          ts.title.toLowerCase().indexOf(search) > -1)
+      }));
+      result;
+   
+    this.changeDetectorRefs.detectChanges();
+  }
   GetStatusNameAndColor(name: string, color: string): { name: string, color: string }[] {
     let lst: { name: string, color: string }[] = [];
     if (name != null) {
@@ -1233,8 +1228,6 @@ export class WorkListNewComponent implements OnInit {
       .forEach((element) => element.classList.remove("drop-inside"));
   }
 
-
-
   editTitle(val) {
     this.isEdittitle = val;
     const ele = document.getElementById("task" + val) as HTMLInputElement;
@@ -1256,10 +1249,6 @@ export class WorkListNewComponent implements OnInit {
     }
     this.UpdateByKey(node, "title", event.target.value.trim());
   }
-
-  focusFunction(val) { }
-
-
 
   AddTask(item) {
     const task = new WorkModel();
@@ -1386,7 +1375,6 @@ export class WorkListNewComponent implements OnInit {
   }
 
   ViewDetai(item) {
-    const url = `/user-management/users`;
     this.router.navigate([
       "",
       { outlets: { auxName: "aux/detail/" + item.id_row } },

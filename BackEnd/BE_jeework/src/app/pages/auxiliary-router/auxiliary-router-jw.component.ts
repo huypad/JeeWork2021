@@ -6,6 +6,7 @@ import { WorkListNewDetailComponent } from '../JeeWork_Core/projects-team/work-l
 import { MessageType } from 'src/app/_metronic/jeework_old/core/_base/crud';
 import { LayoutUtilsService } from 'src/app/_metronic/jeework_old/core/utils/layout-utils.service';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { ListTasksStore } from '../JeeWork_Core/projects-team/work-list-new/list-task-cu/list-task-cu.store';
 
 @Component({
     selector: 'app-auxiliary-router-jw',
@@ -14,15 +15,16 @@ import { BehaviorSubject, Observable } from 'rxjs';
 export class AuxiliaryRouterJWComponent implements OnInit {
     loadingSubject = new BehaviorSubject<boolean>(true);
     loading$: Observable<boolean>;
+    snapshot: any;
     constructor(
         private router: Router,
         public dialog: MatDialog,
         public projectsTeamService: ProjectsTeamService,
         private activatedRoute: ActivatedRoute,
         private layoutUtilsService: LayoutUtilsService,
-
+        public store: ListTasksStore
     ) {
-        const snapshot: RouterStateSnapshot = router.routerState.snapshot;
+        this.snapshot = router.routerState.snapshot.url;
     }
     ngOnInit() {
         this.loading$ = this.loadingSubject.asObservable();
@@ -46,7 +48,16 @@ export class AuxiliaryRouterJWComponent implements OnInit {
     }
     close() {
         this.router.navigate(['', { outlets: { auxName: null } }]);
-        AuxiliaryRouterJWComponent.dialogRef = null;
+        console.log("RouterStateSnapshot", this.snapshot);
+        console.log(this.snapshot.includes('tasks')); // true
+        if (this.snapshot.includes('/tasks(')) {
+            this.store.updateEvent = true;
+
+            //   setTimeout(() => {
+            //     window.location.reload();
+            //   }, 10);
+        }
+        // AuxiliaryRouterJWComponent.dialogRef = null;
     }
     public static dialogRef = null;// chỗ này đem ra biến cục bộ dạng static đó! ý nghĩa là kt nếu đang tồn tại dialog này thì không cần kt code trong sub nữa! => hiện tại là cách fix tam thời (chưa tìm đc chỗ gây lỗi)
     openDialogJW(item) {
@@ -58,7 +69,6 @@ export class AuxiliaryRouterJWComponent implements OnInit {
         });
         AuxiliaryRouterJWComponent.dialogRef.afterClosed().subscribe(result => {
             this.close();
-            AuxiliaryRouterJWComponent.dialogRef = null;
         });
     }
 }

@@ -1,4 +1,3 @@
-import { PresenceService } from './../../_metronic/partials/layout/extras/jee-chat/my-chat/services/presence.service';
 import { environment } from 'src/environments/environment';
 import {
     Component,
@@ -12,7 +11,9 @@ import {
 } from '@angular/core';
 import { LayoutService, LayoutInitService } from '../../_metronic/core';
 import KTLayoutContent from '../../../assets/js/layout/base/content';
-import { ChatService } from '../../_metronic/partials/layout/extras/jee-chat/my-chat/services/chat.service';
+import { CallVideoComponent, ChatService, PresenceService } from 'lib-chat-box-dps';
+import { MatDialog } from '@angular/material/dialog';
+import { T } from '@angular/cdk/keycodes';
 
 const LAYOUT_CONFIG_LOCAL_STORAGE_KEY = `${environment.appVersion}-layoutConfig`;
 
@@ -38,6 +39,7 @@ export class LayoutComponent implements OnInit, AfterViewInit {
     footerCSSClasses: string;
     headerCSSClasses: string;
     headerHTMLAttributes: any = {};
+    lstContact:any[];
     // offcanvases
     extrasSearchOffcanvasDisplay = false;
     extrasNotificationsOffcanvasDisplay = false;
@@ -54,6 +56,7 @@ export class LayoutComponent implements OnInit, AfterViewInit {
         private initService: LayoutInitService,
         private layout: LayoutService,
         private _ngZone: NgZone,
+        public dialog: MatDialog,
         private presence: PresenceService,
         private chatService: ChatService,
         private changeDetectorRefs: ChangeDetectorRef,
@@ -62,6 +65,7 @@ export class LayoutComponent implements OnInit, AfterViewInit {
     }
 
     ngOnInit(): void {
+        this.GetContact();
         setTimeout(() => {
             const userChatBox: UserChatBox[] = JSON.parse(localStorage.getItem('chatboxusers'));
             if (userChatBox) {
@@ -123,14 +127,81 @@ export class LayoutComponent implements OnInit, AfterViewInit {
         this.extrasScrollTopDisplay = this.layout.getProp(
             'extras.scrolltop.display'
         );
-        // try {
-        //     this.presence.connectToken();
-        // } catch (err) {
-        // }
+        try {
+            this.presence.connectToken();
+        } catch (err) {
+        }
         this.subscribeToEvents();
         this.EventCloseChatboxAll();
 
+        this.EventSubcibeCallVideo()
+    
+
+}
+GetContact()
+{
+    
+    
+        this.chatService.GetContactChatUser().subscribe(res=>{
+          this.lstContact=res.data;
+     
+          this.changeDetectorRefs.detectChanges();
+         
+        })
+    
+ 
+}
+CheckCall(idGroup)
+  {
+ 
+    let index=this.lstContact.findIndex(x=>x.IdGroup==idGroup);
+    if(index>=0)
+    {
+      return true
     }
+    else{
+      return false
+    }
+}
+
+
+private EventSubcibeCallVideo(): void {
+
+    this.presence.CallvideoMess$.subscribe(res=>
+      { 
+        if(res&&this.CheckCall(res.IdGroup)&&res.UserName!==this.userCurrent)
+        {
+
+          this.CallVideoDialogEvent(res.isGroup,res.UserName,res.Status,res.keyid,res.IdGroup,res.FullName,res.Avatar,res.BGcolor);
+
+        }
+
+      })
+
+  }
+
+  CallVideoDialogEvent(isGroup,username,code,key,idgroup,fullname,img,bg) {
+
+
+    var dl={isGroup:isGroup,UserName:username,BG:bg,Avatar:img,PeopleNameCall:fullname,status:code,idGroup:idgroup,keyid:key,Name:fullname};
+    const dialogRef = this.dialog.open(CallVideoComponent, {
+  //  width:'800px',
+  // height:'800px',
+  data: {dl },
+  disableClose: true
+
+    });
+  dialogRef.afterClosed().subscribe(res => {
+
+          if(res)
+    {
+      this.presence.ClosevideoMess.next(undefined)
+
+      this.changeDetectorRefs.detectChanges();
+    }
+          })
+
+  }
     userCurrent: string;
     EventCloseChatboxAll() {
         this._ngZone.run(() => {

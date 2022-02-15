@@ -1,7 +1,7 @@
 import { environment } from 'src/environments/environment';
 import { Component, NgZone, OnInit } from '@angular/core';
 import { LayoutService } from '../../../../../core';
-import {ChatService} from '../../jee-chat/my-chat/services/chat.service';
+import { ChatService } from 'lib-chat-box-dps';
 const   HOST_JEEChat=environment.HOST_JEECHAT;
 @Component({
   selector: 'app-quick-panel-offcanvas',
@@ -19,6 +19,7 @@ export class QuickPanelOffcanvasComponent implements OnInit {
     private _ngZone: NgZone,  
     ) {}
   elementId:string;
+  apptitle:string="Quản lý công việc"
   public CData: number;
   search:string;
   hostjeechat:string=HOST_JEEChat;

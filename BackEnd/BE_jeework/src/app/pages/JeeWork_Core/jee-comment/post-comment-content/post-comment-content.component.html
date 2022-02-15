@@ -1,107 +1,128 @@
 <ul #postcmt class="post-comment-content" *ngIf="comment && objectID">
-  <li class="list-comment">
-    <div class="content-comment">
-      <div class="avatar-comment">
-        <img id="img-avatar" src="{{ service.getUriAvatar(comment.Username) }}" />
-      </div>
-      <div class="post-commment-value">
-        <div class="post-comment">
-          <div class="post-comment-input post-comment-input-title">
-            <div class="comment-name-title">
-              <span class="name">
-                {{ service.getDisplay(comment.Username) }}
-              </span>
-              <!-- <span class="title">
-              Dev
-            </span> -->
-            </div>
-            <span class="input-comment-span">{{ comment.Text }}</span>
-            <div
-              class="post-comment-reaction-show show-text"
-              *ngIf="comment.Attachs.Images.length == 0 && comment.Attachs.Videos.length === 0"
-            >
-              <jeecomment-reaction-comment-show
-                [isDeteachChange$]="isDeteachChangeComment$"
-                [comment]="comment"
-              ></jeecomment-reaction-comment-show>
-            </div>
-          </div>
-          <div class="icon-edit-report">
-            <span>
-              <div class="hover-icon" tabindex="0">
-                <span class="show-when-hover">
-                  <i aria-hidden="true" id="edit-report-icon"></i>
+  <ng-container *ngIf="!(isEdit$ | async)">
+    <li class="list-comment">
+      <div class="content-comment">
+        <div class="avatar-comment">
+          <img id="img-avatar" src="{{ service.getUriAvatar(comment.Username) }}" />
+        </div>
+        <div class="post-commment-value">
+          <div class="post-comment">
+            <div class="post-comment-input post-comment-input-title">
+              <div class="comment-name-title">
+                <span class="name">
+                  {{ service.getDisplay(comment.Username) }}
                 </span>
               </div>
-            </span>
-          </div>
-        </div>
-        <div class="post-attach">
-          <div class="post-comment-file">
-            <div *ngFor="let file of comment.Attachs.Files">
-              <img src="https://cdn.jee.vn/jee-comment/icons/facebook-comment-header/download.png" />
-              <a target="_self" [href]="file" [download]="file"> {{ file.split('/')[file.split('/').length - 1] }} </a>
-            </div>
-          </div>
-          <div class="post-comment-image">
-            <ng-container *ngFor="let image of comment.Attachs.Images">
-              <img [src]="image" />
-            </ng-container>
-            <div
-              class="post-comment-reaction-show show-image"
-              *ngIf="comment.Attachs.Images.length > 0 && comment.Attachs.Videos.length === 0"
-            >
-              <jeecomment-reaction-comment-show
-                [isDeteachChange$]="isDeteachChangeComment$"
-                [comment]="comment"
-              ></jeecomment-reaction-comment-show>
-            </div>
-          </div>
-          <div class="post-comment-video">
-            <video *ngFor="let video of comment.Attachs.Videos" controls (click)="toggleVideo()" #videoPlayer>
-              <source src="{{ video }}" type="video/mp4" />
-            </video>
-            <div class="post-comment-reaction-show show-video" *ngIf="comment.Attachs.Videos.length > 0">
-              <jeecomment-reaction-comment-show
-                [isDeteachChange$]="isDeteachChangeComment$"
-                [comment]="comment"
-              ></jeecomment-reaction-comment-show>
-            </div>
-          </div>
-        </div>
-        <div class="bottom-comment">
-          <ul class="comment-icon bottom-comment-action">
-            <li class="bottom-comment-react bottom-comment-like-reply">
-              <div class="post-comment-reaction">
-                <jeecomment-reaction-content
-                  [objectID]="objectID"
-                  [commentID]="commentID"
-                  (changeValue)="ChangeValue()"
-                  [replyCommentID]="replyCommentID"
-                  [userOldReaction]="comment.UserReaction"
-                ></jeecomment-reaction-content>
+              <span class="input-comment-span">{{ comment.Text }}</span>
+              <div
+                class="post-comment-reaction-show show-text"
+                *ngIf="comment.Attachs.Images.length == 0 && comment.Attachs.Videos.length === 0"
+              >
+                <jeecomment-reaction-comment-show
+                  (mouseenter)="mouseEnterReactionCommentShow($event)"
+                  (mouseleave)="mouseLeaveReactionCommentShow($event)"
+                  [isDeteachChange$]="isDeteachChangeComment$"
+                  [comment]="comment"
+                ></jeecomment-reaction-comment-show>
               </div>
-              <span *ngIf="!comment.UserReaction" class="text-filter"> Thích </span>
-              <span *ngIf="comment.UserReaction" class="text-filter" [style.color]="comment.UserReactionColor">
-                {{ comment.UserReaction }}
-              </span>
-            </li>
-            <li class="bottom-comment-like-reply" (click)="showEnterComment()">
-              <span class="text-filter"> Trả lời </span>
-            </li>
-            <li>
+            </div>
+            <div class="icon-edit-report" [matMenuTriggerFor]="menu" *ngIf="isShowEdit(comment.Username)">
               <span>
-                {{ comment.DateCreated | date: 'dd/MM/yyyy HH:mm:ss a' }}
+                <div class="hover-icon" tabindex="0">
+                  <span class="show-when-hover">
+                    <i aria-hidden="true" id="edit-report-icon"></i>
+                  </span>
+                </div>
               </span>
-            </li>
-            <li *ngIf="comment.IsEdit">
-              <span> Đã sửa </span>
-            </li>
-          </ul>
+            </div>
+            <mat-menu #menu="matMenu">
+              <button (click)="edit()" mat-menu-item>
+                <span>{{ 'JEECOMMENT.CHINHSUA' | translate }}</span>
+              </button>
+              <button (click)="delete()" mat-menu-item>
+                <span>{{ 'JEECOMMENT.XOA' | translate }}</span>
+              </button>
+            </mat-menu>
+          </div>
+          <div class="post-attach">
+            <div class="post-comment-file">
+              <div *ngFor="let file of comment.Attachs.Files">
+                <img src="https://cdn.jee.vn/jee-comment/icons/facebook-comment-header/download.png" />
+                <a target="_self" [href]="file" [download]="file"> {{ file.split('/')[file.split('/').length - 1] }} </a>
+              </div>
+            </div>
+            <div class="post-comment-image">
+              <ng-container *ngFor="let image of comment.Attachs.Images">
+                <img [src]="image" />
+              </ng-container>
+              <div
+                class="post-comment-reaction-show show-image"
+                *ngIf="comment.Attachs.Images.length > 0 && comment.Attachs.Videos.length === 0"
+              >
+                <jeecomment-reaction-comment-show
+                  jeecommentPopover="hello word!"
+                  [isDeteachChange$]="isDeteachChangeComment$"
+                  [comment]="comment"
+                ></jeecomment-reaction-comment-show>
+              </div>
+            </div>
+            <div class="post-comment-video">
+              <video *ngFor="let video of comment.Attachs.Videos" controls (click)="toggleVideo()" #videoPlayer>
+                <source src="{{ video }}" type="video/mp4" />
+              </video>
+              <div class="post-comment-reaction-show show-video" *ngIf="comment.Attachs.Videos.length > 0">
+                <jeecomment-reaction-comment-show
+                  jeecommentPopover="hello word!"
+                  [isDeteachChange$]="isDeteachChangeComment$"
+                  [comment]="comment"
+                ></jeecomment-reaction-comment-show>
+              </div>
+            </div>
+          </div>
+          <div class="bottom-comment">
+            <ul class="comment-icon bottom-comment-action">
+              <li class="bottom-comment-react bottom-comment-like-reply">
+                <div class="post-comment-reaction">
+                  <jeecomment-reaction-content
+                    [objectID]="objectID"
+                    [commentID]="commentID"
+                    [replyCommentID]="replyCommentID"
+                    [userOldReaction]="comment.UserReaction"
+                  ></jeecomment-reaction-content>
+                </div>
+                <span *ngIf="!comment.UserReaction" class="text-filter"> {{ 'JEECOMMENT.THICH' | translate }} </span>
+                <span *ngIf="comment.UserReaction" class="text-filter" [style.color]="comment.UserReactionColor">
+                  {{ comment.UserReaction }}
+                </span>
+              </li>
+              <li class="bottom-comment-like-reply" (click)="showEnterComment()">
+                <span class="text-filter"> {{ 'JEECOMMENT.TRALOI' | translate }} </span>
+              </li>
+              <li>
+                <span>
+                  {{ comment.DateCreated | date: 'dd/MM/yyyy hh:mm:ss a' }}
+                </span>
+              </li>
+              <li *ngIf="comment.IsEdit">
+                <span> {{ 'JEECOMMENT.DASUA' | translate }}</span>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
-    </div>
-  </li>
+    </li>
+  </ng-container>
+  <jeecomment-enter-comment-content
+    *ngIf="isEdit$ | async"
+    [isEdit]="isEdit$ | async"
+    [isFocus$]="isFocus$$"
+    [objectID]="objectID"
+    [commentID]="commentID"
+    [editCommentModel]="comment"
+    [replyCommentID]="replyCommentID"
+    (isEditEvent)="isEditEventChange($event)"
+  >
+  </jeecomment-enter-comment-content>
   <li class="list-comment list-comment-reply">
     <ng-container *ngIf="comment.LengthReply > 0">
       <div class="count-comment-reply text-filter" (click)="clickButtonShowReply()" *ngIf="!(ClickShowReply$.asObservable() | async)">
@@ -109,17 +130,17 @@
         <div class="icon-reply">
           <div role="button" tabindex="0"><i id="reply-icon"></i></div>
         </div>
-        <span> {{ comment.LengthReply }} Trả lời </span>
+        <span> {{ comment.LengthReply }} {{ 'JEECOMMENT.TRALOI' | translate }} </span>
       </div>
     </ng-container>
     <ng-container *ngIf="ClickShowReply$.asObservable() | async">
       <div class="comment-filter" *ngIf="filterViewLengthComment < comment.TotalLengthComment">
         <div class="view-more-comment">
-          <span (click)="viewMoreComment()" class="text-filter"> Xem thêm bình luận </span>
+          <span (click)="viewMoreComment()" class="text-filter"> {{ 'JEECOMMENT.XEMTHEMBINHLUAN' | translate }} </span>
           <span class="click-show-spinner-view-more-comment" [class.spinner]="ShowSpinnerViewMore$.asObservable() | async"></span>
         </div>
         <div style="display: none" class="filter">
-          <span>Toàn bộ bình luận </span>
+          <span>{{ 'JEECOMMENT.TOANBOBINHLUAN' | translate }} </span>
           <i data-visualcompletion="css-img" class="item-align-middle" id="filter-icon"></i>
         </div>
       </div>
@@ -132,12 +153,11 @@
       >
       </jeecomment-post-comment-content>
       <jeecomment-enter-comment-content
-        [showonpopup]="showonpopup"
         [isFocus$]="isFocus$$"
         *ngIf="(showEnterComment$.asObservable() | async) && lstObjectID.length < 3"
         [objectID]="objectID"
-        (valuecomment)="showFullComment()"
-        [commentID]="commentID" >
+        [commentID]="commentID"
+      >
       </jeecomment-enter-comment-content>
     </ng-container>
   </li>

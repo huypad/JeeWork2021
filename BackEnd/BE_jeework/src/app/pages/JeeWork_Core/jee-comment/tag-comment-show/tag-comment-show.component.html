@@ -1,0 +1,16 @@
+<div class="choose-users-box">
+  <div class="users-container">
+    <div class="user-item" (click)="select(user)" *ngFor="let user of listUser">
+      <div class="align-items-center d-flex">
+        <ngx-avatar [size]="30" src="{{ user.AvartarImgURL }}" *ngIf="user.AvartarImgURL; else elsAvatar"></ngx-avatar>
+        <ng-template #elsAvatar>
+          <ngx-avatar [textSizeRatio]="2.5" [size]="30" bgColor="{{ user.BgColor }}" [name]="user.FirstName"></ngx-avatar>
+        </ng-template>
+      </div>
+      <div style="padding-left: 10px">
+        <div>{{ user.FullName }}</div>
+        <span>{{ user.Jobtitle }}</span>
+      </div>
+    </div>
+  </div>
+</div>

@@ -56,7 +56,7 @@ export class AuxiliaryRouterComponent implements OnInit {
         });
         AuxiliaryRouterComponent.dialogRef.afterClosed().subscribe(result => {
             this.close();
-            AuxiliaryRouterComponent.dialogRef = null;
+            // AuxiliaryRouterComponent.dialogRef = null;
         });
     }
 }

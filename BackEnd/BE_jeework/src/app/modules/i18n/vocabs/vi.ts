@@ -387,6 +387,23 @@ export const locale = {
             //====================Dùng cho phần xác nhận duyệt - không duyệt (Phép, tăng ca, .....)
             nhanvien: 'Nhân viên',
         },
+        JEECOMMENT: {
+            TRALOI: 'Trả lời',
+            DASUA: 'Đã sửa',
+            XEMTHEMBINHLUAN: 'Xem thêm bình luận',
+            TOANBOBINHLUAN: 'Toàn bộ bình luận',
+            NHAN: 'Nhấn',
+            DE: 'để',
+            HUYBINHLUAN: 'huỷ bình luận',
+            THICH: 'Thích',
+            VIETBINHLUAN: 'Viết bình luận',
+            CHINHSUA: 'Chỉnh sửa',
+            XOA: 'Xoá',
+            BINHLUAN: 'Bình luận',
+            CHIASE: 'Chia sẻ',
+            KHONGHOPLE: 'Comment không hợp lệ hoặc đã bị xoá, vui lòng thử lại sau.',
+            BINHLUANMOINHAT: 'Bình luận gần đây nhất',
+          },
         //==================== Dùng trong templateCenter
         template: {
             addtolib: 'Thêm vào thư viện cá nhân',

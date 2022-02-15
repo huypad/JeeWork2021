@@ -65,6 +65,7 @@ import { LogWorkDescriptionComponent } from '../../../log-work-description/log-w
 import { tinyMCE } from 'src/app/_metronic/jeework_old/components/tinyMCE';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ListTasksStore } from '../list-task-cu/list-task-cu.store';
 @Component({
     selector: 'kt-work-list-new-detail',
     templateUrl: './work-list-new-detail.component.html',
@@ -94,7 +95,8 @@ export class WorkListNewDetailComponent implements OnInit {
         @Inject(MAT_DIALOG_DATA) public datalog: DialogData,
         private menuServices: MenuPhanQuyenServices,
         private sanitizer: DomSanitizer,
-        private viewContainerRef: ViewContainerRef, private componentFactoryResolver: ComponentFactoryResolver
+        private viewContainerRef: ViewContainerRef, private componentFactoryResolver: ComponentFactoryResolver,
+        public store: ListTasksStore
         // public activeModal: NgbActiveModal,
         // private confirmationDialogService: ConfirmationDialogService
 
@@ -1924,7 +1926,9 @@ export class WorkListNewDetailComponent implements OnInit {
         // if (!this.is_confirm)
         this.router.navigate(['', { outlets: { auxName: null } }]);
         // AuxiliaryRouterJWComponent.dialogRef = null;
-        this.dialogRef.close(true);
+        this.dialogRef.close();
+        this.store.updateEvent = true;
+
         // else
         // this.onKeyUp();
         this.changeDetectorRefs.detectChanges();
