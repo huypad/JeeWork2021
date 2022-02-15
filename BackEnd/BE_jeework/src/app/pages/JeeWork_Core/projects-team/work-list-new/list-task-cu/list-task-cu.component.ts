@@ -176,58 +176,46 @@ export class ListTaskCUComponent implements OnInit, OnChanges, OnDestroy {
     ];
     ngOnInit() {
         this.subscription = this.store.updateEvent$.subscribe(res => {
-            if (res) {
-                this.LoadFilterProject();
-                this.BindDataLite();
-                this.selection = new SelectionModel<WorkModel>(true, []);
-                this.menuServices.GetRoleWeWork('' + this.UserID).subscribe(res => {
-                    if (res && res.status === 1) {
-                        this.list_role = res.data.dataRole;
-                        this.IsAdminGroup = res.data.IsAdminGroup;
-                    }
-                });
+            if (res)
+            {
                 this.Forme(true);
-                this.LoadData();
-            }
-            else {
-                // giao tiếp service
-                this.subscription = this.CommunicateService.currentMessage.subscribe(message => {
-                    if (message) {
-                        // this.LoadWork();
-                    }
-                });
-                // end giao tiếp service
-                // get filter groupby
-                this.filter_groupby = this.getMystaff ? this.listFilter_Groupby[1] : this.listFilter_Groupby[0];
-                const today = new Date();
-                this.filterDay = {
-                    // endDate: new Date(today.setMonth(today.getMonth())),
-                    // startDate: new Date(today.getFullYear(), today.getMonth() - 3, 1),
-                    endDate: new Date(today.setMonth(today.getMonth() + 1)),
-                    startDate: new Date(today.getFullYear(), today.getMonth() - 2, 1),
-                };
-                this.column_sort = this.sortField[0];
-                this.route.params.subscribe(res => {
-                    if (this.selectedTab === 2) {
-                        if (res && res.id) {
-                            this.idFilter = res.id;
-                        }
-                    }
-                    this.DanhSachCongViec = [];
-                });
-                this.LoadFilterProject();
-                this.BindDataLite();
-                this.selection = new SelectionModel<WorkModel>(true, []);
-                this.menuServices.GetRoleWeWork('' + this.UserID).subscribe(res => {
-                    if (res && res.status === 1) {
-                        this.list_role = res.data.dataRole;
-                        this.IsAdminGroup = res.data.IsAdminGroup;
-                    }
-                });
-                this.Forme(true);
-                this.LoadData();
             }
         })
+        // giao tiếp service
+        this.subscription = this.CommunicateService.currentMessage.subscribe(message => {
+            if (message) {
+                // this.LoadWork();
+            }
+        });
+        // end giao tiếp service
+        // get filter groupby
+        this.filter_groupby = this.getMystaff ? this.listFilter_Groupby[1] : this.listFilter_Groupby[0];
+        const today = new Date();
+        this.filterDay = {
+            // endDate: new Date(today.setMonth(today.getMonth())),
+            // startDate: new Date(today.getFullYear(), today.getMonth() - 3, 1),
+            endDate: new Date(today.setMonth(today.getMonth() + 1)),
+            startDate: new Date(today.getFullYear(), today.getMonth() - 2, 1),
+        };
+        this.column_sort = this.sortField[0];
+        this.route.params.subscribe(res => {
+            if (this.selectedTab === 2) {
+                if (res && res.id) {
+                    this.idFilter = res.id;
+                }
+            }
+            this.DanhSachCongViec = [];
+        });
+        this.LoadFilterProject();
+        this.BindDataLite();
+        this.selection = new SelectionModel<WorkModel>(true, []);
+        this.menuServices.GetRoleWeWork('' + this.UserID).subscribe(res => {
+            if (res && res.status === 1) {
+                this.list_role = res.data.dataRole;
+                this.IsAdminGroup = res.data.IsAdminGroup;
+            }
+        });
+        this.LoadData();
         this.changeDetectorRefs.detectChanges();
     }
     async LoadData(loading = true) {
