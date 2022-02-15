@@ -295,6 +295,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                             return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
                     }
                     #endregion
+                    string order_by = "";
                     SqlConditions conds = new SqlConditions();
                     conds.Add("w_user.disabled", 0);
                     string select_user = $@"select distinct w_user.id_user,'' as hoten,'' as email,'' as image, id_work,w_user.loai,w_user.CreatedBy
@@ -314,6 +315,10 @@ namespace JeeWork_Core2021.Controllers.Wework
                             strW = " and (w.nguoigiao=@iduser (parent))";
                         if (query.filter["filter"] == "3")// theo dõi
                             strW = $" and (w.id_row in (select id_work from we_work_user where loai = 2 and disabled=0 and id_user = @iduser ) (parent))";
+                    }
+                    if (!string.IsNullOrEmpty(query.filter["sort"]))
+                    {
+                        order_by = query.filter["sort"];
                     }
                     if (!string.IsNullOrEmpty(query.filter["isclose"]))
                     {
@@ -345,7 +350,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         strW += $" and  w.id_row not in (select id_row from we_work where end_date is not null and id_parent is null) ";
                     #endregion
                     string columnName = "id_project_team";
-                    DataSet ds = GetWorkByEmployee(Request.Headers, cnn, query, IDNV, DataAccount, strW);
+                    DataSet ds = GetWorkByEmployee(Request.Headers, cnn, query, IDNV, DataAccount, strW, order_by);
                     if (cnn.LastError != null || ds == null)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     var temp = filterTasks(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
@@ -365,13 +370,9 @@ namespace JeeWork_Core2021.Controllers.Wework
                     pageModel.Page = query.page;
                     var dtNew = temp.Skip((query.page - 1) * query.record).Take(query.record);
                     var dtChild = ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] != DBNull.Value).AsEnumerable();
-                    //dtNew = dtNew.Concat(dtChild);
                     if (dtChild.Any())
                         dtNew = dtNew.Concat(dtChild);
                     dtNew = temp.Skip((query.page - 1) * query.record).Take(query.record);
-                    //DataTable dt_child = new DataTable();
-                    //dt_child = dtChild.CopyToDataTable();
-                    //tmp = rows.CopyToDataTable();
                     Func<DateTime, int> weekProjector = d => CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(d, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
                     var data = from r in dtNew.CopyToDataTable().AsEnumerable()
                                select new
@@ -415,7 +416,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                    activity_date = r["ActivityDate"],
                                    comments = SoluongComment(r["id_row"].ToString(), ConnectionString),  // SL bình luận
                                    status_info = JeeWorkLiteController.get_info_status(r["status"].ToString(), ConnectionString),
-                                   DataStatus = list_status_user(r["id_row"].ToString(), r["id_project_team"].ToString(), loginData, ConnectionString, DataAccount),
+                                   //DataStatus = list_status_user(r["id_row"].ToString(), r["id_project_team"].ToString(), loginData, ConnectionString, DataAccount),
                                    User = from us in dt_Users.AsEnumerable()
                                           where r["id_row"].Equals(us["id_work"]) && long.Parse(us["loai"].ToString()).Equals(1)
                                           select new
@@ -456,21 +457,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                               title = t["title"],
                                               color = t["color"]
                                           },
-                                   //Status = from s in dt_status.AsEnumerable()
-                                   //         select new
-                                   //         {
-                                   //             id_row = s["id_row"],
-                                   //             statusname = s["StatusName"],
-                                   //             description = s["description"],
-                                   //             id_project_team = s["id_project_team"],
-                                   //             typeid = s["type"],
-                                   //             color = s["color"],
-                                   //             position = s["position"],
-                                   //             IsFinal = s["isfinal"],
-                                   //             IsDeadline = s["isdeadline"],
-                                   //             IsDefault = s["Isdefault"],
-                                   //             IsToDo = s["istodo"]
-                                   //         },
+
                                    Childs = displayChild == "0" ? new List<string>() : getChild(domain, loginData.CustomerID, columnName, displayChild == "1" ? "0" : "2", 0, dtNew.CopyToDataTable().AsEnumerable(), tags, DataAccount, loginData, ConnectionString, r["id_row"])
                                };
                     return JsonResultCommon.ThanhCong(data, pageModel, Visible);
@@ -837,7 +824,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     //DataTable dt_test = ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] != DBNull.Value);
                     //DataTable dt_test = ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] != DBNull.Value).CopyToDataTable();
                     dtNew = dtNew.Concat(dtChild);
-                    
+
                     var Children = from rr in dtG.AsEnumerable()
                                    select new
                                    {
@@ -6348,13 +6335,51 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
             return ds;
             #endregion
         }
-        public static DataSet GetWorkByEmployee(IHeaderDictionary _header, DpsConnection cnn, QueryParams query, long curUser, List<AccUsernameModel> DataAccount, string dieukien_where = "")
+        public static DataSet GetWorkByEmployee(IHeaderDictionary _header, DpsConnection cnn, QueryParams query, long curUser, List<AccUsernameModel> DataAccount, string dieukien_where = "", string order_by = "")
         {
             //List<string> nvs = DataAccount.Select(x => x.UserId.ToString()).ToList();
             SqlConditions Conds = new SqlConditions();
             Conds.Add("iduser", curUser);
             #region Code filter
             string dieukienSort = "w.createddate";
+            switch (order_by)
+            {
+                case "CreatedDate_Giam":
+                    {
+                        dieukienSort = "w.createddate desc";
+                        break;
+                    }
+                case "CreatedDate_Tang":
+                    {
+                        dieukienSort = "w.createddate";
+                        break;
+                    }
+                case "Prioritize_Cao":
+                    {
+                        dieukienSort = "w.clickup_prioritize";
+                        break;
+                    }
+                case "Prioritize_Thap":
+                    {
+                        dieukienSort = "w.clickup_prioritize";
+                        break;
+                    }
+                case "Deadline_Tang":
+                    {
+                        dieukienSort = "w.deadline";
+                        break;
+                    }
+                case "Deadline_Giam":
+                    {
+                        dieukienSort = "w.deadline desc";
+                        break;
+                    }
+                default:
+                    {
+                        dieukienSort = "w.createddate";
+                        break;
+                    }
+            }
             if (!string.IsNullOrEmpty(query.filter["id_project_team"]))
             {
                 dieukien_where += " and id_project_team=@id_project_team";
@@ -6436,7 +6461,7 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
                             w.id_parent,w.start_date,w.end_date,w.urgent,w.important,w.prioritize
                             ,w.status,w.result,w.createddate,w.createdby,
                             w.UpdatedDate,w.UpdatedBy, w.project_team,w.id_department
-                            , w.clickup_prioritize , w.nguoigiao,'' as hoten_nguoigiao, Id_NV,''as hoten
+                            , w.clickup_prioritize, w.nguoigiao,'' as hoten_nguoigiao, Id_NV,''as hoten
                             , Iif(fa.id_row is null ,0,1) as favourite 
                             ,coalesce( f.count,0) as num_file, coalesce( com.count,0) as num_com
                             ,'' as NguoiTao, '' as NguoiSua 
@@ -6483,45 +6508,8 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
                                             where a.disabled = 0 " + where_string + " " +
                                     "order by maxdate desc";
             DataTable dt_activity = cnn.CreateDataTable(sql_activity);
-            DataTable dt_task = new DataTable();
-            dt_task = ds.Tables[0];
+            #endregion
             #region Map info account từ JeeAccount
-            //StringCollection list_nguoitao = new StringCollection();
-            //StringCollection list_nguoiupdate = new StringCollection();
-            //StringCollection lits_nguoigiao = new StringCollection();
-            //StringCollection list_assign = new StringCollection();
-
-            //foreach (DataRow dr in ds.Tables[0].Rows)
-            //{
-            //    list_nguoitao.Add(dr["CreatedBy"].ToString());
-            //    list_nguoiupdate.Add(dr["UpdatedBy"].ToString());
-            //    lits_nguoigiao.Add(dr["nguoigiao"].ToString());
-            //    list_assign.Add(dr["Id_NV"].ToString());
-            //}
-            //DataRow row;
-            //foreach (var i_user in DataAccount)
-            //{
-            //    if (list_nguoitao.Contains(i_user.UserId.ToString()))
-            //    {
-            //        row = ds.Tables[0].NewRow();
-            //        row["NguoiTao"] = i_user.FullName;
-            //    }
-            //    if (list_nguoiupdate.Contains(i_user.UserId.ToString()))
-            //    {
-            //        row = ds.Tables[0].NewRow();
-            //        row["NguoiSua"] = i_user.FullName;
-            //    }
-            //    if (lits_nguoigiao.Contains(i_user.UserId.ToString()))
-            //    {
-            //        row = ds.Tables[0].NewRow();
-            //        row["hoten_nguoigiao"] = i_user.FullName;
-            //    }
-            //    if (list_assign.Contains(i_user.UserId.ToString()))
-            //    {
-            //        row = ds.Tables[0].NewRow();
-            //        row["hoten"] = i_user.FullName;
-            //    }
-            //}
             foreach (DataRow item in ds.Tables[0].Rows)
             {
                 var infoNguoiTao = DataAccount.Where(x => item["CreatedBy"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
@@ -6558,12 +6546,6 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
                 else
                     item["ActivityDate"] = Convert.ToDateTime(item["createddate"]);
             }
-            //ds.Tables[0].DefaultView.Sort = "ActivityDate desc";
-            //ds.Tables[0] = ds.Tables[0].DefaultView;
-            // DataView dv = ds.Tables[0].DefaultView;
-            // dv.Sort = "ActivityDate ";
-            //ds.Tables[0] = dv.ToTable();
-            //ds.Tables[0] = dt_table0;
             foreach (DataRow item in ds.Tables[2].Rows)
             {
                 var info = DataAccount.Where(x => item["id_user"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
@@ -6574,7 +6556,6 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
             }
             #endregion
             return ds;
-            #endregion
         }
         private DataSet getWork_IDNV(IHeaderDictionary _header, DpsConnection cnn, QueryParams query, long curUser, List<AccUsernameModel> DataAccount, string dieukien_where = "")
         {
