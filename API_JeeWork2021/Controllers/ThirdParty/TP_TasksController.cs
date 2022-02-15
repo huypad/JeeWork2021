@@ -368,6 +368,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     //dtNew = dtNew.Concat(dtChild);
                     if (dtChild.Any())
                         dtNew = dtNew.Concat(dtChild);
+                    dtNew = temp.Skip((query.page - 1) * query.record).Take(query.record);
                     //DataTable dt_child = new DataTable();
                     //dt_child = dtChild.CopyToDataTable();
                     //tmp = rows.CopyToDataTable();
@@ -6230,7 +6231,6 @@ where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { query.fil
         {
             List<string> nvs = DataAccount.Select(x => x.UserId.ToString()).ToList();
             string ListID = string.Join(",", nvs);
-
             SqlConditions Conds = new SqlConditions();
             Conds.Add("iduser", curUser);
             string dieukienSort = "id_row";
