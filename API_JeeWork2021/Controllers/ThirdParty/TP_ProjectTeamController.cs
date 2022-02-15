@@ -1444,6 +1444,7 @@ where w.disabled=0 and w.id_parent is null and id_project_team=" + id;
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     long idc = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_project_team')").ToString());
+                    data.id_row = idc;
                     DataTable dt_member = new DataTable();
                     string error = "";
                     if (!InsertReferenceProject(cnn, ConnectionString, loginData, idc, data, true, out error))
