@@ -177,6 +177,16 @@ export class ListTaskCUComponent implements OnInit, OnChanges, OnDestroy {
     ngOnInit() {
         this.subscription = this.store.updateEvent$.subscribe(res => {
             if (res) {
+                this.LoadFilterProject();
+                this.BindDataLite();
+                this.selection = new SelectionModel<WorkModel>(true, []);
+                this.menuServices.GetRoleWeWork('' + this.UserID).subscribe(res => {
+                    if (res && res.status === 1) {
+                        this.list_role = res.data.dataRole;
+                        this.IsAdminGroup = res.data.IsAdminGroup;
+                    }
+                });
+                this.Forme(true);
                 this.LoadData();
             }
             else {
