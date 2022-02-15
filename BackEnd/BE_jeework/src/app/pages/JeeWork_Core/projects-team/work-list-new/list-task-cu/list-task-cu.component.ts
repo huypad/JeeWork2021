@@ -176,9 +176,10 @@ export class ListTaskCUComponent implements OnInit, OnChanges, OnDestroy {
     ];
     ngOnInit() {
         this.subscription = this.store.updateEvent$.subscribe(res => {
-            if (res)
-            {
+            if (res) {
+                this.LoadTask();
                 this.Forme(true);
+                this.changeDetectorRefs.detectChanges();
             }
         })
         // giao tiếp service
@@ -215,11 +216,8 @@ export class ListTaskCUComponent implements OnInit, OnChanges, OnDestroy {
                 this.IsAdminGroup = res.data.IsAdminGroup;
             }
         });
-        this.LoadData();
+        this.LoadTask();
         this.changeDetectorRefs.detectChanges();
-    }
-    async LoadData(loading = true) {
-        await this.LoadTask();
     }
     ngOnChanges() {
         this.store.updateEvent = true;
