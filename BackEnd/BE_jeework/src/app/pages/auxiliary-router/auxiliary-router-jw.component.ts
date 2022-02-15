@@ -47,17 +47,7 @@ export class AuxiliaryRouterJWComponent implements OnInit {
         });
     }
     close() {
-        this.router.navigate(['', { outlets: { auxName: null } }]);
-        console.log("RouterStateSnapshot", this.snapshot);
-        console.log(this.snapshot.includes('tasks')); // true
-        if (this.snapshot.includes('/tasks(')) {
-            this.store.updateEvent = true;
-
-            //   setTimeout(() => {
-            //     window.location.reload();
-            //   }, 10);
-        }
-        // AuxiliaryRouterJWComponent.dialogRef = null;
+        AuxiliaryRouterJWComponent.dialogRef = null;
     }
     public static dialogRef = null;// chỗ này đem ra biến cục bộ dạng static đó! ý nghĩa là kt nếu đang tồn tại dialog này thì không cần kt code trong sub nữa! => hiện tại là cách fix tam thời (chưa tìm đc chỗ gây lỗi)
     openDialogJW(item) {

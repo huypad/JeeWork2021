@@ -175,6 +175,8 @@ export class ListTaskCUComponent implements OnInit, OnChanges, OnDestroy {
         },
     ];
     ngOnInit() {
+        this.LoadTask();
+        this.changeDetectorRefs.detectChanges();
         this.subscription = this.store.updateEvent$.subscribe(res => {
             if (res) {
                 this.LoadTask();
@@ -240,6 +242,7 @@ export class ListTaskCUComponent implements OnInit, OnChanges, OnDestroy {
         }
     }
     ngOnDestroy(): void {
+        debugger
         this.subscription.unsubscribe();
     }
     LoadTask() {
