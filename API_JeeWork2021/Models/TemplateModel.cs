@@ -73,6 +73,7 @@ namespace JeeWork_Core2021.Models
         public string save_as_id { get; set; } // Dùng để lưu ngược lại từ space/folder/list về lại template, id link với các table phụ thuộc vào types
         public long id_reference { get; set; } // levels = 1,2 lấy id_row trong we_department, level = 3 we_project_team, level = 4 we_work
         public long nodeid { get; set; } = 0; // WF NodeID > 0
+        public List<ProjectTeamUserModel> Users { get; set; }
     }
     public class HangThienModel
     {

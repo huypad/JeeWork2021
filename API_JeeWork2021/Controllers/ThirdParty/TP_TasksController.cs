@@ -6346,37 +6346,37 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
             {
                 case "CreatedDate_Giam":
                     {
-                        dieukienSort = "w.createddate desc";
+                        dieukienSort = "w.createddate DESC";
                         break;
                     }
                 case "CreatedDate_Tang":
                     {
-                        dieukienSort = "w.createddate";
+                        dieukienSort = "w.createddate ASC";
                         break;
                     }
                 case "Prioritize_Cao":
                     {
-                        dieukienSort = "w.clickup_prioritize";
+                        dieukienSort = "w.clickup_prioritize ASC";
                         break;
                     }
                 case "Prioritize_Thap":
                     {
-                        dieukienSort = "w.clickup_prioritize";
+                        dieukienSort = "w.clickup_prioritize DESC";
                         break;
                     }
                 case "Deadline_Tang":
                     {
-                        dieukienSort = "w.deadline";
+                        dieukienSort = "w.deadline ASC";
                         break;
                     }
                 case "Deadline_Giam":
                     {
-                        dieukienSort = "w.deadline desc";
+                        dieukienSort = "w.deadline DESC";
                         break;
                     }
                 default:
                     {
-                        dieukienSort = "w.createddate";
+                        dieukienSort = "w.createddate ASC";
                         break;
                     }
             }

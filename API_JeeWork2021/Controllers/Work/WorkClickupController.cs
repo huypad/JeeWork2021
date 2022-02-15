@@ -1,33 +1,33 @@
-﻿using DpsLibs.Data;
+﻿using API_JeeWork2021.Classes;
+using DPSinfra.ConnectionCache;
+using DPSinfra.Kafka;
+using DPSinfra.Logger;
+using DPSinfra.Notifier;
+using DpsLibs.Data;
+using Google.Apis.Auth.OAuth2;
+using Google.Apis.Calendar.v3;
+using Google.Apis.Calendar.v3.Data;
+using Google.Apis.Services;
+using JeeWork_Core2021.Classes;
+using JeeWork_Core2021.Controller;
+using JeeWork_Core2021.Models;
+using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using JeeWork_Core2021.Classes;
-using Microsoft.AspNetCore.Cors;
-using Microsoft.AspNetCore.Hosting;
-using JeeWork_Core2021.Models;
-using Microsoft.Extensions.Options;
 using System.Globalization;
-using System.Text;
-using DPSinfra.ConnectionCache;
-using Microsoft.Extensions.Configuration;
-using DPSinfra.Notifier;
-using Microsoft.Extensions.Logging;
-using API_JeeWork2021.Classes;
-using DPSinfra.Kafka;
-using JeeWork_Core2021.Controller;
-using Google.Apis.Calendar.v3;
-using Google.Apis.Auth.OAuth2;
 using System.IO;
-using Google.Apis.Services;
-using Google.Apis.Calendar.v3.Data;
-using Microsoft.AspNetCore.Http;
-using DPSinfra.Logger;
-using Newtonsoft.Json;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -7165,7 +7165,7 @@ where u.disabled = 0 and u.loai = 2";
                 DataTable dt_value = new DataTable();
                 string column = "status";
                 string field_custom = "", field_type = "";
-                
+
                 SqlConditions conds = new SqlConditions();
                 if (!rs)
                 {
@@ -7300,12 +7300,12 @@ where u.disabled = 0 and u.loai = 2";
                                     and id_work in (select id_row from we_work
                                     where id_project_team = " + id_project_team + " " +
                                     "and disabled = 0) order by id_work, id_tag";
-                                 dt_value = cnn.CreateDataTable(querySQL);
+                                dt_value = cnn.CreateDataTable(querySQL);
                                 if (result.Rows.Count > 0)
                                 {
                                     DataRow _r = dt_filter.NewRow();
                                     DataTable dt_wt = new DataTable();
-                                   foreach (DataRow item in result.Rows)
+                                    foreach (DataRow item in result.Rows)
                                     {
                                         //item["list_id_tag"] = "0";
                                         DataRow[] row = dt_value.Select("id_work=" + item["id_row"].ToString());

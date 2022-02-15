@@ -1746,7 +1746,7 @@ from we_template_library where disabled = 0 and id_template = " + id;
                         dt = cnn.CreateDataTable(sqlq);
                         if (dt.Rows.Count > 0)
                             idmau = dt.Rows[0][0].ToString();
-                        long idc = InsertTempToDepartment(id_temp, long.Parse(idmau), data.title, data.ParentID, data.field_id, loginData, cnn, out error);
+                        long idc = InsertTempToDepartment(id_temp, long.Parse(idmau), data.title, data.ParentID, data.field_id, loginData, cnn, data.Users, out error);
                         if (idc <= 0)
                         {
                             return false;
@@ -1760,7 +1760,7 @@ from we_template_library where disabled = 0 and id_template = " + id;
                             {
                                 long idfolder = long.Parse(dr["id_row"].ToString());
                                 string titlef = dr["title"].ToString();
-                                long idfoldertemp = InsertTempToDepartment(id_temp, idfolder, titlef, idc, data.field_id, loginData, cnn, out error);
+                                long idfoldertemp = InsertTempToDepartment(id_temp, idfolder, titlef, idc, data.field_id, loginData, cnn, data.Users, out error);
                                 if (idfoldertemp <= 0)
                                 {
                                     return false;
@@ -1773,7 +1773,7 @@ from we_template_library where disabled = 0 and id_template = " + id;
                     {
                         sqlq = $"select id_row from we_department_temp where {field} = {data.id_row}";
                         idmau = cnn.ExecuteScalar(sqlq).ToString();
-                        long idc = InsertTempToDepartment(id_temp, long.Parse(idmau), data.title, data.ParentID, data.field_id, loginData, cnn, out error);
+                        long idc = InsertTempToDepartment(id_temp, long.Parse(idmau), data.title, data.ParentID, data.field_id, loginData, cnn, data.Users, out error);
                         if (idc <= 0)
                         {
                             return false;
@@ -1784,7 +1784,7 @@ from we_template_library where disabled = 0 and id_template = " + id;
                     {
                         sqlq = $"select top 1 id_row from we_project_team_temp where {field} = {data.id_row}";
                         idmau = cnn.ExecuteScalar(sqlq).ToString();
-                        if (!InsertTempToProject(id_temp, long.Parse(idmau), data.title, data.ParentID, cnn, out error))
+                        if (!InsertTempToProject(id_temp, long.Parse(idmau), data.title, data.ParentID, cnn, loginData, data.Users, out error))
                         {
                             return false;
                         }
@@ -1797,7 +1797,7 @@ from we_template_library where disabled = 0 and id_template = " + id;
             }
             return true;
         }
-        private long InsertTempToDepartment(long id_temp, long idmau, string title, long idparent, string field_id, UserJWT loginData, DpsConnection cnn, out string error)
+        private long InsertTempToDepartment(long id_temp, long idmau, string title, long idparent, string field_id, UserJWT loginData, DpsConnection cnn, List<ProjectTeamUserModel> list_users, out string error)
         {
             // insert department/folder kiểm tra trong department/folder có dự án thì tạo dự án luôn
             error = "";
@@ -1826,7 +1826,7 @@ from we_template_library where disabled = 0 and id_template = " + id;
                 {
                     long idproject = long.Parse(dr["id_row"].ToString());
                     string titlep = dr["title"].ToString();
-                    if (!InsertTempToProject(id_temp, idproject, titlep, idc, cnn, out error))
+                    if (!InsertTempToProject(id_temp, idproject, titlep, idc, cnn, loginData, list_users, out error))
                     {
                         return 0;
                     }
@@ -1834,7 +1834,7 @@ from we_template_library where disabled = 0 and id_template = " + id;
             }
             return idc;
         }
-        private bool InsertTempToProject(long id_temp, long idprojectteam, string title, long id_department, DpsConnection cnn, out string error)
+        private bool InsertTempToProject(long id_temp, long idprojectteam, string title, long id_department, DpsConnection cnn, UserJWT loginData, List<ProjectTeamUserModel> list_users, out string error)
         {
             error = "";
             string sql = "exec [DuplicateTempToProjectTeam] @id_temp,@id ,@title,@id_department ";
@@ -1849,6 +1849,23 @@ from we_template_library where disabled = 0 and id_template = " + id;
                 cnn.RollbackTransaction();
                 error = cnn.LastError.Message.ToString();
                 return false;
+            }
+            // WorkFlow dùng list_users
+            if (list_users != null)
+            {
+                Hashtable val1 = new Hashtable();
+                val1["id_project_team"] = idprojectteam;
+                val1["CreatedDate"] = Common.GetDateTime();
+                val1["CreatedBy"] = loginData.UserID;
+                foreach (var user in list_users)
+                {
+                    val1["id_user"] = user.id_user;
+                    val1["admin"] = user.admin;
+                    if (cnn.Insert(val1, "we_project_team_user") != 1)
+                    {
+                        return false;
+                    }
+                }
             }
             if (!JeeWorkLiteController.insert_processwork(cnn))
             {
