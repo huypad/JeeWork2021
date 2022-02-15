@@ -117,8 +117,8 @@ export class ListTaskCUComponent implements OnInit, OnChanges, OnDestroy {
     IsAdminGroup = false;
     public filteredDanhSachCongViec: ReplaySubject<any[]> = new ReplaySubject<any[]>(1);
     filterDay = {
-        startDate: new Date('09/01/2020'),
-        endDate: new Date('09/30/2020'),
+        startDate: new Date('11/01/2021'),
+        endDate: new Date('02/28/2022'),
     };
     loadingSubject = new BehaviorSubject<boolean>(false);
     public column_sort: any = [];
