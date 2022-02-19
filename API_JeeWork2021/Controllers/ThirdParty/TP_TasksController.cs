@@ -410,7 +410,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                    estimates = r["estimates"],
                                    trehan = r["TreHan"],
                                    hoanthanh = r["done"],
-                                   danglam = r["danglam"],
+                                   doing = r["Doing"],
                                    closed = r["closed"],
                                    //closed_work_date = r["closed_work_date"],
                                    //closed_work_by = r["closed_work_by"],
