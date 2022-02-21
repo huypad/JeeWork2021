@@ -10,6 +10,8 @@ pipeline {
 
         NODE_ENV = "staging"
 
+        MAIL_TO = "nguyenchisanh1999@gmail.com"
+
         service = ""
     }
     agent any
@@ -49,6 +51,20 @@ pipeline {
                     }
                 }
             }
+        }
+        stage('Cleaning up') {
+            steps{
+                sh "docker image prune -f"
+            }
+        }
+    }
+    post {
+        always {
+            emailext subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!',                        
+                            to: "$MAIL_TO",   
+                            body: '${SCRIPT, template="groovy-html.template"}',
+                            mimeType: 'text/html',
+                            attachLog: true 
         }
     }
 }
