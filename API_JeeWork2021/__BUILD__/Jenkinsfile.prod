@@ -8,6 +8,8 @@ pipeline {
         REMOTE_URL = "https://jenkins.jee.vn/view/jeework/job/REMOTE%20jeework%20api/build"
         REMOTE_BUILD_TOKEN = "URvfMrgfPc3TE55mTGMYc2XNffFvgYgABNwLLtesQVRdg4Y2hHypV5mKGhPqMG2F"
 
+        MAIL_TO = "nguyenchisanh1999@gmail.com"
+
         service = ""
     }
     agent any
@@ -56,6 +58,20 @@ pipeline {
                     }
                 }
             }
+        }
+        stage('Cleaning up') {
+            steps{
+                sh "docker image prune -f"
+            }
+        }
+    }
+    post {
+        always {
+            emailext subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!',                        
+                            to: "$MAIL_TO",   
+                            body: '${SCRIPT, template="groovy-html.template"}',
+                            mimeType: 'text/html',
+                            attachLog: true 
         }
     }
 }
