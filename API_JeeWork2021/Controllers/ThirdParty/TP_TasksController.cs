@@ -6483,7 +6483,7 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
                             ,iIf(w.start_date is null and w.end_date is null,1,0) as New -- Mới
                             ,iIf(w.deadline < GETUTCDATE() and w.deadline is not null and w.end_date is null  ,1,0) as TreHan -- Trễ hạn: Ngày kết thúc is null và deadline is not null và deadline < GETUTCDATE()
                             ,iIf(w.end_date is not null ,1,0) as Done --Hoàn thành: Ngày kết thúc is not null và deadline is not null và deadline < GETUTCDATE()
-                            ,iIf(((deadline >= GETUTCDATE() and deadline is not null) or deadline is null) and w.end_date is null and start_date is not null,1,0) as Doing -- Đang làm: Ngày kết thúc is null và deadline is not null và deadline => GETUTCDATE()
+                            ,iIf(((deadline >= GETUTCDATE() and deadline is not null) or deadline is null) and w.end_date is null and start_date is not null,1,0) as doing -- Đang làm: Ngày kết thúc is null và deadline is not null và deadline => GETUTCDATE()
                             from v_wework_new w 
                             left join (select count(*) as count,object_id 
                             from we_attachment where object_type=1 group by object_id) f on f.object_id=w.id_row
@@ -6702,7 +6702,7 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
                             ,iIf(w.start_date is null and w.end_date is null,1,0) as New -- Mới
                             ,iIf(w.deadline < GETUTCDATE() and w.deadline is not null and w.end_date is null ,1,0) as TreHan -- Trễ hạn: Ngày kết thúc is null và deadline is not null và deadline < GETUTCDATE()
                             ,iIf(w.end_date is not null ,1,0) as Done --Hoàn thành: Ngày kết thúc is not null và deadline is not null và deadline < GETUTCDATE()
-                            ,iIf(((deadline >= GETUTCDATE() and deadline is not null) or deadline is null) and w.end_date is null and start_date is not null,1,0) as DangLam -- Đang làm: Ngày kết thúc is null và deadline is not null và deadline => GETUTCDATE()
+                            ,iIf(((deadline >= GETUTCDATE() and deadline is not null) or deadline is null) and w.end_date is null and start_date is not null,1,0) as Doing -- Đang làm: Ngày kết thúc is null và deadline is not null và deadline => GETUTCDATE()
                             from v_wework_new w 
                             left join (select count(*) as count,object_id 
                             from we_attachment where object_type=1 group by object_id) f on f.object_id=w.id_row
