@@ -313,7 +313,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         {
                             case "1": // được giao
                                 {
-                                    strW = " and (w.id_nv=@iduser (parent)) and start_date is null";
+                                    strW = " and (w.id_nv=@iduser (parent))";
                                     break;
                                 }
                             case "2": // giao đi
