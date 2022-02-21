@@ -345,7 +345,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         GetDateTime UTCdate = new GetDateTime();
                         DateTime today = UTCdate.Date;
                         DateTime currentTime = today.Date.Add(new TimeSpan(0, 0, 0));
-                        strW += " and deadline >= '" + currentTime + "' and deadline < '" + currentTime.AddDays(1) + "'";
+                        strW += " and deadline <= '" + currentTime + "' and end_date is null ";
                     }
                     string displayChild = "0";//hiển thị con: 0-không hiển thị, 1- 1 cấp con, 2- nhiều cấp con
                     displayChild = query.filter["displayChild"];
@@ -4135,6 +4135,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                             // Xử lý riêng cho update status
                             if ("status".Equals(data.key))
                             {
+                                bool isNew = long.Parse(cnn.ExecuteScalar("select count(*) from we_status where id_row = " + data.value + " and IsDefault = 1 and isTodo = 0 and IsFinal = 0").ToString()) > 0;
                                 bool isTodo = long.Parse(cnn.ExecuteScalar("select count(*) from we_status where id_row = " + data.value + " and isTodo = 1").ToString()) > 0;
                                 bool isFinal = long.Parse(cnn.ExecuteScalar("select count(*) from we_status where id_row = " + data.value + " and IsFinal = 1").ToString()) > 0;
                                 string StatusID = "";
@@ -6699,16 +6700,16 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
                             , w.clickup_prioritize, w.nguoigiao,'' as hoten_nguoigiao, Id_NV,''as hoten
                             ,coalesce( f.count,0) as num_file, coalesce( com.count,0) as num_com
                             ,'' as NguoiTao, '' as NguoiSua, closed
-                            ,iIf(w.start_date is null and w.end_date is null,1,0) as New -- Mới
+                            ,iIf((select count(*) from we_status where id_row = w.status and IsDefault = 1 and isTodo = 0 and IsFinal = 0)>0,1,0) as New -- Mới
                             ,iIf(w.deadline < GETUTCDATE() and w.deadline is not null and w.end_date is null ,1,0) as TreHan -- Trễ hạn: Ngày kết thúc is null và deadline is not null và deadline < GETUTCDATE()
-                            ,iIf(w.end_date is not null ,1,0) as Done --Hoàn thành: Ngày kết thúc is not null và deadline is not null và deadline < GETUTCDATE()
-                            ,iIf(((deadline >= GETUTCDATE() and deadline is not null) or deadline is null) and w.end_date is null and start_date is not null,1,0) as Doing -- Đang làm: Ngày kết thúc is null và deadline is not null và deadline => GETUTCDATE()
+                            ,iIf((select count(*) from we_status where id_row = w.status and IsDefault = 1 and IsFinal = 1)>0,1,0) as Done --Hoàn thành: Ngày kết thúc is not null và deadline is not null và deadline < GETUTCDATE()
+                            ,iIf((select count(*) from we_status where id_row = w.status and IsDefault = 1 and isTodo = 1)>0,1,0) as Doing -- Đang làm: Ngày kết thúc is null và deadline is not null và deadline => GETUTCDATE(
                             from v_wework_new w 
                             left join (select count(*) as count,object_id 
                             from we_attachment where object_type=1 group by object_id) f on f.object_id=w.id_row
                             left join (select count(*) as count,object_id
                             from we_comment where object_type=1 group by object_id) com on com.object_id=w.id_row
-                            where 1=1 " + dieukien_where + "  order by " + dieukienSort;
+                            where 1=1 " + dieukien_where + " order by " + dieukienSort;
             sqlq += ";select id_work, id_tag,color, title " +
                 "from we_work_tag wt join we_tag t on wt.id_tag=t.id_row where wt.disabled=0 and t.disabled=0";
             string where_string = "";
