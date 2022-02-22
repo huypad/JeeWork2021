@@ -6592,12 +6592,12 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
                     }
                 case "Prioritize_Cao":
                     {
-                        dieukienSort = "w.clickup_prioritize ASC";
+                        dieukienSort = "w.clickup_prioritize desc";
                         break;
                     }
                 case "Prioritize_Thap":
                     {
-                        dieukienSort = "w.clickup_prioritize DESC";
+                        dieukienSort = "w.clickup_prioritize asc";
                         break;
                     }
                 case "Deadline_Tang":
