@@ -374,7 +374,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     DataTable dtG = cnn.CreateDataTable(strG);
                     if (dtG.Rows.Count == 0)
                         return JsonResultCommon.ThanhCong(new List<string>(), null, Visible);
-                    DataSet ds = GetWorkByEmployee(Request.Headers, cnn, query, IDNV, DataAccount, strW);
+                    DataSet ds = GetWorkByEmployee2022(Request.Headers, cnn, query, IDNV, DataAccount, strW);
                     if (cnn.LastError != null || ds == null)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     //var temp = filterWork(ds.Tables[0].AsEnumerable().Where(x => x["id_parent"] == DBNull.Value), query.filter);//k bao gồm con
@@ -6239,9 +6239,10 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
                             ,'' as NguoiTao, '' as NguoiSua 
                             , w.accepted_date, w.activated_date, w.closed_date, w.state_change_date,
                             w.activated_by, w.closed_by, w.closed, w.closed_work_date, w.closed_work_by
+                            ,iIf(w.start_date is null and w.end_date is null,1,0) as New -- Mới
                             ,iIf(w.deadline < GETUTCDATE() and w.deadline is not null and w.end_date is null  ,1,0) as TreHan -- Trễ hạn: Ngày kết thúc is null và deadline is not null và deadline < GETUTCDATE()
                             ,iIf(w.end_date is not null ,1,0) as Done --Hoàn thành: Ngày kết thúc is not null và deadline is not null và deadline < GETUTCDATE()
-                            ,iIf(((deadline >= GETUTCDATE() and deadline is not null) or deadline is null) and w.end_date is null ,1,0) as Doing -- Đang làm: Ngày kết thúc is null và deadline is not null và deadline => GETUTCDATE()
+                            ,iIf(((deadline >= GETUTCDATE() and deadline is not null) or deadline is null) and w.end_date is null and start_date is not null,1,0) as Doing -- Đang làm: Ngày kết thúc is null và deadline is not null và deadline => GETUTCDATE()
                             from v_wework_new w 
                             left join (select count(*) as count,object_id 
                             from we_attachment where object_type=1 group by object_id) f on f.object_id=w.id_row
@@ -6268,57 +6269,21 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
             DataSet ds = cnn.CreateDataSet(sqlq, Conds);
             ds.Tables[0].Columns.Add("PhanLoai");
             ds.Tables[0].Columns.Add("ActivityDate", typeof(DateTime));
-            string sql_activity = @"SELECT b.maxdate, a.*
-                                            from we_work a
+            string sql_activity = @"SELECT b.maxdate, w.id_row
+                                            from we_work w
                                             join
                                                 (
                                                     select object_id, MAX(CreatedDate) maxdate
                                                     from we_log
                                                     where id_action in (select id_row from we_log_action where object_type = 1)
                                                     group by object_id
-                                                ) b on a.id_row = b.object_id
-                                            where a.disabled = 0 " + where_string + " " +
+                                                ) b on w.id_row = b.object_id
+                                            where w.disabled = 0 " + where_string + " " +
                                     "order by maxdate desc";
             DataTable dt_activity = cnn.CreateDataTable(sql_activity);
             DataTable dt_task = new DataTable();
             dt_task = ds.Tables[0];
             #region Map info account từ JeeAccount
-            //StringCollection list_nguoitao = new StringCollection();
-            //StringCollection list_nguoiupdate = new StringCollection();
-            //StringCollection lits_nguoigiao = new StringCollection();
-            //StringCollection list_assign = new StringCollection();
-
-            //foreach (DataRow dr in ds.Tables[0].Rows)
-            //{
-            //    list_nguoitao.Add(dr["CreatedBy"].ToString());
-            //    list_nguoiupdate.Add(dr["UpdatedBy"].ToString());
-            //    lits_nguoigiao.Add(dr["nguoigiao"].ToString());
-            //    list_assign.Add(dr["Id_NV"].ToString());
-            //}
-            //DataRow row;
-            //foreach (var i_user in DataAccount)
-            //{
-            //    if (list_nguoitao.Contains(i_user.UserId.ToString()))
-            //    {
-            //        row = ds.Tables[0].NewRow();
-            //        row["NguoiTao"] = i_user.FullName;
-            //    }
-            //    if (list_nguoiupdate.Contains(i_user.UserId.ToString()))
-            //    {
-            //        row = ds.Tables[0].NewRow();
-            //        row["NguoiSua"] = i_user.FullName;
-            //    }
-            //    if (lits_nguoigiao.Contains(i_user.UserId.ToString()))
-            //    {
-            //        row = ds.Tables[0].NewRow();
-            //        row["hoten_nguoigiao"] = i_user.FullName;
-            //    }
-            //    if (list_assign.Contains(i_user.UserId.ToString()))
-            //    {
-            //        row = ds.Tables[0].NewRow();
-            //        row["hoten"] = i_user.FullName;
-            //    }
-            //}
             foreach (DataRow item in ds.Tables[0].Rows)
             {
                 var infoNguoiTao = DataAccount.Where(x => item["CreatedBy"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
@@ -6361,6 +6326,186 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
             // dv.Sort = "ActivityDate ";
             //ds.Tables[0] = dv.ToTable();
             //ds.Tables[0] = dt_table0;
+            foreach (DataRow item in ds.Tables[2].Rows)
+            {
+                var info = DataAccount.Where(x => item["id_user"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                if (info != null)
+                {
+                    item["hoten"] = info.FullName;
+                }
+            }
+            #endregion
+            return ds;
+            #endregion
+        }
+        public static DataSet GetWorkByEmployee2022(IHeaderDictionary _header, DpsConnection cnn, QueryParams query, long curUser, List<AccUsernameModel> DataAccount, string dieukien_where = "")
+        {
+            SqlConditions Conds = new SqlConditions();
+            Conds.Add("iduser", curUser);
+            #region Code filter
+            string dieukienSort = "w.createddate";
+            if (!string.IsNullOrEmpty(query.filter["id_project_team"]))
+            {
+                dieukien_where += " and id_project_team=@id_project_team";
+                Conds.Add("id_project_team", query.filter["id_project_team"]);
+            }
+            if (!string.IsNullOrEmpty(query.filter["id_nv"]))
+            {
+                Conds.Add("id_nv", query.filter["id_nv"]);
+            }
+            DateTime from = Common.GetDateTime();
+            DateTime to = Common.GetDateTime();
+            Dictionary<string, string> collect = new Dictionary<string, string>
+                        {
+                            { "CreatedDate", "CreatedDate"},
+                            { "Deadline", "deadline"},
+                            { "StartDate", "start_date"}
+                        };
+            string collect_by = "CreatedDate";
+            if (!string.IsNullOrEmpty(query.filter["collect_by"]))
+                collect_by = collect[query.filter["collect_by"]];
+            if (!string.IsNullOrEmpty(query.filter["TuNgay"]))
+            {
+                DateTime.TryParseExact(query.filter["TuNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out from);
+                dieukien_where += " and w." + collect_by + ">=@from";
+                Conds.Add("from", JeeWorkLiteController.GetUTCTime(_header, from.ToString()));
+            }
+            if (!string.IsNullOrEmpty(query.filter["DenNgay"]))
+            {
+                DateTime.TryParseExact(query.filter["DenNgay"], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out to);
+                to = to.AddDays(1);
+                dieukien_where += " and w." + collect_by + "<@to";
+                Conds.Add("to", JeeWorkLiteController.GetUTCTime(_header, to.ToString()));
+            }
+            int nam = DateTime.Today.Year;
+            int thang = DateTime.Today.Month;
+            var lastDayOfMonth = DateTime.DaysInMonth(nam, thang);
+            if (!string.IsNullOrEmpty(query.filter["Thang"]))
+            {
+                thang = int.Parse(query.filter["Thang"]);
+            }
+            if (!string.IsNullOrEmpty(query.filter["Nam"]))
+            {
+                nam = int.Parse(query.filter["Nam"]);
+            }
+            if (!string.IsNullOrEmpty(query.filter["Thang"]) && !string.IsNullOrEmpty(query.filter["Nam"]))
+            {
+                from = new DateTime(nam, thang, 1, 0, 0, 1);
+                to = GetEndDateInMonth(thang, nam);
+                dieukien_where += " and w." + collect_by + ">=@from";
+                Conds.Add("from", JeeWorkLiteController.GetUTCTime(_header, from.ToString()));
+                dieukien_where += " and w." + collect_by + "<@to";
+                Conds.Add("to", JeeWorkLiteController.GetUTCTime(_header, to.ToString()));
+            }
+            if (!string.IsNullOrEmpty(query.filter["keyword"]))
+            {
+                dieukien_where += " and (w.title like N'%@keyword%' or w.description like N'%@keyword%')";
+                dieukien_where = dieukien_where.Replace("@keyword", query.filter["keyword"]);
+            }
+            #endregion
+            #region Sort data follow data below
+            Dictionary<string, string> sortableFields = new Dictionary<string, string>
+                        {
+                            { "id_row", "id_row"},
+                            { "title", "title"},
+                            { "CreatedDate", "CreatedDate"},
+                            {"UpdatedDate","UpdatedDate" },
+                            {"deadline","deadline" },
+                            {"end_date","end_date" },
+                            {"important","important" },
+                            {"prioritize","prioritize" },
+                            {"urgent","urgent" }
+                        };
+            #endregion
+            if (!string.IsNullOrEmpty(query.sortField) && sortableFields.ContainsKey(query.sortField))
+                dieukienSort = sortableFields[query.sortField] + ("desc".Equals(query.sortOrder) ? " desc" : " asc");
+            #region Return data to backend to display on the interface
+            string sqlq = @$"select  distinct w.id_row,w.title, w.id_project_team, w.estimates
+                            ,w.deadline,
+                            w.id_parent,w.start_date,w.end_date
+                            ,w.status,w.result,w.createddate,w.createdby,
+                            w.project_team, w.id_department
+                            , w.clickup_prioritize , w.nguoigiao,'' as hoten_nguoigiao, Id_NV,''as hoten
+                            , Iif(fa.id_row is null ,0,1) as favourite 
+                            ,coalesce( f.count,0) as num_file, coalesce( com.count,0) as num_com
+                            ,'' as NguoiTao
+                            ,iIf((select count(*) from we_status where id_row = w.status and IsDefault = 1 and isTodo = 0 and IsFinal = 0)>0,1,0) as New
+                            ,iIf(w.deadline < GETUTCDATE() and w.deadline is not null and w.end_date is null ,1,0) as TreHan
+                            ,iIf((select count(*) from we_status where id_row = w.status and IsDefault = 1 and IsFinal = 1)>0,1,0) as Done 
+                            ,iIf((select count(*) from we_status where id_row = w.status and IsDefault = 1 and isTodo = 1)>0,1,0) as Doing
+                            from v_wework_new w 
+                            left join (select count(*) as count,object_id 
+                            from we_attachment where object_type=1 group by object_id) f on f.object_id=w.id_row
+                            left join (select count(*) as count,object_id
+                            from we_comment where object_type=1 group by object_id) com on com.object_id=w.id_row
+                            left join we_work_favourite fa 
+                            on fa.id_work=w.id_row and fa.createdby=@iduser and fa.disabled=0
+                            where 1=1 " + dieukien_where + " order by " + dieukienSort;
+            sqlq += ";select id_work, id_tag,color, title " +
+                "from we_work_tag wt join we_tag t " +
+                "on wt.id_tag=t.id_row " +
+                "where wt.disabled=0 and t.disabled=0";
+            string where_string = "";
+            if (!string.IsNullOrEmpty(query.filter["id_project_team"]))
+            {
+                where_string = " and id_project_team=" + query.filter["id_project_team"];
+            }
+            if (!string.IsNullOrEmpty(query.filter["status"]))
+            {
+                dieukien_where += " and status=" + query.filter["status"];
+            }
+            sqlq += where_string;
+            //người theo dõi
+            sqlq += @$";select id_work,id_user,'' as hoten from we_work_user u 
+                        where u.disabled = 0 and u.loai = 2";
+            DataSet ds = cnn.CreateDataSet(sqlq, Conds);
+            ds.Tables[0].Columns.Add("PhanLoai");
+            ds.Tables[0].Columns.Add("ActivityDate", typeof(DateTime));
+            string sql_activity = @"SELECT b.maxdate, w.id_row
+                                            from we_work w
+                                            join
+                                                (
+                                                    select object_id, MAX(CreatedDate) maxdate
+                                                    from we_log
+                                                    where id_action in (select id_row from we_log_action where object_type = 1)
+                                                    group by object_id
+                                                ) b on w.id_row = b.object_id
+                                            where w.disabled = 0 " + where_string + " " +
+                                    "order by maxdate desc";
+            DataTable dt_activity = cnn.CreateDataTable(sql_activity);
+            #region Map info account từ JeeAccount
+            foreach (DataRow item in ds.Tables[0].Rows)
+            {
+                var infoNguoiTao = DataAccount.Where(x => item["CreatedBy"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                //var infoNguoiSua = DataAccount.Where(x => item["UpdatedBy"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                var infonguoigiao = DataAccount.Where(x => item["nguoigiao"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                var infoId_NV = DataAccount.Where(x => item["Id_NV"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                if (infoNguoiTao != null)
+                {
+                    item["NguoiTao"] = infoNguoiTao.Username;
+                }
+                if (infonguoigiao != null)
+                {
+                    item["hoten_nguoigiao"] = infonguoigiao.FullName;
+                }
+                if (infoId_NV != null)
+                {
+                    item["hoten"] = infoId_NV.FullName;
+                }
+                if (!string.IsNullOrEmpty(query.filter["sort_activity"]))
+                {
+                    if (dt_activity.Rows.Count > 0)
+                    {
+                        DataRow[] dr = dt_activity.Select("id_row =" + item["id_row"].ToString());
+                        if (dr.Length > 0)
+                        {
+                            item["ActivityDate"] = Convert.ToDateTime(dr[0]["maxdate"]);
+                        }
+                    }
+                }
+                else
+                    item["ActivityDate"] = Convert.ToDateTime(item["createddate"]);
+            }
             foreach (DataRow item in ds.Tables[2].Rows)
             {
                 var info = DataAccount.Where(x => item["id_user"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
@@ -6579,40 +6724,40 @@ where u.disabled = 0 and u.loai = 2";
                          id_parent = r["id_parent"],
                          id_row = r["id_row"],
                          title = r["title"],
-                         description = r["description"],
+                         //description = r["description"],
                          id_project_team = r["id_project_team"],
                          project_team = r["project_team"],
                          deadline = r["deadline"],
                          end_date = r["end_date"],
-                         urgent = r["urgent"],
-                         important = r["important"],
+                         //urgent = r["urgent"],
+                         //important = r["important"],
                          start_date = r["start_date"],
-                         prioritize = r["prioritize"],
-                         favourite = r["favourite"],
+                         //prioritize = r["prioritize"],
+                         //favourite = r["favourite"],
                          status = r["status"],
-                         id_milestone = r["id_milestone"],
-                         milestone = r["milestone"],
+                         //id_milestone = r["id_milestone"],
+                         //milestone = r["milestone"],
                          trehan = r["TreHan"],
                          estimates = r["estimates"],
-                         hoanthanh = r["done"],
-                         danglam = r["Doing"],
-                         closed = r["closed"],
-                         closed_work_date = r["closed_work_date"],
-                         closed_work_by = r["closed_work_by"],
-                         accepted_date = r["accepted_date"] == DBNull.Value ? "" : r["accepted_date"],
-                         activated_by = r["activated_by"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(r["activated_by"].ToString(), DataAccount),
-                         activated_date = r["activated_date"] == DBNull.Value ? "" : r["activated_date"],
-                         closed_by = r["closed_by"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(r["closed_by"].ToString(), DataAccount),
-                         closed_date = r["closed_date"] == DBNull.Value ? "" : r["closed_date"],
-                         state_change_date = r["state_change_date"] == DBNull.Value ? "" : r["state_change_date"],
+                         //hoanthanh = r["done"],
+                         //danglam = r["Doing"],
+                         //closed = r["closed"],
+                         //closed_work_date = r["closed_work_date"],
+                         //closed_work_by = r["closed_work_by"],
+                         //accepted_date = r["accepted_date"] == DBNull.Value ? "" : r["accepted_date"],
+                         //activated_by = r["activated_by"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(r["activated_by"].ToString(), DataAccount),
+                         //activated_date = r["activated_date"] == DBNull.Value ? "" : r["activated_date"],
+                         //closed_by = r["closed_by"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(r["closed_by"].ToString(), DataAccount),
+                         //closed_date = r["closed_date"] == DBNull.Value ? "" : r["closed_date"],
+                         //state_change_date = r["state_change_date"] == DBNull.Value ? "" : r["state_change_date"],
                          createddate = r["CreatedDate"],
                          createdby = r["CreatedBy"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(r["CreatedBy"].ToString(), DataAccount),
                          nguoitao = r["NguoiTao"],
-                         updateddate = r["UpdatedDate"] == DBNull.Value ? "" : r["UpdatedDate"],
-                         updatedby = r["UpdatedBy"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(r["UpdatedBy"].ToString(), DataAccount),
-                         nguoisua = r["NguoiSua"],
+                         //updateddate = r["UpdatedDate"] == DBNull.Value ? "" : r["UpdatedDate"],
+                         //updatedby = r["UpdatedBy"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(r["UpdatedBy"].ToString(), DataAccount),
+                         //nguoisua = r["NguoiSua"],
                          clickup_prioritize = r["clickup_prioritize"],
-                         activity_date = r["ActivityDate"],
+                         //activity_date = r["ActivityDate"],
                          comments = SoluongComment(r["id_row"].ToString(), ConnectString),  // SL bình luận
                          status_info = JeeWorkLiteController.get_info_status(r["status"].ToString(), ConnectString),
                          DataStatus = list_status_user(r["id_row"].ToString(), r["id_project_team"].ToString(), loginData, ConnectString, DataAccount),
@@ -6626,28 +6771,28 @@ where u.disabled = 0 and u.loai = 2";
                                     email = us["email"],
                                     loai = us["loai"],
                                 },
-                         NguoiGiao = from us in dt_Users.AsEnumerable()
-                                     where r["id_row"].ToString().Equals(us["id_work"].ToString()) && long.Parse(us["loai"].ToString()).Equals(1)
-                                     select us["CreatedBy"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(us["CreatedBy"].ToString(), DataAccount),
-                         UsersInfo = from us in dt_Users.AsEnumerable()
-                                     where r["id_row"].Equals(us["id_work"]) && long.Parse(us["loai"].ToString()).Equals(1)
-                                     select us["id_user"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(us["id_user"].ToString(), DataAccount),
-                         Follower = from us in dt_Users.AsEnumerable()
-                                    where r["id_row"].Equals(us["id_work"]) && long.Parse(us["loai"].ToString()).Equals(2)
-                                    select new
-                                    {
-                                        id_nv = us["id_user"],
-                                        hoten = us["hoten"],
-                                        image = us["image"],
-                                        email = us["email"],
-                                        loai = us["loai"],
-                                    },
-                         FollowerInfo = from us in dt_Users.AsEnumerable()
-                                        where r["id_row"].Equals(us["id_work"]) && long.Parse(us["loai"].ToString()).Equals(2)
-                                        select new
-                                        {
-                                            data = us["id_user"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(us["id_user"].ToString(), DataAccount),
-                                        },
+                         //NguoiGiao = from us in dt_Users.AsEnumerable()
+                         //            where r["id_row"].ToString().Equals(us["id_work"].ToString()) && long.Parse(us["loai"].ToString()).Equals(1)
+                         //            select us["CreatedBy"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(us["CreatedBy"].ToString(), DataAccount),
+                         //UsersInfo = from us in dt_Users.AsEnumerable()
+                         //            where r["id_row"].Equals(us["id_work"]) && long.Parse(us["loai"].ToString()).Equals(1)
+                         //            select us["id_user"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(us["id_user"].ToString(), DataAccount),
+                         //Follower = from us in dt_Users.AsEnumerable()
+                         //           where r["id_row"].Equals(us["id_work"]) && long.Parse(us["loai"].ToString()).Equals(2)
+                         //           select new
+                         //           {
+                         //               id_nv = us["id_user"],
+                         //               hoten = us["hoten"],
+                         //               image = us["image"],
+                         //               email = us["email"],
+                         //               loai = us["loai"],
+                         //           },
+                         //FollowerInfo = from us in dt_Users.AsEnumerable()
+                         //               where r["id_row"].Equals(us["id_work"]) && long.Parse(us["loai"].ToString()).Equals(2)
+                         //               select new
+                         //               {
+                         //                   data = us["id_user"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(us["id_user"].ToString(), DataAccount),
+                         //               },
                          Tags = from t in tags
                                 where r["id_row"].Equals(t["id_work"])
                                 select new

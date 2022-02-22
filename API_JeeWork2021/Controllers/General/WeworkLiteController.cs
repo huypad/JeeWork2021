@@ -47,6 +47,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         private IProducer _producer;
         private IConnectionCache ConnectionCache;
         private IConfiguration _configuration;
+        private INotifier _notifier;
         private readonly ILogger<JeeWorkLiteController> _logger;
         public JeeWorkLiteController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IProducer producer, INotifier notifier, IConfiguration Configuration, IConnectionCache _cache, IConfiguration configuration, ILogger<JeeWorkLiteController> logger)
         {
@@ -58,6 +59,7 @@ namespace JeeWork_Core2021.Controllers.Wework
             ConnectionCache = _cache;
             _configuration = configuration;
             _logger = logger;
+            _notifier = notifier;
         }
         /// <summary>
         /// DS department theo customerID
@@ -2334,6 +2336,42 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                        };
             return data;
         }
+
+
+        [HttpPost]
+        [Route("testnotificationdesktop")]
+        public async void testnotificationdesktop(NotificationDesktopMessModel data)
+        {
+            UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
+            if (loginData == null)
+                return;
+            //
+            string JeeWork_BE = _configuration.GetValue<string>("Host:JeeWork_BE");
+            NotificationDesktopMessModel noti_mess = new NotificationDesktopMessModel();
+            string API_Account = _configuration.GetValue<string>("Host:JeeAccount_API");
+
+            noti_mess.AppCode = "WORK";
+            noti_mess.Content = data.Content;
+            noti_mess.Link = "Chat";
+            noti_mess.Domain = JeeWork_BE;
+            desktopMessage asyncnotice = new desktopMessage()
+            {
+                sender = "congtytest.tuan",
+                receivers = getUserNames(HttpContext.Request.Headers, loginData.Username, API_Account),
+                message_text = "Thông báo từ App Desktop JeeWork",
+                message_html = "<h1>abc</h1>",
+                message_json = JsonConvert.SerializeObject(noti_mess),
+                // Các field dưới đây là của Desktop
+                customerID = loginData.CustomerID,
+                dtTitle = "Test notification desktop for JeeWork by Huy Tran",
+                dtMessage = "Test notification Huy Tran",
+                dtWebURL = noti_mess.Domain + noti_mess.Link,
+                dtAppURL = "https://google.vn",
+                dtIcon = "https://api.jeehr.com/images/logokhachhang/25.jpg"
+            };
+            await _notifier.sendDesktop(asyncnotice);
+        }
+
         /// <summary>
         /// tesst notify
         /// </summary>
@@ -4831,6 +4869,31 @@ p.id_department = d.id_row where d.IdKH = { loginData.CustomerID } and w.id_row 
                 }
             }
             return ds;
+        }
+
+        public class NotificationDesktopMessModel
+        {
+            public string Content { get; set; }
+            public string AppCode { get; set; }
+            public string Domain { get; set; } //link chuyển nếu có
+            public string Link { get; set; } //link chuyển nếu có
+            public int CustomerId { get; set; }
+        }
+        public static string[] getUserNames(IHeaderDictionary pHeader, string user_name, string api)
+        {
+            var dataJA = Common.GetEmployeeByJA(pHeader, api);
+            if (dataJA == null)
+                return new string[] { };
+            //var model = JsonConvert.DeserializeObject<List<AccUsernameModel>>(dataJA.ToString());
+            List<string> usernames = new List<string>();
+            foreach (var item in dataJA)
+            {
+                if (item.Username != user_name)
+                {
+                    usernames.Add(item.Username.ToString());
+                }
+            }
+            return usernames.ToArray();
         }
     }
 }

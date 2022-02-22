@@ -37,6 +37,25 @@ namespace API_JeeWork2021.Classes
             };
             _notifier.sendSocket(asyncnotice);
         }
+        public void notification_desktop(string sender, string receivers, string message, string html, NotificationMess noti_mess, IConfiguration _configuration)
+        {
+            string jeework_be = _configuration.GetValue<string>("Host:JeeWork_BE");
+            string appcode_jw = _configuration.GetValue<string>("AppConfig:AppCode");
+            socketMessage asyncnotice = new socketMessage()
+            {
+                sender = sender,
+                receivers = new string[] { receivers },
+                message_text = message,
+                message_html = html,
+                message_json = JsonConvert.SerializeObject(noti_mess),
+                osTitle = "Thông báo từ App Desktop JeeWork",
+                osMessage = noti_mess.Content,
+                osWebURL = jeework_be + noti_mess.Link,
+                osAppURL = noti_mess.oslink,
+                osIcon = noti_mess.Icon
+            };
+            _notifier.sendSocket(asyncnotice);
+        }
         public async void notificationemail(string access_token)
         {
             emailMessage asyncnotice = new emailMessage()

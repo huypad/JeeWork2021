@@ -565,7 +565,7 @@ export class WorkListNewComponent implements OnInit {
 
   }
 
-  ReloadTask(item: UpdateWorkModel) {
+  ReloadTask() {
     const queryParams = new QueryParamsModelNew(
       this.filterConfiguration(),
       "",
@@ -574,10 +574,10 @@ export class WorkListNewComponent implements OnInit {
       50,
       true
     );
-    this.layoutUtilsService.showWaitingDiv();
+    // this.layoutUtilsService.showWaitingDiv();
     this._service.ListTask(queryParams).subscribe(
       (res) => {
-        this.layoutUtilsService.OffWaitingDiv();
+        // this.layoutUtilsService.OffWaitingDiv();
         if (res && res.status === 1) {
           this.listStatus = res.data;
           var itemPush = [];
@@ -1471,7 +1471,7 @@ export class WorkListNewComponent implements OnInit {
     this._service.InsertTask(val).subscribe((res) => {
       if (res && res.status == 1) {
         // this.LoadData();
-        this.ReloadTask(val);
+        this.ReloadTask();
         // setTimeout(() => {
         this.newtask = x;
         this.AddnewTask(val.status, true);
@@ -1582,13 +1582,13 @@ export class WorkListNewComponent implements OnInit {
     }
     this._service._UpdateByKey(item).subscribe((res) => {
       if (res && res.status == 1) {
-        // this.LoadData();
-        this.ReloadTask(item);
+        this.ReloadTask();
+        this.changeDetectorRefs.detectChanges();
       } else {
 
         this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
       }
-      this.ReloadTask(item);
+      this.ReloadTask();
     });
   }
 

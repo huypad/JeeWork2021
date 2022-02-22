@@ -62,16 +62,16 @@
                                 </mat-menu>
                             </div>
                             <div class="filter row pd-0" *ngIf="selectedTab != 3 && !getMystaff">
-                                <div class="icon-user border" (click)="filterwork=1;ChangeData()"
+                                <div class="icon-user border" (click)="filterwork=1;LoadTask()"
                                     matTooltip="Công việc giao cho tôi">
                                     <i class="fas fa-user" (click)="Forme(true)"
                                         [ngClass]="{'text-success': filterwork===1}"></i>
                                 </div>
-                                <div class="icon-user border" (click)="filterwork=2;ChangeData()"
+                                <div class="icon-user border" (click)="filterwork=2;LoadTask()"
                                     matTooltip="Công việc tôi giao đi">
                                     <i class="fas fa-user-check" [ngClass]="{'text-success': filterwork===2}"></i>
                                 </div>
-                                <div class="icon-user border" (click)="filterwork=0;ChangeData()"
+                                <div class="icon-user border" (click)="filterwork=0;LoadTask()"
                                     matTooltip="Danh sách công việc">
                                     <i class="fas fa-users" [ngClass]="{'text-success': filterwork===0}"></i>
                                 </div>
@@ -767,7 +767,6 @@
                                         <div class="cu-task-list-footer__items"></div>
                                     </div>
                                 </ng-container>
-
                             </div>
                         </div>
                     </ng-container>

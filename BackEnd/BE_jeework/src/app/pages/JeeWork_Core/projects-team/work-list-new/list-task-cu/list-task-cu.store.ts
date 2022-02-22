@@ -16,4 +16,13 @@ export class ListTasksStore  {
   constructor() {
 
   }
+
+  private readonly _updateNode = new BehaviorSubject<any>(null);
+  readonly updateNode$ = this._updateNode.asObservable();
+  get updateNode() {
+    return this._updateNode.getValue();
+  }
+  set updateNode(val) {
+    this._updateNode.next(val);
+  }
 }

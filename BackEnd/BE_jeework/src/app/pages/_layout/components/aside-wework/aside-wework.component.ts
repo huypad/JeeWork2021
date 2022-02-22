@@ -43,8 +43,9 @@ import * as objectPath from 'object-path';
 import { TranslateService } from '@ngx-translate/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ProjectTeamModel } from 'src/app/pages/JeeWork_Core/projects-team/Model/department-and-project.model';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { MenuPhanQuyenServices } from 'src/app/_metronic/jeework_old/core/_base/layout/services/menu-phan-quyen.service';
+import { MenuConfigService } from 'src/app/_metronic/jeework_old/core/_base/layout';
 
 @Component({
     selector: 'app-aside-wework',
@@ -70,6 +71,7 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
         private changeDetectorRefs: ChangeDetectorRef,
         public commonService: CommonService,
         public WeWorkService: JeeWorkLiteService,
+        public _mneu: MenuConfigService,
         private menuPhanQuyenServices: MenuPhanQuyenServices,
     ) {
     }
@@ -138,13 +140,14 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
     currentUrl: string;
     menuData2: Observable<any[]>;
     menuData: any;
-
+    menu_project: any;
     folderOpen = false;
-
+    menuList: BehaviorSubject<any[]> = new BehaviorSubject<any[]>([]);
     ngAfterViewInit(): void {
     }
 
     ngOnInit(): void {
+       this.LoadMenu();
         // load view settings
         this.disableAsideSelfDisplay =
             this.layout.getProp('aside.self.display') === false;
@@ -164,7 +167,6 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
         // this.asideMenuCSSClasses = `${this.asideMenuCSSClasses} ${this.asideMenuScroll === 1 ? 'scroll my-4 ps ps--active-y' : ''}`;
         // Routing
         this.location = this.loc;
-
         this.currentRouteUrl = this.router.url.split(/[?#]/)[0];
         this.router.events
             .pipe(filter((event) => event instanceof NavigationEnd))
@@ -172,38 +174,124 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
                 this.currentRouteUrl = this.router.url.split(/[?#]/)[0];
                 this.cdr.markForCheck();
             });
-        // const config = this.layoutConfigService.getConfig();
-        // if (objectPath.get(config, 'aside.menu.dropdown') !== true && objectPath.get(config, 'aside.self.fixed')) {
-        // 	this.render.setAttribute(this.asideMenu.nativeElement, 'data-ktmenu-scroll', '1');
-        // }
-
-        // if (objectPath.get(config, 'aside.menu.dropdown')) {
-        // 	this.render.setAttribute(this.asideMenu.nativeElement, 'data-ktmenu-dropdown', '1');
-        // 	// tslint:disable-next-line:max-line-length
-        // 	this.render.setAttribute(this.asideMenu.nativeElement, 'data-ktmenu-dropdown-timeout', objectPath.get(config, 'aside.menu.submenu.dropdown.hover-timeout'));
-        // }
-        this.menuPhanQuyenServices.layMenuChucNang('wework').subscribe(r => {
-            if (r && r.status == 1) {
-                this.menuData = r.data;
-            } else {
-                this.menuData = [];
-            }
-            // this.menuData2.next(this.menuData);
-            this.menuData2 = new Observable((observer) => {
-                observer.next(this.menuData.data);
-            });
-        });
+        
     }
 
     handleSVG(svg: SVGElement, parent: Element | null): SVGElement {
         svg.setAttribute('width', '100');
         return svg;
     }
+    fs_Assign(res: any) {
+        let config = {
+            header: {
+                self: {},
+                items: []
+            },
+            aside: {
+                self: {},
+                items: []
+            }
+        };
+        if (res && res.status == 1) {
+            let dt = res.data.data;
+            let spaceww = res.data.dataww;
+            let arr = [];
+            // Các menu project wework
+            if (spaceww.length > 0) {
+                spaceww.forEach((item, index) => {
+                    let parentMenu = {
+                        title: '' + item.Title,
+                        root: item.list.length == 0,
+                        icon: '' + item.Icon,
+                        page: 'pad',
+                        id_phanloai: 1,
+                        alignment: 'left',//dành cho header menu
+                        id: '' + item.RowID,
+                        IsFolder: item.IsFolder,
+                        type: item.type,
+                        submenu: [],
+                    };
+                    if (item.folder && item.folder.length > 0) {
+                        parentMenu["submenu"] = [];
+                        item.folder.forEach((itemE, indexE) => {
+                            let _folder = {
+                                title: '' + itemE.Title,
+                                root: item.list.length == 0,
+                                icon: '' + itemE.Icon,
+                                page: 'pad',
+                                id_phanloai: 1,
+                                alignment: 'left',
+                                id: '' + itemE.RowID,
+                                IsFolder: itemE.IsFolder,
+                                type: itemE.type
 
-    LoadMenu() {
-        this.menuAsideService.loadMenu();
+                            };
+                            parentMenu["submenu"].push(_folder);
+                            // _folder["bullet"] = 'dot';
+                            _folder["submenu"] = [];
+                            itemE.list.forEach((itemS, indexE) => {
+                                let child = {
+                                    title: '' + itemS.Title,
+                                    page: '/project/' + itemS.ID_Row + '/home/clickup',
+                                    target: '' + itemS.Target, // bổ sung vào để phân biệt kiểu target
+                                    id_phanloai: 0,
+                                    id: '' + itemS.ID_Row,
+                                    Locked: itemS.Locked,
+                                    Is_Project: itemS.Is_Project,
+                                    Status: itemS.Status,
+                                    Default_View: itemS.Default_View, //1: streamview; 2: period view, 3: board view, 4: list view, 5: gantt,
+                                    type: itemS.type
+                                };
+                                _folder["submenu"].push(child);
+                            });
+                        });
+                    }
+                    else
+                        parentMenu["submenu"] = [];
+                    // else {
+                    if (item.list && item.list.length > 0) {
+                        parentMenu["bullet"] = 'dot';
+                        // parentMenu["submenu"] = [];
+                        item.list.forEach((itemE, indexE) => {
+                            let srcSub = 'SubMenu.' + '' + itemE.Title;//for sub menu
+                            let child = {
+                                //title: '' + itemE.Summary,
+                                title: '' + itemE.Title,
+                                page: '/project/' + itemE.ID_Row + '/home/clickup',
+                                target: '' + itemE.Target, // bổ sung vào để phân biệt kiểu target
+                                id_phanloai: 0,
+                                id: '' + itemE.ID_Row,
+                                Locked: itemE.Locked,
+                                Is_Project: itemE.Is_Project,
+                                Status: itemE.Status,
+                                Default_View: itemE.Default_View, //1: streamview; 2: period view, 3: board view, 4: list view, 5: gantt
+                                type: itemE.type
+                            };
+                            parentMenu["submenu"].push(child);
+                        });
+                        // }
+                    }
+                    config.aside.items.push(parentMenu);
+                });
+            }
+        }
+        return config;
     }
-
+    LoadMenu() {
+        this.menuPhanQuyenServices.layMenuChucNang('wework').subscribe(r => {
+            if (r && r.status == 1) {
+                this.menuData = r.data;
+            } else {
+                this.menuData = [];
+                this.menu_project = [];
+            }
+            this.menuData2 = new Observable((observer) => {
+                observer.next(this.menuData.data);
+            });
+            const menuItems: any[] = objectPath.get(this.fs_Assign(r), 'aside.items');
+            this.menuList.next(menuItems);
+        });
+    }
     private getLogo() {
         return './../../../../../assets/images/jeework_logo.png';
     }
@@ -283,7 +371,6 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
                 return true;
             }
         }
-
         return false;
     }
 
@@ -322,7 +409,6 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
                 clearTimeout(this.insideTm);
                 this.insideTm = null;
             }
-
             this.outsideTm = setTimeout(() => {
                 // if the left aside menu is expand
                 if (
@@ -343,31 +429,23 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
      */
     getItemCssClasses(item) {
         let classes = 'kt-menu__item';
-
         if (objectPath.get(item, 'submenu')) {
             classes += ' kt-menu__item--submenu';
         }
-
-
         if (!item.submenu && this.isMenuItemIsActive(item)) {
-
             classes += ' kt-menu__item--active kt-menu__item--here';
         }
-
         if (item.submenu && this.isMenuItemIsActive(item)) {
             classes += ' kt-menu__item--open kt-menu__item--here';
         }
-
         // custom class for menu item
         const customClass = objectPath.get(item, 'custom-class');
         if (customClass) {
             classes += ' ' + customClass;
         }
-
         if (objectPath.get(item, 'icon-only')) {
             classes += ' kt-menu__item--icon-only';
         }
-
         return classes;
     }
 
@@ -412,7 +490,6 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
         } else {
             // submenu toggle default to 'hover'
         }
-
         return toggle;
     }
 
@@ -451,7 +528,7 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
             if (!res) {
                 return;
             } else {
-                this.menuAsideService.loadMenu();
+                this.LoadMenu();
             }
         });
         this.layoutUtilsService.menuSelectColumns_On_Off();
@@ -505,13 +582,11 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
         model.clear(); // Set all defaults fields
         this.Update_DuplicateProject(model, item.id);
     }
-
     Update_DuplicateProject(_item: ProjectTeamDuplicateModel, id_project_team) {
         let newitem: any = [];
         this._Services.Detail(id_project_team).subscribe((res) => {
             if (res && res.status == 1) {
                 newitem = res.data;
-
                 let saveMessageTranslateParam = '';
                 // _item = this.item;
                 _item.id = id_project_team;
@@ -893,7 +968,7 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
             } else {
                 // this.ngOnInit();
                 this.layoutUtilsService.showInfo(_saveMessage);
-                this.menuAsideService.loadMenu();
+                this.LoadMenu();
                 // location.reload();
                 // this.changeDetectorRefs.detectChanges();
             }

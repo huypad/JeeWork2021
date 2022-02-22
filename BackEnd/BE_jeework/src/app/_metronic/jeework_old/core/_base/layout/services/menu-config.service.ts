@@ -33,8 +33,8 @@ export class MenuConfigService {
 		let menu;
 		menu = this.fs_Assign(res);
 		return menu;
-		// return this.menuConfig;
 	}
+	menuData: any[];
 	layMenu() {
 		return this.menuPhanQuyenServices.layMenuChucNang(Module).toPromise();
 	}
@@ -142,78 +142,7 @@ export class MenuConfigService {
 		}
 		return config;
 	}
-
-	fs_AssignWMS(dt: any) {
-		let config = {
-			header: {
-				self: {},
-				items: []
-			},
-			aside: {
-				self: {},
-				items: []
-			}
-		};
-		// let arr = [];
-		dt.forEach((item, index) => {
-			if (item.Child.length > 0) {
-				let _module = {
-					title: '' + item.MenuName,
-					root: item.Child ? item.Child.length > 0 : true,
-					icon: '' + item.Icon,
-				}
-				if (item.Child.length > 0) {
-					_module["bullet"] = 'dot';
-					_module["submenu"] = [];
-					item.Child.forEach((itemE, indexE) => {
-						let _mainmenu = {
-							title: '' + itemE.MenuName,
-							icon: '' + itemE.Icon,
-							root: itemE.Child ? itemE.Child.length == 0 : true,
-							page: '' + itemE.Link,
-						};
-						if (itemE.Child.length > 0 || itemE.Link == '/') {
-							_mainmenu["bullet"] = 'dot';
-							_mainmenu["submenu"] = [];
-							itemE.Child.forEach((itemEE, indexEE) => {
-								let _submenu = {
-									title: '' + itemEE.MenuName,
-									page: '' + itemEE.Link,
-									// idLoaiHH: itemEE.Position
-								};
-								_mainmenu["submenu"].push(_submenu);
-							});
-							_module["submenu"].push(_mainmenu);
-						} else {
-							let _submenu = {
-								title: '' + itemE.MenuName,
-								page: '' + itemE.Link,
-								icon: '' + itemE.Icon,
-								// idLoaiHH: itemE.Position
-							};
-							_module["submenu"].push(_submenu);
-						}
-					});
-				}
-				config.aside.items.push(_module);
-			}
-			else {
-				if (item.Link != '#') {
-					let _module = {
-						title: '' + item.MenuName,
-						root: item.Child ? item.Child.length == 0 : true,
-						icon: '' + item.Icon,
-						page: '' + item.Link
-					};
-					config.aside.items.push(_module);
-				}
-			}
-		});
-		return config;
-	}
-
 	async GetWMSRolesToLocalStorage() {
-
 	}
 
 	/**

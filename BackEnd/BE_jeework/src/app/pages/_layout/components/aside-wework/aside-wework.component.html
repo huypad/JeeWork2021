@@ -79,12 +79,8 @@
                         [attr.data-menu-dropdown]="asideMenuDropdown" data-menu-dropdown-timeout="500">
                         <!-- begin::Menu Nav -->
                         <ul class="menu-nav" [ngClass]="ulCSSClasses">
-                            <ng-container *ngFor="let child of menuAsideService.menuList$ | async">
-                                <!-- <ng-container *ngIf="child.section" [ngTemplateOutlet]="menuItemSectionTemplate"
-                                [ngTemplateOutletContext]="{ item: child }"></ng-container> -->
-                                <!-- <ng-container *ngIf="child.separator" [ngTemplateOutlet]="menuItemSeparatorTemplate"
-                                [ngTemplateOutletContext]="{ item: child }"></ng-container> -->
-                                <!-- <ng-container *ngIf="!child.title" [ngTemplateOutlet]="workspace"></ng-container> -->
+                            <!-- {{menuList.value | json}} -->
+                            <ng-container *ngFor="let child of menuList.value">
                                 <ng-container *ngIf="child.title" [ngTemplateOutlet]="menuItemTemplate"
                                     [ngTemplateOutletContext]="{ item: child }"></ng-container>
                             </ng-container>

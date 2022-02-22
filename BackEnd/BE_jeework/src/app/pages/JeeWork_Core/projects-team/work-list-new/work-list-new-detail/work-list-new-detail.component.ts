@@ -1927,6 +1927,7 @@ export class WorkListNewDetailComponent implements OnInit {
         this.router.navigate(['', { outlets: { auxName: null } }]);
         // AuxiliaryRouterJWComponent.dialogRef = null;
         this.dialogRef.close();
+        this
         this.store.updateEvent = true;
 
         // else
