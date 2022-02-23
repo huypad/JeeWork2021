@@ -4232,6 +4232,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                             #endregion
                             #region Ngày bắt đầu
                             case "start_date":
+                                key_special = "ww_xoathoigianbatdau";
                                 if (data.value != null)
                                 {
                                     templateguimail = 27;

@@ -378,4 +378,7 @@
   <data name="ww_xoakhoiduan" xml:space="preserve">
     <value>$nguoigui$ đã xóa bạn khỏi dự án $project_team$</value>
   </data>
+  <data name="ww_xoathoigianbatdau" xml:space="preserve">
+    <value>$nguoigui$ đã xóa thời gian bắt đầu công việc $tencongviec$</value>
+  </data>
 </root>

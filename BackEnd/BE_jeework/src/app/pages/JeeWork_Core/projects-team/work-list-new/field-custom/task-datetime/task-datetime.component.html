@@ -10,11 +10,11 @@
 </ng-container>
 
 <ng-template #selectedDate>
-    <div (click)="dt1.open()" class="item-field item-datetime url" *ngIf="role">
+    <div  class="item-field item-datetime url" *ngIf="role">
         <div class="remove-date url" (click)="RemoveKey()" [hidden]="!value">
-            <i class="fas fa-times-circle" style="color: #28a745 ;"></i>
+            <i class="fas fa-times-circle" style="color: red ;"></i>
         </div>
-        <span class=" hide-more-text" [ngClass]="getClassdate()"
+        <span class=" hide-more-text" [ngClass]="getClassdate()" (click)="dt1.open()"
             matTooltip="{{value | timezone}}" *ngIf="value;else setDate">
             <ng-container *ngIf="showall">
                 <span style="font-size: 110%;">{{ value | timezone:'HH:mm' }}</span>
@@ -23,7 +23,7 @@
             {{ GetDatetime(value) }}
         </span>
         <ng-template #setDate>
-            <i class="{{ getIconCalendar() }}" style="font-size: 1.5rem"></i>
+            <i class="{{ getIconCalendar() }}" style="font-size: 1.5rem" (click)="dt1.open()"></i>
         </ng-template>
     </div>
     <div class="item-field " *ngIf="!role">
