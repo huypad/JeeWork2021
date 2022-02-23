@@ -1601,9 +1601,9 @@ where disabled = 0 and u.id_user in ({listID}) and id_project_team = @id";
                         if (item["format"] != DBNull.Value)
                         {
                             string f = "{0:" + item["format"].ToString() + "}";
-                            if (item["oldvalue"] != DBNull.Value)
+                            if (!string.IsNullOrEmpty(item["oldvalue"].ToString()))
                                 item["oldvalue"] = string.Format(f, DateTime.Parse(item["oldvalue"].ToString()));
-                            if (item["newvalue"] != DBNull.Value)
+                            if (!string.IsNullOrEmpty(item["newvalue"].ToString()))
                                 item["newvalue"] = string.Format(f, DateTime.Parse(item["newvalue"].ToString()));
                         }
 
