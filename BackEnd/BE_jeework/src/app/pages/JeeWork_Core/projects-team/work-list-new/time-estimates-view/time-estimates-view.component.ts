@@ -23,4 +23,13 @@ export class TimeEstimatesViewComponent implements OnInit {
     }
   }
 
+  //Hàm kiêm tra===================================
+	text(e: any) {
+		if (!((e.keyCode > 95 && e.keyCode < 106)
+			|| (e.keyCode > 47 && e.keyCode < 58)
+			|| e.keyCode == 8)) {
+			e.preventDefault();
+		}
+	}
+
 }
