@@ -1152,8 +1152,8 @@ export class ListTaskCUComponent implements OnInit, OnDestroy {
         });
     }
     showTitleFilter(id) {
-        if (this.idFilter > 0) {
-            const x = this.danhsachboloc.find(x => x.id_row === id);
+        if (+this.idFilter > 0) {
+            const x = this.danhsachboloc.find(x => +x.id_row === +id);
             if (x) {
                 return x.title;
             } else {
