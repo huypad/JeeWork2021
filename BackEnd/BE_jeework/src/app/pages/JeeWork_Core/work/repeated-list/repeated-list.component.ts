@@ -86,12 +86,10 @@ export class RepeatedListComponent implements OnInit {
 
     constructor(
         public dialog: MatDialog,
-        private activatedRoute: ActivatedRoute,
         private router: Router,
         private translate: TranslateService,
         public weworkService: JeeWorkLiteService,
         private _service: WorkService,
-        private datePipe: DatePipe,
         private tokenStorage: TokenStorage,
         private layoutUtilsService: LayoutUtilsService,
         private changeDetectorRefs: ChangeDetectorRef,
@@ -102,7 +100,6 @@ export class RepeatedListComponent implements OnInit {
             this.id_project = +x[2];
         } else {
         }
-
     }
 
     /** LOAD DATA */
@@ -115,16 +112,13 @@ export class RepeatedListComponent implements OnInit {
         var now = moment();
         this.DenNgay = now;
         this.TuNgay = moment(now).add(-1, 'months');
-
         this.weworkService.lite_project_team_byuser('').subscribe(res => {
             if (res && res.status === 1) {
                 this.listProject = res.data;
                 this.setUpDropSearchProject();
                 this.changeDetectorRefs.detectChanges();
             }
-            ;
         });
-
         const filter: any = {};
         // filter.key = 'id_project_team';
         // filter.value = 1;
@@ -139,7 +133,6 @@ export class RepeatedListComponent implements OnInit {
             ;
         });
     }
-
     loadDataList(page: boolean = false) {
         const queryParams = new QueryParamsModelNew(
             this.filterConfiguration(),
