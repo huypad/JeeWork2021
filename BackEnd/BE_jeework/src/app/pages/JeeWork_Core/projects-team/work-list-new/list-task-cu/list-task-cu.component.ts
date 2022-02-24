@@ -1,7 +1,5 @@
-import { delay, filter, take } from 'rxjs/operators';
 import { SubheaderService } from './../../../../../_metronic/jeework_old/core/_base/layout/services/subheader.service';
 import { TokenStorage } from './../../../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
-import { DanhMucChungService } from './../../../../../_metronic/jeework_old/core/services/danhmuc.service';
 import { MenuPhanQuyenServices } from './../../../../../_metronic/jeework_old/core/_base/layout/services/menu-phan-quyen.service';
 import { MessageType, LayoutUtilsService } from './../../../../../_metronic/jeework_old/core/utils/layout-utils.service';
 import { QueryParamsModelNew } from './../../../../../_metronic/jeework_old/core/models/query-models/query-params.model';
@@ -10,24 +8,21 @@ import { workAddFollowersComponent } from './../../../work/work-add-followers/wo
 import { WorkAssignedComponent } from './../../../work/work-assigned/work-assigned.component';
 import { DuplicateWorkComponent } from './../../../work/work-duplicate/work-duplicate.component';
 import { DuplicateTaskNewComponent } from './../duplicate-task-new/duplicate-task-new.component';
-import { WorkListNewDetailComponent } from './../work-list-new-detail/work-list-new-detail.component';
 import { DialogSelectdayComponent } from './../../../report/dialog-selectday/dialog-selectday.component';
 import { DropInfo } from './../work-list-new.component';
 import { WorkModel, UserInfoModel, UpdateWorkModel, WorkDuplicateModel, FilterModel } from './../../../work/work.model';
 import { SelectionModel } from '@angular/cdk/collections';
 import { JeeWorkLiteService } from './../../../services/wework.services';
 import { TranslateService } from '@ngx-translate/core';
-import { FormBuilder } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
-import { MatTable } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
 import { Router, ActivatedRoute } from '@angular/router';
 import { WorkService } from './../../../work/work.service';
 import { ProjectsTeamService } from './../../Services/department-and-project.service';
 import { DOCUMENT, DatePipe } from '@angular/common';
-import { DrapDropItem, ColumnWorkModel } from './../drap-drop-item.model';
-import { CdkDragDrop, moveItemInArray, CdkDropList, CdkDragStart } from '@angular/cdk/drag-drop';
-import { Component, OnInit, Input, Inject, ChangeDetectorRef, ViewChild, OnChanges, HostListener, OnDestroy, AfterViewInit } from '@angular/core';
+import { DrapDropItem } from './../drap-drop-item.model';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { Component, OnInit, Input, Inject, ChangeDetectorRef, ViewChild, OnDestroy } from '@angular/core';
 import * as moment from 'moment';
 import { BehaviorSubject, of, ReplaySubject, Subscription, SubscriptionLike } from 'rxjs';
 import { CommunicateService } from '../work-list-new-service/communicate.service';
@@ -46,7 +41,6 @@ export class ListTaskCUComponent implements OnInit, OnDestroy {
         private router: Router,
         public dialog: MatDialog,
         private route: ActivatedRoute,
-        private CommunicateService: CommunicateService,
         public subheaderService: SubheaderService,
         private layoutUtilsService: LayoutUtilsService,
         private changeDetectorRefs: ChangeDetectorRef,
@@ -59,44 +53,11 @@ export class ListTaskCUComponent implements OnInit, OnDestroy {
 
     ) {
         this.taskinsert.clear();
-        // this.filter_groupby = this.getMystaff?this.listFilter_Groupby[1]:this.listFilter_Groupby[0];
         this.filter_subtask = this.listFilter_Subtask[1];
         this.list_priority = this.WeWorkService.list_priority;
         this.UserID = +localStorage.getItem('idUser');
     }
-    updateDate1(task, date, field) {
-        if (date) {
-            this.UpdateByKey(task, field, moment(date).format('MM/DD/YYYY HH:mm'));
-        } else {
-            this.UpdateByKey(task, field, null);
-        }
-    }
-    refresh_item(key: string, value: any) {
-        var column = key;
-        this.sb2 = this.store.updateNode$.subscribe(res => {
-            if (res != null) {
-                this.DanhSachCongViec.forEach(element => {
-                    if (element.data.length > 0) {
-                        element.data.forEach((itemE, indexE) => {
-                            if (itemE.id_row == res.id_row) {
-
-                                if (column == 'deadline' || column == 'start_date') {
-                                    this.LoadTask();
-                                    return;
-                                }
-                                else {
-                                    itemE[column] = value;
-                                    this.filteredDanhSachCongViec.next(this.DanhSachCongViec);
-                                    this.changeDetectorRefs.detectChanges();
-                                    return;
-                                }
-                            }
-                        })
-                    }
-                })
-            }
-        });
-    }
+   
     @Input() ID_Project = 1;
     @Input() ID_NV = 0;
     @Input() selectedTab = 0;
@@ -206,17 +167,11 @@ export class ListTaskCUComponent implements OnInit, OnDestroy {
     ngOnInit() {
         const today = new Date();
         this.filterDay = {
-            // endDate: new Date(today.setMonth(today.getMonth())),
-            // startDate: new Date(today.getFullYear(), today.getMonth() - 3, 1),
-            endDate: new Date(today.setMonth(today.getMonth() + 1)),
-            startDate: new Date(today.getFullYear(), today.getMonth() - 2, 1),
+            endDate: new Date(today.getFullYear(), today.getMonth() + 1, 1),
+            startDate: new Date(today.getFullYear(), today.getMonth() - 6, 1),
+            // endDate: new Date(today.setMonth(today.getMonth() + 1)),
+            // startDate: new Date(today.getFullYear(), today.getMonth() - 2, 1),
         };
-        // giao tiếp service
-        // this.subscription = this.CommunicateService.currentMessage.subscribe(message => {
-        //     if (message) {
-        //         // this.LoadWork();
-        //     }
-        // });
         this.filter_groupby = this.getMystaff ? this.listFilter_Groupby[1] : this.listFilter_Groupby[0];
         this.column_sort = this.sortField[0];
         this.route.params.subscribe(res => {
@@ -247,9 +202,32 @@ export class ListTaskCUComponent implements OnInit, OnDestroy {
         this.Forme(true);
         this.changeDetectorRefs.detectChanges();
     }
-
+    refresh_item(key: string, value: any) {
+        var column = key;
+        this.sb2 = this.store.updateNode$.subscribe(res => {
+            if (res != null) {
+                this.DanhSachCongViec.forEach(element => {
+                    if (element.data.length > 0) {
+                        element.data.forEach((itemE, indexE) => {
+                            if (itemE.id_row == res.id_row) {
+                                if (column == 'deadline' || column == 'start_date') {
+                                    this.LoadTask();
+                                    return;
+                                }
+                                else {
+                                    itemE[column] = value;
+                                    this.filteredDanhSachCongViec.next(this.DanhSachCongViec);
+                                    this.changeDetectorRefs.detectChanges();
+                                    return;
+                                }
+                            }
+                        })
+                    }
+                })
+            }
+        });
+    }
     ngOnDestroy(): void {
-
         this.subscription.unsubscribe();
     }
     LoadTask() {
@@ -747,7 +725,6 @@ export class ListTaskCUComponent implements OnInit, OnDestroy {
             if (result != undefined) {
                 this.filterDay.startDate = new Date(result.startDate);
                 this.filterDay.endDate = new Date(result.endDate);
-                // this.LoadWork();
                 this.LoadTask();
             }
         });
@@ -762,15 +739,6 @@ export class ListTaskCUComponent implements OnInit, OnDestroy {
         if (v != '' && v != undefined) {
             const a = new Date(v);
             return ('0' + (a.getDate())).slice(-2) + '/' + ('0' + (a.getMonth() + 1)).slice(-2) + '/' + a.getFullYear();
-        }
-    }
-    viewdate() {
-        if (this.selectedDate.startDate === '' && this.selectedDate.endDate === '') {
-            return 'Set due date';
-        } else {
-            const start = this.f_convertDate(this.selectedDate.startDate);
-            const end = this.f_convertDate(this.selectedDate.endDate);
-            return start + ' - ' + end;
         }
     }
     GroupBy(item) {
@@ -850,13 +818,11 @@ export class ListTaskCUComponent implements OnInit, OnDestroy {
     }
     ShowCloseTask() {
         this.showclosedtask = !this.showclosedtask;
-        // this.LoadWork();
         this.LoadTask();
     }
 
     ShowClosesubTask() {
         this.showclosedsubtask = !this.showclosedsubtask;
-        // this.LoadWork();
         this.LoadTask();
     }
 
@@ -938,7 +904,6 @@ export class ListTaskCUComponent implements OnInit, OnDestroy {
         item.id_row = task.id_row;
         item.key = key;
         item.value = value;
-
         if (task.id_nv > 0) {
             item.IsStaff = true;
         }
@@ -1056,12 +1021,6 @@ export class ListTaskCUComponent implements OnInit, OnDestroy {
             }
         });
     }
-
-    work() {
-        const model = new WorkModel();
-        model.clear();
-    }
-
     assign(node) {
         this.loadOptionprojectteam(node);
         const item = this.options_assign;

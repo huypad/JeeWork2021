@@ -28,6 +28,7 @@ export class MenuConfigService {
 	 * Returns the menuConfig
 	 */
 	async getMenus() {
+		debugger
 		//lấy menu phân quyền
 		let res = await this.layMenu().then();
 		let menu;
