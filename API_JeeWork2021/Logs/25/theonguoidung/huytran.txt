@@ -114,3 +114,8 @@
 16/12/2021 04:26:24 - Thêm mới dữ liệu công việc: title=Tạo test, id_project_team=25631
 16/12/2021 04:26:56 - Thêm mới dữ liệu công việc: title=Task 1, id_project_team=25631
 17/12/2021 03:21:29 - Update user: ID27779 - admin = True
+24/02/2022 07:22:29 - Thêm mới dữ liệu công việc: title=Task 1, id_project_team=26660
+24/02/2022 07:22:48 - Thêm mới dữ liệu công việc: title=Task 2, id_project_team=26660
+24/02/2022 07:23:25 - Thêm mới dữ liệu công việc: title=Task new, id_project_team=26660
+24/02/2022 07:23:52 - Thêm mới dữ liệu công việc: title=Task 4, id_project_team=26660
+24/02/2022 07:27:37 - Thêm mới dữ liệu công việc: title=Task 5, id_project_team=26660

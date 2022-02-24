@@ -1,4 +1,3 @@
-import { SubheaderService } from './../../../../../_metronic/jeework_old/core/_base/layout/services/subheader.service';
 import { TokenStorage } from './../../../../../_metronic/jeework_old/core/auth/_services/token-storage.service';
 import { MenuPhanQuyenServices } from './../../../../../_metronic/jeework_old/core/_base/layout/services/menu-phan-quyen.service';
 import { MessageType, LayoutUtilsService } from './../../../../../_metronic/jeework_old/core/utils/layout-utils.service';
@@ -25,7 +24,6 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component, OnInit, Input, Inject, ChangeDetectorRef, ViewChild, OnDestroy } from '@angular/core';
 import * as moment from 'moment';
 import { BehaviorSubject, of, ReplaySubject, Subscription, SubscriptionLike } from 'rxjs';
-import { CommunicateService } from '../work-list-new-service/communicate.service';
 import { ListTasksStore } from './list-task-cu.store';
 
 @Component({
@@ -41,7 +39,6 @@ export class ListTaskCUComponent implements OnInit, OnDestroy {
         private router: Router,
         public dialog: MatDialog,
         private route: ActivatedRoute,
-        public subheaderService: SubheaderService,
         private layoutUtilsService: LayoutUtilsService,
         private changeDetectorRefs: ChangeDetectorRef,
         private translate: TranslateService,
@@ -75,6 +72,8 @@ export class ListTaskCUComponent implements OnInit, OnDestroy {
     @ViewChild(MatSort, { static: true }) sort: MatSort;
     previousIndex: number;
     addNodeitem = 0;
+    addNodeitemTop = 0;
+
     newtask = -1;
     options_assign: any = {};
     filter_groupby: any = [];
@@ -168,9 +167,7 @@ export class ListTaskCUComponent implements OnInit, OnDestroy {
         const today = new Date();
         this.filterDay = {
             endDate: new Date(today.getFullYear(), today.getMonth() + 1, 1),
-            startDate: new Date(today.getFullYear(), today.getMonth() - 6, 1),
-            // endDate: new Date(today.setMonth(today.getMonth() + 1)),
-            // startDate: new Date(today.getFullYear(), today.getMonth() - 2, 1),
+            startDate: new Date(today.getFullYear(), today.getMonth() - 4, 1),
         };
         this.filter_groupby = this.getMystaff ? this.listFilter_Groupby[1] : this.listFilter_Groupby[0];
         this.column_sort = this.sortField[0];
@@ -621,6 +618,7 @@ export class ListTaskCUComponent implements OnInit, OnDestroy {
             this.newtask = -1;
         }
     }
+
     editTitle(val) {
         this.isEdittitle = val;
         const ele = (document.getElementById('task' + val) as HTMLInputElement);
@@ -848,14 +846,13 @@ export class ListTaskCUComponent implements OnInit, OnDestroy {
             this.newtask = x;
         }, 1000);
         this._service.InsertTask(val).subscribe(res => {
-
             if (res && res.status === 1) {
                 this.CloseAddnewTask(true);
                 this.LoadListStatusByProject();
-                // this.LoadWork()
-                this.DanhSachCongViec.push(val);
-                this.filteredDanhSachCongViec.next(this.DanhSachCongViec);
-                // this.LoadTask();
+                this.LoadTask();
+                // this.DanhSachCongViec.push(val);
+                // this.filteredDanhSachCongViec.next(this.DanhSachCongViec);
+                // this.changeDetectorRefs.detectChanges();
             } else {
                 this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
             }

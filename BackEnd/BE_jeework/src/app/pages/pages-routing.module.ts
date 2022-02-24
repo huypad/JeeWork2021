@@ -10,8 +10,8 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'tasks',
-        // pathMatch: 'prefix',
+        redirectTo: '/tasks',
+        pathMatch: 'full',
         // canActivate: [AdminGuard],
       },
       {

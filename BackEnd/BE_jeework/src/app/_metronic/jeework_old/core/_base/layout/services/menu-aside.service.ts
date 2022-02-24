@@ -27,7 +27,6 @@ export class MenuAsideService {
 	 * Load menu list
 	 */
 	async loadMenu() {
-		debugger
 		const menuItems: any[] = objectPath.get(await this.menuConfigService.getMenus(), 'aside.items');
 		this.menuList$.next(menuItems);
 	}

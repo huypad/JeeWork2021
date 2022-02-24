@@ -4,9 +4,6 @@ import { CommonModule } from '@angular/common';
 import { FieldsCustomModule } from './field-custom/fields-custom.module';
 import { WorksListGroup2Component } from './works-dash-board/works-list-group-2/works-list-group-2.component';
 import { JeeWork_CoreModule } from '../../JeeWork_Core.module';
-
-
-
 @NgModule({
 	imports: [
 		CommonModule,

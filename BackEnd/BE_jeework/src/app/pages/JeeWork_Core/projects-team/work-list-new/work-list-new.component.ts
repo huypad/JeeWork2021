@@ -101,11 +101,6 @@ export class WorkListNewComponent implements OnInit {
     this.UserID = this.auth.getUserId();
   }
   @Input() ID_Project = 0;
-  @ViewChild("table1", { static: true }) table1: MatTable<any>;
-  @ViewChild("table2", { static: true }) table2: MatTable<any>;
-  @ViewChild("table3", { static: true }) table3: MatTable<any>;
-  @ViewChild("list1", { static: true }) list1: CdkDropList;
-  ListtopicObjectID$: BehaviorSubject<any> = new BehaviorSubject<any>([]);
   subscription: SubscriptionLike;
   data: any = [];
   ListColumns: any = [];
@@ -113,20 +108,23 @@ export class WorkListNewComponent implements OnInit {
   ListTasks: any = [];
   ListTags: any = [];
   ListUsers: any = [];
-  editmail = 0;
-  statusDefault = 0;
-  isAssignforme = false;
-  // col
-  displayedColumnsCol: string[] = [];
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
-  previousIndex: number;
-  ListAction: any = [];
-  addNodeitem = 0;
-  newtask = -1;
   options_assign: any = {};
   filter_groupby: any = [];
   filter_subtask: any = [];
   list_milestone: any = [];
+  ProjectTeam: any = {};
+  listNewField: any = [];
+  DataNewField: any = [];
+  listType: any = [];
+  list_role: any = [];
+  editmail = 0;
+  statusDefault = 0;
+  isAssignforme = false;
+  // col
+  previousIndex: number;
+  addNodeitem = 0;
+  newtask = -1;
+  
   Assign_me = -1;
   keyword = "";
   // view setting
@@ -142,12 +140,9 @@ export class WorkListNewComponent implements OnInit {
   isEdittitle = -1;
   startDatelist: Date = new Date();
   selection = new SelectionModel<WorkModel>(true, []);
-  list_role: any = [];
   ItemFinal = 0;
-  ProjectTeam: any = {};
-  listNewField: any = [];
-  DataNewField: any = [];
-  listType: any = [];
+
+
   textArea = "";
   searchCtrl: FormControl = new FormControl();
   private readonly componentName: string = "kt-task_";
@@ -160,9 +155,6 @@ export class WorkListNewComponent implements OnInit {
   public column_sort: any = [];
   listField: any = [];
   listStatus: any = [];
-  // list da nhiệm
-  // nodes: any[] = demoData;
-  // ids for connected drop lists
   dropTargetIds = [];
   nodeLookup = {};
   dropActionTodo: DropInfo = null;
@@ -292,13 +284,11 @@ export class WorkListNewComponent implements OnInit {
     //   startWith(originalText)
     // );    
   }
-
   ngOnDestroy(): void {
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
   }
-
   LoadDetailProject() {
     this._service.Detail(this.ID_Project).subscribe((res) => {
       if (res && res.status == 1) {
@@ -306,7 +296,6 @@ export class WorkListNewComponent implements OnInit {
       }
     });
   }
-
   CheckClosedProject() {
     if (this.list_role) {
       const x = this.list_role.find((x) => x.id_row == this.ID_Project);
@@ -318,7 +307,6 @@ export class WorkListNewComponent implements OnInit {
     }
     return true;
   }
-
   CheckRoles(roleID: number) {
     if (this.list_role) {
       const x = this.list_role.find((x) => x.id_row == this.ID_Project);
@@ -481,17 +469,11 @@ export class WorkListNewComponent implements OnInit {
   }
 
   LoadDataWorkGroup() {
-    this.weworkService
-      .lite_workgroup(this.ID_Project)
-      .pipe(
-        tap((res) => {
+    this.weworkService.lite_workgroup(this.ID_Project).pipe(tap((res) => {
           if (res && res.status == 1) {
             this.listType = res.data;
             this.changeDetectorRefs.detectChanges();
-          }
-        })
-      )
-      .subscribe();
+          }})).subscribe();
   }
 
   LoadDataTaskNew(loading = true) {
@@ -613,9 +595,7 @@ export class WorkListNewComponent implements OnInit {
           const x = this.status_dynamic.find((val) => val.IsFinal == true);
           if (x) {
             this.ItemFinal = x.id_row;
-          } else {
           }
-
           const itemstatusdefault = this.status_dynamic.find(
             (x) =>
               x.isdefault == true &&
@@ -687,7 +667,6 @@ export class WorkListNewComponent implements OnInit {
     if (!this.KiemTraThayDoiCongViec(node, field.fieldname)) {
       return;
     }
-
     const idWork = node.id_row;
     const _item = new UpdateWorkModel();
     _item.clear();

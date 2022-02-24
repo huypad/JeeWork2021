@@ -82,7 +82,6 @@ import { GlobalVariable } from 'src/app/pages/global';
 	indexxxxx: number = -1;
 	it: any = {};
 	constructor(
-		private FormControlFB: FormBuilder,
 		public dialog: MatDialog,
 		private layoutUtilsService: LayoutUtilsService,
 		private changeDetectorRefs: ChangeDetectorRef,

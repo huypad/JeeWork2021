@@ -47,7 +47,6 @@ export class SubheaderService {
 		private router: Router,
 		private pageConfigService: PageConfigService,
 		private menuConfigService: MenuConfigService) {
-		debugger
 		const initBreadcrumb = () => {
 			// get updated title current page config
 			this.pageConfig = this.pageConfigService.getCurrentPageConfig();

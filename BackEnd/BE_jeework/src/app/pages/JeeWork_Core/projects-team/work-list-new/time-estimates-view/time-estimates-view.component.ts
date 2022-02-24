@@ -16,20 +16,20 @@ export class TimeEstimatesViewComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  submitOut(){
-    if(this.times.nativeElement.value){ 
+  submitOut() {
+    if (this.times.nativeElement.value) {
       this.submit.emit(this.times.nativeElement.value)
       // this.time = this.times.nativeElement.value;
     }
   }
 
   //Hàm kiêm tra===================================
-	text(e: any) {
-		if (!((e.keyCode > 95 && e.keyCode < 106)
-			|| (e.keyCode > 47 && e.keyCode < 58)
-			|| e.keyCode == 8)) {
-			e.preventDefault();
-		}
-	}
+  text(e: any) {
+    if (!((e.keyCode > 95 && e.keyCode < 106)
+      || (e.keyCode > 47 && e.keyCode < 58)
+      || e.keyCode == 8)) {
+      e.preventDefault();
+    }
+  }
 
 }

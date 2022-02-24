@@ -156,6 +156,12 @@
                                                     <div class="cu-task-list-header-field__title-text"
                                                         style="padding-top: 6px;">
                                                         {{lstcongviec.data.length}} {{ 'work.tasks' | translate}}
+                                                        &nbsp;
+                                                        <button (click)="AddnewTask(lstcongviec.id,true)"
+                                                            class="btn cu-dropdown-head text-muted -hover">
+                                                            <i class="fas fa-plus"></i> {{ 'work.newtask' |
+                                                            translate}}
+                                                        </button>
                                                     </div>
                                                 </div>
                                             </div>

@@ -2,7 +2,6 @@ import { WorkProcessEditComponent } from './../work-process-edit/work-process-ed
 import { QueryFilterComment } from './../../../jee-comment/jee-comment.model';
 import { QueryParamsModelNew } from './../../../../../_metronic/jeework_old/core/models/query-models/query-params.model';
 import { MenuPhanQuyenServices } from './../../../../../_metronic/jeework_old/core/_base/layout/services/menu-phan-quyen.service';
-import { SubheaderService } from './../../../../../_metronic/jeework_old/core/_base/layout/services/subheader.service';
 import {
     LayoutUtilsService,
     MessageType,
@@ -43,8 +42,6 @@ import {
     ViewChild,
     ElementRef,
     ChangeDetectorRef,
-    OnChanges,
-    HostListener,
     ViewContainerRef,
     ComponentFactoryResolver,
 } from '@angular/core';
@@ -75,14 +72,12 @@ export class WorkListNewDetailComponent implements OnInit {
     nameList: string[];
     name: string;
     constructor(
-        private activatedRoute: ActivatedRoute,
         private workService: WorkService,
         private communicateService: CommunicateService,
         private el: ElementRef,
         private router: Router,
         private projectsTeamService: ProjectsTeamService,
         public dialog: MatDialog,
-        public subheaderService: SubheaderService,
         private layoutUtilsService: LayoutUtilsService,
         private changeDetectorRefs: ChangeDetectorRef,
         private translate: TranslateService,
@@ -94,12 +89,7 @@ export class WorkListNewDetailComponent implements OnInit {
         public dialogRef: MatDialogRef<WorkListNewDetailComponent>,
         @Inject(MAT_DIALOG_DATA) public datalog: DialogData,
         private menuServices: MenuPhanQuyenServices,
-        private sanitizer: DomSanitizer,
-        private viewContainerRef: ViewContainerRef, private componentFactoryResolver: ComponentFactoryResolver,
         public store: ListTasksStore
-        // public activeModal: NgbActiveModal,
-        // private confirmationDialogService: ConfirmationDialogService
-
     ) {
         this.list_priority = this.weworkService.list_priority;
         this.UserID = +localStorage.getItem('idUser');
@@ -228,10 +218,6 @@ export class WorkListNewDetailComponent implements OnInit {
         this.LoadData();
         this.LoadChecklist();
         this.LoadObjectID();
-    }
-    ngAfterViewInit() {
-        // this.is_confirm = false;
-
     }
     getHeight(): any {
         let obj = window.location.href.split('/').find(x => x == 'tabs-references');

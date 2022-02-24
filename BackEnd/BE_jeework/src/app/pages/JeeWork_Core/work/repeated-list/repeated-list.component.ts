@@ -104,9 +104,9 @@ export class RepeatedListComponent implements OnInit {
 
     /** LOAD DATA */
     ngOnInit() {
-        this.layoutUtilsService.showWaitingDiv();
+        // this.layoutUtilsService.showWaitingDiv();
         setTimeout(() => {
-            this.layoutUtilsService.OffWaitingDiv();
+            // this.layoutUtilsService.OffWaitingDiv();
             this.loadDataList(true);
         }, 1000);
         var now = moment();
@@ -124,13 +124,11 @@ export class RepeatedListComponent implements OnInit {
         // filter.value = 1;
         this.weworkService.list_account({}).subscribe(res => {
             this.changeDetectorRefs.detectChanges();
-
             if (res && res.status === 1) {
                 this.listUser = res.data;
                 this.setUpDropSearchNhanVien();
                 this.changeDetectorRefs.detectChanges();
             }
-            ;
         });
     }
     loadDataList(page: boolean = false) {
@@ -222,11 +220,6 @@ export class RepeatedListComponent implements OnInit {
                 this.filterBanks();
             });
     }
-
-    Update_Status(val: any) {
-
-    }
-
     protected filterBanks() {
         if (!this.listUser) {
             return;
