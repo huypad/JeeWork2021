@@ -61,7 +61,7 @@ export class WorkListComponent implements OnInit {
 		public myworkSer: ProjectsTeamService,
 		private datePipe: DatePipe,
 		private translate: TranslateService,
-		private subheaderService: SubheaderService,
+		// private subheaderService: SubheaderService,
 		private changeDetect: ChangeDetectorRef,
 		private layoutUtilsService: LayoutUtilsService,
 		public menuHorService: MenuHorizontalService,

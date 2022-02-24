@@ -18,7 +18,7 @@ export class MenuHorizontalService {
 	 * @param menuConfigService: MenuConfigService
 	 */
 	constructor(private menuConfigService: MenuConfigService) {
-		this.loadMenu();
+		// this.loadMenu();
 	}
 
 	/**

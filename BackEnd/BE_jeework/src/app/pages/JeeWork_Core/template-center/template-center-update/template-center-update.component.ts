@@ -282,9 +282,7 @@ export class TemplateCenterUpdateComponent implements OnInit {
     TCinsert.template_typeid = this.TemplateDetail.template_typeid;
     TCinsert.img_temp = this.TemplateDetail.img_temp;
     TCinsert.id_row = this.TemplateDetail.id_row;
-    TCinsert.templateid = this.TemplateDetail.templateid
-      ? this.TemplateDetail.templateid
-      : 0;
+    TCinsert.templateid = this.TemplateDetail.templateid ? this.TemplateDetail.templateid : 0;
     TCinsert.levels = this.TemplateDetail.levels
       ? this.TemplateDetail.levels
       : 1;
