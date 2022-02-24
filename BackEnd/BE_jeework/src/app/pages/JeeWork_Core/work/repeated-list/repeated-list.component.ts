@@ -89,7 +89,6 @@ export class RepeatedListComponent implements OnInit {
         private activatedRoute: ActivatedRoute,
         private router: Router,
         private translate: TranslateService,
-        private subheaderService: SubheaderService,
         public weworkService: JeeWorkLiteService,
         private _service: WorkService,
         private datePipe: DatePipe,
