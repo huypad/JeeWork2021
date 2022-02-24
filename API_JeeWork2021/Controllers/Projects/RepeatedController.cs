@@ -869,6 +869,11 @@ from we_repeated_Task task where task.Disabled=0";
                 return JsonResultCommon.DangNhap();
             try
             {
+                #region Lấy dữ liệu account từ JeeAccount
+                DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                if (DataAccount == null)
+                    return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
+                #endregion
                 long iduser = loginData.UserID;
                 long idk = loginData.CustomerID;
                 string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
@@ -1073,11 +1078,14 @@ from we_repeated_Task task where task.Disabled=0";
                         DataTable dt_status = JeeWorkLiteController.StatusDynamic(long.Parse(dr["id_project_team"].ToString()), new List<AccUsernameModel>(), cnn);
                         if (dt.Rows.Count > 0)
                         {
-                            DataRow[] RowStatus = dt_status.Select("IsDefault = 1 and IsFinal = 0");
-                            if (RowStatus.Length > 0)
+                            if (dt_status.Rows.Count > 0)
                             {
-                                val.Add("status", RowStatus[0]["id_row"]);
-                            }
+                                DataRow[] RowStatus = dt_status.Select("IsDefault = 1 and IsFinal = 0");
+                                if (RowStatus.Length > 0)
+                                {
+                                    val.Add("status", RowStatus[0]["id_row"]);
+                                }
+                            }    
                         }
                         cnn.BeginTransaction();
                         if (cnn.Insert(val, "we_work") != 1)
