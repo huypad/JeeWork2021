@@ -88,8 +88,8 @@
                                                     <ng-container *ngFor="let us of getlist_Owners();let index = index">
                                                         <div *ngIf="index < 3" class="url row position-relative mr-2"
                                                             style="justify-content: flex-end;">
-                                                            <div class="bg-success user-admin"></div>
-                                                            <div class="pt-2 mr-3">{{us.hoten}}</div>
+                                                            <!-- <div class="bg-success user-admin"></div> -->
+                                                            <!-- <div class="pt-2 mr-3">{{us.hoten}}</div> -->
                                                             <div style="justify-content: flex-end;">
                                                                 <ng-container>
                                                                     <kt-avatar-user class="user url" [image]="us.image"
@@ -98,6 +98,35 @@
                                                                 </ng-container>
                                                             </div>
                                                         </div>
+                                                    </ng-container>
+                                                    <ng-container
+                                                        *ngIf="getlist_Owners() && getlist_Owners().length > 3">
+
+                                                        <div class="m--img-rounded m--marginless m--img-centered background"
+                                                            [matMenuTriggerFor]="menu1"
+                                                            [ngStyle]="{'width.px': 34,'height.px':34}">
+                                                            <div class="user w-100 h-100"
+                                                                style="opacity: 1;color:white;padding-top:3px;text-align: center;background: grey;"
+                                                                [ngStyle]="{'font-size.px': 16}">
+                                                                +{{getlist_Owners().length-3}}
+                                                            </div>
+                                                        </div>
+                                                        <mat-menu #menu1="matMenu">
+                                                            <div *ngFor="let user of getlist_Owners();let index = index"
+                                                                style="justify-content: flex-end;margin-bottom: 5px;">
+                                                                <ng-container *ngIf="index > 2">
+                                                                    <div class="position-relative">
+                                                                        <div class="row">
+                                                                            <kt-avatar-user [image]="user.image"
+                                                                                size="35" [name]="user.hoten"
+                                                                                [showFull]="true"
+                                                                                [info]="'@' + user.username">
+                                                                            </kt-avatar-user>
+                                                                        </div>
+                                                                    </div>
+                                                                </ng-container>
+                                                            </div>
+                                                        </mat-menu>
                                                     </ng-container>
                                                 </div>
                                             </div>
@@ -278,7 +307,9 @@
             <h3>{{ 'department.chusohuu'|translate}}</h3>
             <div class="row" style="margin-top: 15px;">
                 <ng-container *ngFor="let us of getlist_Owners();let index = index">
-                    <div *ngIf="index < 3" class="user url position-relative" style="justify-content: flex-end;">
+                    <div *ngIf="index < 3" class="user url scale-hover-02 position-relative" style="justify-content: flex-end;">
+                        <i class="far fa-times-circle url view-hover bg-white" (click)="ItemSelected(us)" *ngIf="us.id_nv != UserId"
+                        style="position: absolute;top:0;right:0;border-radius: 50%;font-size: 12pt;"></i>
                         <ng-container>
                             <kt-avatar-user [image]="us.image" size="35" [name]="us.hoten">
                             </kt-avatar-user>
@@ -298,7 +329,7 @@
                         <div *ngFor="let user of getlist_Owners();let index = index" style="justify-content: flex-end;">
                             <ng-container *ngIf="index > 2">
                                 <div class="position-relative">
-                                    <i class="fas fa-times scale-hover-01 url" style="position: absolute;top:0;right:0"
+                                    <i class="fas fa-times scale-hover-01 url" style="position: absolute;top:0;right:0" *ngIf="user.id_nv != UserId"
                                         (click)="ItemSelected(user)"></i>
                                     <div class="row">
                                         <kt-avatar-user [image]="user.image" size="35" [name]="user.hoten"
@@ -310,7 +341,14 @@
                         </div>
                     </mat-menu>
                 </ng-container>
-
+                <div matTooltip="Chọn người" matTooltipPosition="above" class="url user" [matMenuTriggerFor]="owner"
+                    style="border: 1px dashed #676363;border-radius: 50%;padding: 5px;display: inline-block;height:39px;width:39px; ">
+                    <mat-icon style="font-size: 28px!important;">person_add</mat-icon>
+                </div>
+                <div style=" font-size: 20px; padding: 7px;">
+                    <span class="url" [matMenuTriggerFor]="owner">{{
+                        'department.themthanhvien'|translate}}</span>
+                </div>
             </div>
         </div>
 

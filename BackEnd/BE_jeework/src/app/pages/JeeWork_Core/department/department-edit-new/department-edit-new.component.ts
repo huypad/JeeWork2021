@@ -591,21 +591,22 @@ export class DepartmentEditNewComponent implements OnInit {
     const _deleteMessage = this.translate.instant(
       "GeneralKey.thaydoithanhcong"
     );
-    if (this.isChangeData()) {
-      const dialogRef = this.layoutUtilsService.deleteElement(
-        _title,
-        _description,
-        _waitDesciption
-      );
-      dialogRef.afterClosed().subscribe((res) => {
-        if (!res) {
-          return;
-        }
-        this.dialogRef.close();
-      });
-    } else {
-      this.dialogRef.close();
-    }
+    this.dialogRef.close();
+    // if (this.isChangeData()) {
+    //   const dialogRef = this.layoutUtilsService.deleteElement(
+    //     _title,
+    //     _description,
+    //     _waitDesciption
+    //   );
+    //   dialogRef.afterClosed().subscribe((res) => {
+    //     if (!res) {
+    //       return;
+    //     }
+    //     this.dialogRef.close();
+    //   });
+    // } else {
+    //   this.dialogRef.close();
+    // }
   }
 
   isChangeData() {

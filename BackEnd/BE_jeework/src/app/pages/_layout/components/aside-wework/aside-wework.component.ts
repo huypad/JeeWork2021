@@ -147,7 +147,7 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
     }
 
     ngOnInit(): void {
-       this.LoadMenu();
+        this.LoadMenu();
         // load view settings
         this.disableAsideSelfDisplay =
             this.layout.getProp('aside.self.display') === false;
@@ -174,7 +174,7 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
                 this.currentRouteUrl = this.router.url.split(/[?#]/)[0];
                 this.cdr.markForCheck();
             });
-        
+
     }
 
     handleSVG(svg: SVGElement, parent: Element | null): SVGElement {
@@ -770,7 +770,7 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
                     _item.RowID > 0 ? MessageType.Update : MessageType.Create;
                 const IsUpdate = _item.RowID > 0 ? true : false;
                 const dialogRef = this.dialog.open(DepartmentEditNewComponent, {
-                    data: { _item, _IsEdit: _item.IsEdit, IsUpdate },
+                    data: { _item, _IsEdit: _item.IsEdit, IsUpdate }, disableClose: true,
                 });
                 dialogRef.afterClosed().subscribe((res) => {
                     if (!res) {
@@ -990,7 +990,7 @@ export class AsideWeworkComponent implements OnInit, AfterViewInit {
         const dialogRef = this.dialog.open(DepartmentEditNewComponent, {
             // minHeight: '50vh',
             data: { _item, _IsEdit: _item.IsEdit },
-            minWidth: '650px',
+            minWidth: '650px', disableClose: true
         });
         dialogRef.afterClosed().subscribe((res) => {
             if (!res) {

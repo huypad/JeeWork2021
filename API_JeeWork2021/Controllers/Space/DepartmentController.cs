@@ -1054,6 +1054,18 @@ namespace JeeWork_Core2021.Controllers.Wework
                                     return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                                 }
                             }
+                            else
+                            {
+                                SqlConditions conds = new SqlConditions();
+                                conds.Add("id_row", owner.id_row);
+                                val1 = new Hashtable();
+                                val1["Type"] = owner.type;
+                                if (cnn.Update(val1, conds, "we_department_owner") != 1)
+                                {
+                                    cnn.RollbackTransaction();
+                                    return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                                }
+                            }
                         }
                     }
                     if (data.DefaultView != null)

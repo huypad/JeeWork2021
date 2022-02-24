@@ -219,6 +219,7 @@ export class ListDepartmentListComponent implements OnInit {
 			// minHeight: '50vh',
 			data: { _item, _IsEdit: _item.IsEdit, IsUpdate },
 			minWidth: '650px',
+			disableClose: true
 		});
 		dialogRef.afterClosed().subscribe(res => {
 			if (!res) {
@@ -238,7 +239,7 @@ export class ListDepartmentListComponent implements OnInit {
 		const _saveMessage = this.translate.instant(saveMessageTranslateParam);
 		const _messageType = _item.RowID > 0 ? MessageType.Update : MessageType.Create;
 
-		const dialogRef = this.dialog.open(DepartmentEditNewComponent, { data: { _item, _IsEdit: _item.IsEdit } });
+		const dialogRef = this.dialog.open(DepartmentEditNewComponent, { data: { _item, _IsEdit: _item.IsEdit }, disableClose: true });
 		dialogRef.afterClosed().subscribe(res => {
 			if (!res) {
 				return;
