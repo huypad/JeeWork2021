@@ -17,6 +17,7 @@ using Newtonsoft.Json;
 using DPSinfra.ConnectionCache;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using DPSinfra.Kafka;
 
 namespace JeeWork_Core2021.Controllers.Wework
 {
@@ -30,13 +31,14 @@ namespace JeeWork_Core2021.Controllers.Wework
         private IConnectionCache ConnectionCache;
         private IConfiguration _configuration;
         private readonly ILogger<WW_UserRightsController> _logger;
-
-        public WW_UserRightsController(IOptions<JeeWorkConfig> config, IConnectionCache _cache, IConfiguration configuration, ILogger<WW_UserRightsController> logger)
+        private IProducer _producer;
+        public WW_UserRightsController(IOptions<JeeWorkConfig> config, IConnectionCache _cache, IConfiguration configuration, ILogger<WW_UserRightsController> logger, IProducer producer)
         {
             _config = config.Value;
             ConnectionCache = _cache;
             _configuration = configuration;
             _logger = logger;
+            _producer = producer;
         }
         /// <summary>
         /// Nhóm người dùng ---
@@ -74,7 +76,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region khởi tạo dữ liệu quyền cho nhóm quản trị
-                        Common.InsertGroupType(cnn, loginData.CustomerID);
+                    Common.InsertGroupType(cnn, loginData.CustomerID);
                     #endregion
                     Conds.Add("CustemerID", loginData.customdata.jeeAccount.customerID);
                     Conds.Add("Module", query.filter["Module"]);
@@ -121,7 +123,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                                ID_Nhom = r["id_group"],
                                IsAdmin = r["Isadmin"],
                                grouptype = r["GroupType"],
-                               icon_class = bool.TrueString.Equals(r["Isadmin"].ToString()) ? "fa fa-cog" : (r["GroupType"] != DBNull.Value ? ("1".Equals(r["GroupType"].ToString())? "fa fa-check-double" : "fa fa-check"):""),
+                               icon_class = bool.TrueString.Equals(r["Isadmin"].ToString()) ? "fa fa-cog" : (r["GroupType"] != DBNull.Value ? ("1".Equals(r["GroupType"].ToString()) ? "fa fa-check-double" : "fa fa-check") : ""),
                                color_class = bool.TrueString.Equals(r["Isadmin"].ToString()) ? "#82c91e" : (r["GroupType"] != DBNull.Value ? ("1".Equals(r["GroupType"].ToString()) ? "#4dabf7" : "#ffd43b") : ""),
                                tooltip = bool.TrueString.Equals(r["Isadmin"].ToString()) ? "Quản trị hệ thống" : (r["GroupType"] != DBNull.Value ? ("1".Equals(r["GroupType"].ToString()) ? "Nhóm quản trị phòng ban/thư mục" : "Nhóm thành viên") : ""),
                                DateCreated = string.Format("{0:dd/MM/yyyy HH:mm}", r["DateCreated"]),
@@ -361,20 +363,16 @@ namespace JeeWork_Core2021.Controllers.Wework
                         List<string> listrole = dt.AsEnumerable().Select(x => x["id_permit"].ToString()).ToList();
                         role = string.Join(",", listrole);
                     }
+                    string topic = _configuration.GetValue<string>("KafkaConfig:TopicProduce:JeeplatformInitializationAppupdate");
                     ObjCustomData objCustomData = new ObjCustomData();
                     objCustomData.userId = Common.getIDUserbyUserName(data.UserName, HttpContext.Request.Headers, _configuration.GetValue<string>("Host:JeeAccount_API"));
                     objCustomData.updateField = "jee-work";
                     var datas = new
                     {
-                        WeWorkRoles = role
+                        roles = role
                     };
                     objCustomData.fieldValue = datas;
-                    var dataJA = Common.UpdateCustomData(HttpContext.Request.Headers, _configuration.GetValue<string>("Host:JeeAccount_API"), objCustomData);
-                    if (dataJA == null)
-                    {
-                        cnn.RollbackTransaction();
-                        return JsonResultCommon.ThatBai("Lỗi cập nhật quyền lên hệ thống quản lý tài khoản! Vui lòng đợi cập nhật");
-                    }
+                    _producer.PublishAsync(topic, Newtonsoft.Json.JsonConvert.SerializeObject(objCustomData));
                     cnn.EndTransaction();
                     #endregion
                 }
@@ -448,16 +446,11 @@ namespace JeeWork_Core2021.Controllers.Wework
                     objCustomData.updateField = "jee-work";
                     var datas = new
                     {
-                        WeWorkRoles = role
+                        roles = role
                     };
                     objCustomData.fieldValue = datas;
-
-                    var dataJA = Common.UpdateCustomData(HttpContext.Request.Headers, _configuration.GetValue<string>("Host:JeeAccount_API"), objCustomData);
-                    if (dataJA == null)
-                    {
-                        cnn.RollbackTransaction();
-                        return JsonResultCommon.ThatBai("Lỗi cập nhật dữ liệu quyền lên hệ thống quản lý tài khoản! Vui lòng đợi cập nhật");
-                    }
+                    string topic = _configuration.GetValue<string>("KafkaConfig:TopicProduce:JeeplatformInitializationAppupdate");
+                    _producer.PublishAsync(topic, Newtonsoft.Json.JsonConvert.SerializeObject(objCustomData));
                     cnn.EndTransaction();
                     #endregion
                 }
@@ -500,8 +493,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                     int rs = cnn.Delete(Conds, "tbl_group");
                     if (rs < 0)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
-                    //string LogContent = "Xóa nhóm " + TenNhom + " (" + id + ")";
-                    //DpsPage.Ghilogfile(loginData.CustomerID.ToString(), LogContent, LogContent, loginData.UserID.ToString());
                 }
                 return JsonResultCommon.ThanhCong(true);
             }
@@ -924,6 +915,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         }
                     }
                     #region update customdata
+                    string topic = _configuration.GetValue<string>("KafkaConfig:TopicProduce:JeeplatformInitializationAppupdate");
                     if (ColumnKey == "username")
                     {
                         Conds = new SqlConditions();
@@ -944,15 +936,12 @@ namespace JeeWork_Core2021.Controllers.Wework
                         objCustomData.updateField = "jee-work";
                         var datas = new
                         {
-                            WeWorkRoles = role
+                            roles = role
                         };
                         objCustomData.fieldValue = datas;
-                        var dataJA = Common.UpdateCustomData(HttpContext.Request.Headers, _configuration.GetValue<string>("Host:JeeAccount_API"), objCustomData);
-                        if (dataJA == null)
-                        {
-                            cnn.RollbackTransaction();
-                            return JsonResultCommon.ThatBai("Lỗi cập nhật nhóm quyền lên hệ thống quản lý tài khoản! Vui lòng đợi cập nhật");
-                        }
+                        #region update customdata
+                        _producer.PublishAsync(topic, Newtonsoft.Json.JsonConvert.SerializeObject(objCustomData));
+                        #endregion
                     }
                     else
                     {
@@ -980,17 +969,15 @@ namespace JeeWork_Core2021.Controllers.Wework
                             objCustomData.updateField = "jee-work";
                             var datas = new
                             {
-                                WeWorkRoles = role
+                                //WeWorkRoles = role,
+                                roles = role
                             };
                             objCustomData.fieldValue = datas;
                             if (!string.IsNullOrEmpty(objCustomData.userId))
                             {
-                                var dataJA = Common.UpdateCustomData(HttpContext.Request.Headers, _configuration.GetValue<string>("Host:JeeAccount_API"), objCustomData);
-                                if (dataJA == null)
-                                {
-                                    cnn.RollbackTransaction();
-                                    return JsonResultCommon.ThatBai("Lỗi cập nhật username vào nhóm lên hệ thống quản lý tài khoản! Vui lòng đợi cập nhật");
-                                }
+                                #region update customdata
+                                _producer.PublishAsync(topic, Newtonsoft.Json.JsonConvert.SerializeObject(objCustomData));
+                                #endregion
                             }
                         }
                     }
@@ -998,7 +985,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                     LogContent += " của nhóm " + arr_data[0].Ten + "(" + arr_data[0].ID + ")";
                     cnn.EndTransaction();
                     cnn.Disconnect();
-                    //DpsPage.Ghilogfile(loginData.CustomerID.ToString(), LogContent, LogContent, loginData.UserName);
                 }
                 return JsonResultCommon.ThanhCong();
             }
