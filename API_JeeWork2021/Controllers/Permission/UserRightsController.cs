@@ -550,7 +550,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     Conds.Add("hoten", "%" + query.filter["HoTen"] + "%");
                 }
                 Conds.Add("CustemerID", loginData.CustomerID);
-
+                Conds.Add("ID_Nhom", query.filter["ID_Nhom"]);
                 Dictionary<string, string> sortableFields = new Dictionary<string, string>
                         {
                             { "HoTen", "hoten"},
@@ -569,6 +569,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                 {
                     Visible = false;
                 }
+                DataTable dt_user_group = new DataTable();
                 #endregion
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
@@ -591,13 +592,24 @@ namespace JeeWork_Core2021.Controllers.Wework
                         row["Department"] = str.Department;
                         row["AvartarImgURL"] = str.AvartarImgURL;
                         row["CustomerID"] = str.CustomerID;
-                        dt_staff.Rows.Add(row);
+                        SqlConditions cond = new SqlConditions();
+                        cond.Add("Id_group", query.filter["ID_Nhom"]);
+                        cond.Add("Username", str.Username);
+                        dt_user_group = cnn.CreateDataTable("select Id_group, Username from tbl_group_account where (where)", "(where)", cond);
+                        if (dt_user_group.Rows.Count <= 0)
+                        {
+                            dt_staff.Rows.Add(row);
+                        }
                     }
                     #endregion
+
+
                 }
                 if (!string.IsNullOrEmpty(query.filter["HoTen"]))
                 {
                     DataRow[] filteredRows = dt_staff.Select("FullName like '%" + query.filter["HoTen"] + "%'");
+                    if (filteredRows.Count() == 0)
+                        return JsonResultCommon.ThanhCong(new List<string>(), pageModel, Visible);
                     dt_staff = filteredRows.CopyToDataTable();
                 }
                 int total = dt_staff.Rows.Count;
