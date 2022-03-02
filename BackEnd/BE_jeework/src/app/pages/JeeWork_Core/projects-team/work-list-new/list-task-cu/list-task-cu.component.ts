@@ -159,7 +159,7 @@ export class ListTaskCUComponent implements OnInit, OnDestroy {
         },
         {
             title: this.translate.instant('day.theongaybatdau'),
-            value: 'StartDate',
+            value: 'start_date',
         },
     ];
     sb2: Subscription;
@@ -167,7 +167,7 @@ export class ListTaskCUComponent implements OnInit, OnDestroy {
         const today = new Date();
         this.filterDay = {
             endDate: new Date(today.getFullYear(), today.getMonth() + 1, 1),
-            startDate: new Date(today.getFullYear(), today.getMonth() - 4, 1),
+            startDate: new Date(today.getFullYear(), today.getMonth() - 6, 1),
         };
         this.filter_groupby = this.getMystaff ? this.listFilter_Groupby[1] : this.listFilter_Groupby[0];
         this.column_sort = this.sortField[0];

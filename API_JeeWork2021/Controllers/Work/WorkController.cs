@@ -2117,7 +2117,7 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                     val.Add("type", data.type);
                     val.Add("duplicate_child", data.duplicate_child);
                     val.Add("urgent", data.urgent);
-                    val.Add("required_result", data.required_result);
+                    //val.Add("required_result", data.required_result);
                     if (data.type == 2)
                         val.Add("id_project_team", data.id_project_team);
                     else

@@ -2949,7 +2949,7 @@ where tag.Disabled=0 and p.Disabled=0 " + strW1;
         /// </summary>
         /// <param name="Loai">xls:Excel;doc:Word</param>
         /// <returns></returns>
-        [CusAuthorize]
+        //[CusAuthorize]
         [Route("ExportExcel")]
         [HttpGet]
         public async Task<IActionResult> ExportExcel(string FileName)

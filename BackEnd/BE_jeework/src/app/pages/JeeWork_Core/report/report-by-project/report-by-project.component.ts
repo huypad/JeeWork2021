@@ -100,7 +100,7 @@ export class ReportByProjectComponent implements OnInit {
         },
         {
             title: this.translate.instant('day.theongaybatdau'),
-            value: 'StartDate',
+            value: 'start_date',
         },
     ];
     _filterTT = [

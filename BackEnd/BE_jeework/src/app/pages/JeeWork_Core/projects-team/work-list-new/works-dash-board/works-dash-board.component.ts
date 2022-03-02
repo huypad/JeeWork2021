@@ -539,7 +539,7 @@ export class WorksDashBoardComponent implements OnInit, OnChanges {
         },
         {
             title: this.translate.instant('day.theongaybatdau'),
-            value: 'StartDate',
+            value: 'start_date',
         },
     ];
 

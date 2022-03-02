@@ -1,15 +1,15 @@
-import {DanhMucChungService} from './../../../../../_metronic/jeework_old/core/services/danhmuc.service';
-import {MessageType, LayoutUtilsService} from './../../../../../_metronic/jeework_old/core/utils/layout-utils.service';
-import {ProjectsTeamService} from './../../Services/department-and-project.service';
-import {WorkDuplicateModel} from './../../../work/work.model';
-import {Router} from '@angular/router';
+import { DanhMucChungService } from './../../../../../_metronic/jeework_old/core/services/danhmuc.service';
+import { MessageType, LayoutUtilsService } from './../../../../../_metronic/jeework_old/core/utils/layout-utils.service';
+import { ProjectsTeamService } from './../../Services/department-and-project.service';
+import { WorkDuplicateModel } from './../../../work/work.model';
+import { Router } from '@angular/router';
 import { JeeWorkLiteService } from './../../../services/wework.services';
-import {TranslateService} from '@ngx-translate/core';
-import {WorkService} from './../../../work/work.service';
-import {FormBuilder} from '@angular/forms';
-import {DuplicateWorkComponent} from './../../../work/work-duplicate/work-duplicate.component';
-import {MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
-import {Component, OnInit, ChangeDetectorRef, Inject} from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import { WorkService } from './../../../work/work.service';
+import { FormBuilder } from '@angular/forms';
+import { DuplicateWorkComponent } from './../../../work/work-duplicate/work-duplicate.component';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, OnInit, ChangeDetectorRef, Inject } from '@angular/core';
 import * as moment from 'moment';
 
 @Component({
@@ -20,16 +20,14 @@ import * as moment from 'moment';
 export class DuplicateTaskNewComponent implements OnInit {
 
     constructor(public dialogRef: MatDialogRef<DuplicateWorkComponent>,
-                @Inject(MAT_DIALOG_DATA) public data: any,
-                private fb: FormBuilder,
-                private ProjectsTeamService: ProjectsTeamService,
-                private changeDetectorRefs: ChangeDetectorRef,
-                private _service: WorkService,
-                private layoutUtilsService: LayoutUtilsService,
-                private translate: TranslateService,
-                private danhMucChungService: DanhMucChungService,
-                public weworkService: JeeWorkLiteService,
-                private router: Router,) {
+        @Inject(MAT_DIALOG_DATA) public data: any,
+        private ProjectsTeamService: ProjectsTeamService,
+        private changeDetectorRefs: ChangeDetectorRef,
+        private layoutUtilsService: LayoutUtilsService,
+        private translate: TranslateService,
+        private danhMucChungService: DanhMucChungService,
+        public weworkService: JeeWorkLiteService,
+        private router: Router,) {
     }
 
     ItemDuplicate: any = [];
@@ -105,18 +103,18 @@ export class DuplicateTaskNewComponent implements OnInit {
                 type: 'bool',
                 checked: false,
             },
-            {
-                name: 'required_result',
-                value: 'required_result',
-                type: 'bool',
-                checked: false,
-            },
-            {
-                name: 'require',
-                value: 'require',
-                type: 'bool',
-                checked: false,
-            },
+            // {
+            //     name: 'required_result',
+            //     value: 'required_result',
+            //     type: 'bool',
+            //     checked: false,
+            // },
+            // {
+            //     name: 'require',
+            //     value: 'require',
+            //     type: 'bool',
+            //     checked: false,
+            // },
         ]
     };
 

@@ -4847,7 +4847,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     val.Add("type", data.type);
                     val.Add("duplicate_child", data.duplicate_child);
                     val.Add("urgent", data.urgent);
-                    val.Add("required_result", data.required_result);
+                    //val.Add("required_result", data.required_result);
                     if (data.type == 2)
                     {
                         val.Add("title", data.title);
@@ -4968,7 +4968,6 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     _logger.LogInformation(JsonConvert.SerializeObject(d2));
                     #endregion
                     cnn.EndTransaction();
-
                     foreach (DataRow dr in dt.Rows)
                     {
                         #region Lấy thông tin để thông báo
@@ -4988,7 +4987,10 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                             notify_model.AppCode = "WORK";
                             notify_model.From_IDNV = loginData.UserID.ToString();
                             notify_model.To_IDNV = dataUser[i].ToString();
-                            notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_themmoicongviec", "", "vi");
+                            if (data.type == 2)
+                            {
+                            }
+                            notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_nhanbancongviec", "", "vi");
                             notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
                             notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", dr["title"].ToString());
                             notify_model.ReplaceData = has_replace;

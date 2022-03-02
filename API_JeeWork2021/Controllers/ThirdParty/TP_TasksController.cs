@@ -4932,7 +4932,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     val.Add("type", data.type);
                     val.Add("duplicate_child", data.duplicate_child);
                     val.Add("urgent", data.urgent);
-                    val.Add("required_result", data.required_result);
+                    //val.Add("required_result", data.required_result);
                     if (data.type == 2)
                     {
                         val.Add("title", data.title);

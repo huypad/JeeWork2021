@@ -330,6 +330,9 @@
   <data name="ww_mocongviec" xml:space="preserve">
     <value>$nguoigui$ mở lại công việc</value>
   </data>
+  <data name="ww_nhanbancongviec" xml:space="preserve">
+    <value>$nguoigui$ đã nhân bản công việc $tencongviec$ $duan$</value>
+  </data>
   <data name="ww_thaoluan" xml:space="preserve">
     <value>$nguoigui$ đã thêm bạn vào thảo luận</value>
   </data>

@@ -47,7 +47,7 @@ namespace JeeWork_Core2021.Models
         public long assign { get; set; }
         public List<long> followers { get; set; }
         public bool urgent { get; set; }
-        public bool required_result { get; set; }
+        //public bool required_result { get; set; }
     }
     public class GoogleCalendarModel
     {
