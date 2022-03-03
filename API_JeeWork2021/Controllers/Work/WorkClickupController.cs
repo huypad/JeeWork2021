@@ -4841,17 +4841,36 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                 string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
+                    if (Common.IsProjectClosed(data.id_project_team.ToString(), cnn))
+                    {
+                        return JsonResultCommon.Custom("Dự án đã đóng không thể xóa công việc");
+                    }
+                    // quyền 1 : tạo mới/nhân bản công việc
+                    bool rs = Common.CheckIsUpdatedTask(data.id_project_team.ToString(), 1, loginData, cnn, ConnectionString);
+                    if (!rs)
+                    {
+                        return JsonResultCommon.Custom("Bạn không có quyền nhân bản công việc");
+                    }
+                    #region Lấy dữ liệu account từ JeeAccount
+                    DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
+                    if (DataAccount == null)
+                        return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
+                    #endregion
                     DataTable dt_infowork = cnn.CreateDataTable("select title, id_project_team, clickup_prioritize, start_date, deadline, status " +
                        "from we_work " +
                        "where id_row = @id_row", new SqlConditions() { { "id_row", data.id } });
                     string workname = "";
                     long id_project_team = 0;
                     long prioritize = 0;
+                    string sql = "";
+                    string project_name_old = "", project_name_new = "";
                     if (dt_infowork.Rows.Count > 0)
                     {
                         workname = dt_infowork.Rows[0]["title"].ToString();
                         id_project_team = long.Parse(dt_infowork.Rows[0]["id_project_team"].ToString());
                         prioritize = long.Parse(dt_infowork.Rows[0]["clickup_prioritize"].ToString());
+                        sql = "select title from we_project_team where Locked = 0 and Disabled = 0 and id_row = " + id_project_team;
+                        project_name_old = cnn.ExecuteScalar(sql).ToString();
                     }
                     else
                         return JsonResultCommon.Custom("Công việc nhân bản không tồn tại");
@@ -4869,11 +4888,15 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                         val.Add("prioritize", 0);
                     val.Add("urgent", data.urgent);
                     //val.Add("required_result", data.required_result);
+                    val.Add("id_project_team", data.id_project_team);
                     if (data.type == 2)
                     {
+                        sql = "select title from we_project_team where Locked = 0 and Disabled = 0 and id_row = " + data.id_project_team;
+                        project_name_old = cnn.ExecuteScalar(sql).ToString();
                         val.Add("title", data.title);
-                        val.Add("id_project_team", data.id_project_team);
                         sqlq = "select ISNULL((select id_row from we_status where disabled=0 and position = 1 and id_project_team = " + data.id_project_team + "),0)";
+                        project_name_new = cnn.ExecuteScalar(sql).ToString();
+
                     }
                     else
                     {
@@ -5001,27 +5024,31 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                         #region Lấy thông tin để thông báo
                         SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(10, ConnectionString);
                         #endregion
-                        DataTable tblU = cnn.CreateDataTable("select * from we_work_user where disabled = 0 and id_work = " + dr["id_row"]);
-                        List<long> dataUser = tblU.AsEnumerable().Select(x => long.Parse(x["id_user"].ToString())).ToList();
-                        JeeWorkLiteController.SendEmail(idc, dataUser, 10, loginData, ConnectionString, _notifier, _configuration);
+                        var users_loai1 = JeeWorkLiteController.GetUserSendNotify(loginData, idc, 1, 1, ConnectionString, DataAccount, cnn);
+                        JeeWorkLiteController.SendEmail(idc, users_loai1, 10, loginData, ConnectionString, _notifier, _configuration);
                         #region Notify thêm mới công việc
                         Hashtable has_replace = new Hashtable();
-                        for (int i = 0; i < dataUser.Count; i++)
+                        string du_an = "";
+                        for (int i = 0; i < users_loai1.Count; i++)
                         {
                             NotifyModel notify_model = new NotifyModel();
                             has_replace = new Hashtable();
                             has_replace.Add("nguoigui", loginData.Username);
                             has_replace.Add("tencongviec", dr["title"]);
                             notify_model.AppCode = "WORK";
+                            notify_model.ReplaceData = has_replace;
                             notify_model.From_IDNV = loginData.UserID.ToString();
-                            notify_model.To_IDNV = dataUser[i].ToString();
+                            notify_model.To_IDNV = users_loai1[i].ToString();
                             if (data.type == 2)
                             {
+                                du_an = " từ dự án " + project_name_old + " sang dự án "+ project_name_new;
                             }
+                            else
+                                du_an = " trong dự án " + project_name_new;
                             notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_nhanbancongviec", "", "vi");
                             notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
                             notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", dr["title"].ToString());
-                            notify_model.ReplaceData = has_replace;
+                            notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$duan$", du_an);
                             notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", dr["id_row"].ToString());
                             notify_model.To_Link_WebApp = noti.link.Replace("$id$", dr["id_row"].ToString());
                             var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
@@ -7758,7 +7785,7 @@ where u.disabled = 0 and u.loai = 2";
             DateTime.TryParseExact(d, "d/M/yyyy", fm, DateTimeStyles.NoCurrentDateDefault, out result);
             return result;
         }
-        public DataTable DuplicateWork(long id_dup, DpsConnection cnn)
+        public static DataTable DuplicateWork(long id_dup, DpsConnection cnn)
         {
             DataTable dt_duplicate = new DataTable();
             SqlConditions conds = new SqlConditions();
@@ -7775,14 +7802,14 @@ where u.disabled = 0 and u.loai = 2";
                 "select title, description, id_project_team, id_group, deadline, prioritize, status, CreatedDate, CreatedBy " +
                 "from we_work_duplicate where id_row =" + id_dup;
             cnn.ExecuteNonQuery(sql_insert);
-            if (cnn.LastError == null)
+            if (cnn.LastError != null)
                 return new DataTable();
             long id_task = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_work')").ToString());
             sql_insert = "insert into we_log(object_id, id_action, CreatedDate, CreatedBy) " +
                 "select id_row, 1, CreatedDate, CreatedBy " +
                 "from we_work where id_row =" + id_task;
             cnn.ExecuteNonQuery(sql_insert);
-            if (cnn.LastError == null)
+            if (cnn.LastError != null)
                 return new DataTable();
             if ((!"".Equals(dt_duplicate.Rows[0]["assign"].ToString())) && int.TryParse(dt_duplicate.Rows[0]["assign"].ToString(), out Assign))
             {
@@ -7790,7 +7817,7 @@ where u.disabled = 0 and u.loai = 2";
                "select id_row, " + Assign + ", CreatedDate, CreatedBy " +
                "from we_work where id_row =" + id_task;
                 cnn.ExecuteNonQuery(sql_insert);
-                if (cnn.LastError == null)
+                if (cnn.LastError != null)
                     return new DataTable();
             }
             #region clone checklist
@@ -7820,9 +7847,9 @@ where u.disabled = 0 and u.loai = 2";
                 #region Nhân bản công việc con
                 sql_execute = $@"insert into we_work (title, description, id_project_team, id_group, deadline, clickup_prioritize, status, id_parent, CreatedDate, CreatedBy) " +
                "select title, description, id_project_team, id_group, deadline, prioritize, status, id_row, CreatedDate, CreatedBy " +
-               "from we_work where disabled=0 and id_row =@id_row";
+               "from we_work where disabled=0 and id_parent = @id_row";
                 cnn.ExecuteNonQuery(sql_insert);
-                if (cnn.LastError == null)
+                if (cnn.LastError != null)
                     return new DataTable();
                 conds = new SqlConditions();
                 conds.Add("id_row", id_task);
@@ -7834,7 +7861,7 @@ where u.disabled = 0 and u.loai = 2";
                 "select id_row, 1, CreatedDate, CreatedBy " +
                 "from we_work where id_parent =" + id_task;
                 cnn.ExecuteNonQuery(sql_insert);
-                if (cnn.LastError == null)
+                if (cnn.LastError != null)
                     return new DataTable();
                 #endregion
             }
