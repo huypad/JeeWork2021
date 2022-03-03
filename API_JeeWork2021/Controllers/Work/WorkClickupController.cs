@@ -7810,12 +7810,39 @@ where u.disabled = 0 and u.loai = 2";
             conds.Add("id", id_task);
             conds.Add("id_row", id_task);
             conds.Add("CreatedBy", CreatedBy);
-            if (cnn.ExecuteNonQuery(sql_execute, conds) <= 0)
+            if (cnn.ExecuteNonQuery(sql_execute, conds) < 0)
             {
                 return new DataTable();
             }
             #endregion
-            return dt;
+            if ((bool)dt_duplicate.Rows[0]["duplicate_child"])
+            {
+                #region Nhân bản công việc con
+                sql_execute = $@"insert into we_work (title, description, id_project_team, id_group, deadline, clickup_prioritize, status, id_parent, CreatedDate, CreatedBy) " +
+               "select title, description, id_project_team, id_group, deadline, prioritize, status, id_row, CreatedDate, CreatedBy " +
+               "from we_work where disabled=0 and id_row =@id_row";
+                cnn.ExecuteNonQuery(sql_insert);
+                if (cnn.LastError == null)
+                    return new DataTable();
+                conds = new SqlConditions();
+                conds.Add("id_row", id_task);
+                if (cnn.ExecuteNonQuery(sql_execute, conds) < 0)
+                {
+                    return new DataTable();
+                }
+                sql_insert = "insert into we_log(object_id, id_action, CreatedDate, CreatedBy) " +
+                "select id_row, 1, CreatedDate, CreatedBy " +
+                "from we_work where id_parent =" + id_task;
+                cnn.ExecuteNonQuery(sql_insert);
+                if (cnn.LastError == null)
+                    return new DataTable();
+                #endregion
+            }
+            string sqlq = "SELECT * from we_work where disabled=0 and (id_row=@id_row or id_parent = @id_row)";
+            conds = new SqlConditions();
+            conds.Add("id_row", id_task);
+            dt = cnn.CreateDataTable(sqlq, conds);
+            return cnn.CreateDataTable(sqlq, conds);
         }
     }
 }
