@@ -4909,7 +4909,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     long idc = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_work_duplicate')").ToString());
                     //string sql = "exec DuplicateWork " + idc;
                     //DataTable dt = cnn.CreateDataTable(sql);
-                    DataTable dt = DuplicateWork(idc);
+                    DataTable dt = DuplicateWork(idc, cnn);
                     if (cnn.LastError != null || dt == null || dt.Rows.Count == 0)
                     {
                         cnn.RollbackTransaction();
@@ -7760,13 +7760,61 @@ where u.disabled = 0 and u.loai = 2";
         }
         public DataTable DuplicateWork(long id_dup, DpsConnection cnn)
         {
+            DataTable dt_duplicate = new DataTable();
+            SqlConditions conds = new SqlConditions();
+            conds.Add("id_row", id_dup);
+            string sql_duplicate = "select id_row, id, title, description, id_parent, id_project_team, id_group, deadline, duplicate_child, assign, urgent, start_date, required_result, followers, type, CreatedBy, CreatedDate, prioritize, status " +
+                "from we_work_duplicate where (where)";
+            dt_duplicate = cnn.CreateDataTable(sql_duplicate, "(where)", conds);
+            if (dt_duplicate.Rows.Count <= 0)
+                return new DataTable();
+            int Assign = 0;
+            string CreatedBy = dt_duplicate.Rows[0]["CreatedBy"].ToString();
             DataTable dt = new DataTable();
-            string sql_insert = $@"insert into [we_work] (title, description, id_project_team, id_group, deadline, clickup_prioritize, status, CreatedDate, CreatedBy) " +
+            string sql_insert = $@"insert into we_work (title, description, id_project_team, id_group, deadline, clickup_prioritize, status, CreatedDate, CreatedBy) " +
                 "select title, description, id_project_team, id_group, deadline, prioritize, status, CreatedDate, CreatedBy " +
-                "from we_work_duplicate where id_row ="+ id_dup;
+                "from we_work_duplicate where id_row =" + id_dup;
             cnn.ExecuteNonQuery(sql_insert);
             if (cnn.LastError == null)
                 return new DataTable();
+            long id_task = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_work')").ToString());
+            sql_insert = "insert into we_log(object_id, id_action, CreatedDate, CreatedBy) " +
+                "select id_row, 1, CreatedDate, CreatedBy " +
+                "from we_work where id_row =" + id_task;
+            cnn.ExecuteNonQuery(sql_insert);
+            if (cnn.LastError == null)
+                return new DataTable();
+            if ((!"".Equals(dt_duplicate.Rows[0]["assign"].ToString())) && int.TryParse(dt_duplicate.Rows[0]["assign"].ToString(), out Assign))
+            {
+                sql_insert = "insert into we_work_user (id_work, id_user, CreatedDate, CreatedBy) " +
+               "select id_row, " + Assign + ", CreatedDate, CreatedBy " +
+               "from we_work where id_row =" + id_task;
+                cnn.ExecuteNonQuery(sql_insert);
+                if (cnn.LastError == null)
+                    return new DataTable();
+            }
+            #region clone checklist
+            string sql_execute = "";
+            sql_execute = @"DECLARE @temp TABLE (id decimal(18,0),id_old decimal(18,0));
+    MERGE INTO we_checklist USING(select* from we_checklist c where c.Disabled= 0 and id_work = @id) AS w ON 1 = 0
+    WHEN NOT MATCHED THEN
+        INSERT([title] ,[id_work] ,[CreatedDate] ,[CreatedBy])
+		VALUES([title] ,@id_row, getdate(), @CreatedBy)
+		OUTPUT INSERTED.id_row, w.id_row
+    INTO @temp;
+ --select * from @temp;
+ INSERT INTO we_checklist_item([title], [id_checklist], [checker], [CreatedDate], [CreatedBy])
+	select [title], temp.id, null, getdate(), @CreatedBy
+   from [dbo].[we_checklist_item] item join @temp temp on item.id_checklist = temp.id_old where disabled = 0";
+            conds = new SqlConditions();
+            conds.Add("id", id_task);
+            conds.Add("id_row", id_task);
+            conds.Add("CreatedBy", CreatedBy);
+            if (cnn.ExecuteNonQuery(sql_execute, conds) <= 0)
+            {
+                return new DataTable();
+            }
+            #endregion
             return dt;
         }
     }
