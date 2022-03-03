@@ -2128,11 +2128,11 @@ join {_config.HRCatalog}.dbo.Tbl_Account nv on a.createdby = nv.id_nv where Disa
                     }
                     if (!string.IsNullOrEmpty(data.description))
                         val.Add("description", data.description);
-                    if (data.deadline > DateTime.MinValue)
-                        val.Add("deadline", data.deadline.ToUniversalTime());
+                    //if (data.deadline > DateTime.MinValue)
+                        //val.Add("deadline", data.deadline.ToUniversalTime());
                     if (data.assign > 0)
                         val.Add("assign", data.assign);
-                    if (data.start_date > DateTime.MinValue)
+                    //if (data.start_date > DateTime.MinValue)
                         val.Add("start_date", data.start_date);
                     if (data.followers != null && data.followers.Count > 0)
                         val.Add("followers", string.Join(",", data.followers));

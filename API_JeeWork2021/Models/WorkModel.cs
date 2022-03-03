@@ -37,8 +37,8 @@ namespace JeeWork_Core2021.Models
         public int type { get; set; }//1: nhân bản vào dự án phòng ban cũ, 2: vào dự án phòng ban mới
         public long id { get; set; }
         public string title { get; set; }
-        public DateTime deadline { get; set; }
-        public DateTime start_date { get; set; }
+        public bool deadline { get; set; }
+        public bool start_date { get; set; }
         public string description { get; set; }
         public long id_parent { get; set; }
         public long id_project_team { get; set; }

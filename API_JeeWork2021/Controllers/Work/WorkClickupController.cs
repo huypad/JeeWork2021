@@ -4837,50 +4837,79 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                 {
                     return JsonResultCommon.BatBuoc(strRe);
                 }
+                string sqlq = "";
                 string ConnectionString = JeeWorkLiteController.getConnectionString(ConnectionCache, loginData.CustomerID, _configuration);
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
+                    DataTable dt_infowork = cnn.CreateDataTable("select title, id_project_team, clickup_prioritize, start_date, deadline, status " +
+                       "from we_work " +
+                       "where id_row = @id_row", new SqlConditions() { { "id_row", data.id } });
+                    string workname = "";
+                    long id_project_team = 0;
+                    long prioritize = 0;
+                    if (dt_infowork.Rows.Count > 0)
+                    {
+                        workname = dt_infowork.Rows[0]["title"].ToString();
+                        id_project_team = long.Parse(dt_infowork.Rows[0]["id_project_team"].ToString());
+                        prioritize = long.Parse(dt_infowork.Rows[0]["clickup_prioritize"].ToString());
+                    }
+                    else
+                        return JsonResultCommon.Custom("Công việc nhân bản không tồn tại");
                     long iduser = loginData.UserID;
                     long idk = loginData.CustomerID;
                     Hashtable val = new Hashtable();
                     val.Add("id", data.id);
                     val.Add("type", data.type);
                     val.Add("duplicate_child", data.duplicate_child);
+                    if (data.urgent)
+                    {
+                        val.Add("prioritize", prioritize);
+                    }
+                    else
+                        val.Add("prioritize", 0);
                     val.Add("urgent", data.urgent);
                     //val.Add("required_result", data.required_result);
                     if (data.type == 2)
                     {
                         val.Add("title", data.title);
                         val.Add("id_project_team", data.id_project_team);
+                        sqlq = "select ISNULL((select id_row from we_status where disabled=0 and position = 1 and id_project_team = " + data.id_project_team + "),0)";
                     }
                     else
                     {
+                        sqlq = "select ISNULL((select status from we_work where disabled=0 and id_row = " + data.id + "),0)";
                         val.Add("title", data.title);
                         if (data.id_parent > 0)//nhân bản subtask làm subtask
                             val.Add("id_parent", data.id_parent);
                     }
+                    var statusID = long.Parse(cnn.ExecuteScalar(sqlq).ToString());
+                    val.Add("status", statusID);
                     if (!string.IsNullOrEmpty(data.description))
                         val.Add("description", data.description);
-                    if (data.deadline > DateTime.MinValue)
-                        val.Add("deadline", data.deadline);
+                    if (data.deadline)
+                        val.Add("deadline", dt_infowork.Rows[0]["deadline"].ToString());
+                    else
+                        val.Add("deadline", DBNull.Value);
                     if (data.assign > 0)
                         val.Add("assign", data.assign);
-                    if (data.start_date > DateTime.MinValue)
-                        val.Add("start_date", data.start_date);
-                    if (data.followers != null && data.followers.Count > 0)
-                        val.Add("followers", string.Join(",", data.followers));
+                    if (data.start_date)
+                        val.Add("start_date", dt_infowork.Rows[0]["deadline"].ToString());
+                    else
+                        val.Add("start_date", DBNull.Value);
+                    //if (data.followers != null && data.followers.Count > 0)
+                    //    val.Add("followers", string.Join(",", data.followers));
                     val.Add("CreatedDate", Common.GetDateTime());
                     val.Add("CreatedBy", iduser);
-                    cnn.BeginTransaction();
+                    //cnn.BeginTransaction();
                     if (cnn.Insert(val, "we_work_duplicate") != 1)
                     {
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     long idc = long.Parse(cnn.ExecuteScalar("select IDENT_CURRENT('we_work_duplicate')").ToString());
-                    string sql = "exec DuplicateWork " + idc;
-
-                    DataTable dt = cnn.CreateDataTable(sql);
+                    //string sql = "exec DuplicateWork " + idc;
+                    //DataTable dt = cnn.CreateDataTable(sql);
+                    DataTable dt = DuplicateWork(idc);
                     if (cnn.LastError != null || dt == null || dt.Rows.Count == 0)
                     {
                         cnn.RollbackTransaction();
@@ -4888,8 +4917,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     }
                     // update lại tình trạng cho công việc mới khởi tạo
                     long workID_New = long.Parse(cnn.ExecuteScalar("select max(id_row) from we_work where disabled = 0").ToString());
-                    string sqlq = "select ISNULL((select id_row from we_status where disabled=0 and Position = 1 and id_project_team = " + data.id_project_team + "),0)";
-                    var statusID = long.Parse(cnn.ExecuteScalar(sqlq).ToString());
+
                     //Insert người follow cho từng tình trạng của công việc
                     DataTable dt_status = JeeWorkLiteController.StatusDynamic(data.id_project_team, new List<AccUsernameModel>(), cnn);
                     foreach (DataRow dr in dt.Rows)
@@ -7729,6 +7757,17 @@ where u.disabled = 0 and u.loai = 2";
             DateTime result = new DateTime();
             DateTime.TryParseExact(d, "d/M/yyyy", fm, DateTimeStyles.NoCurrentDateDefault, out result);
             return result;
+        }
+        public DataTable DuplicateWork(long id_dup, DpsConnection cnn)
+        {
+            DataTable dt = new DataTable();
+            string sql_insert = $@"insert into [we_work] (title, description, id_project_team, id_group, deadline, clickup_prioritize, status, CreatedDate, CreatedBy) " +
+                "select title, description, id_project_team, id_group, deadline, prioritize, status, CreatedDate, CreatedBy " +
+                "from we_work_duplicate where id_row ="+ id_dup;
+            cnn.ExecuteNonQuery(sql_insert);
+            if (cnn.LastError == null)
+                return new DataTable();
+            return dt;
         }
     }
 }

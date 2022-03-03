@@ -153,18 +153,11 @@ export class DuplicateTaskNewComponent implements OnInit {
                 duplicate[element.value] = element.checked;
             } else {
                 if (element.checked) {
-                    if (element.type == 'date') {
-                        if (moment(this.ItemDuplicate[element.value]).format('MM/DD/YYYY HH:mm:ss') != 'Invalid date') {
-                            duplicate[element.value] = moment(this.ItemDuplicate[element.value]).format('MM/DD/YYYY  HH:mm:ss');
-                        }
-
-                    } else {
-                        duplicate[element.value] = element.value == 'assign' ? this.getIDNV(this.ItemDuplicate.User) : this.ItemDuplicate[element.value];
-                    }
+                    duplicate[element.value] = element.checked;
                 }
             }
         });
-
+        debugger
         this.Create(duplicate);
     }
 
