@@ -86,15 +86,15 @@ export class WorkComponent implements OnInit {
 		// 	}
 		// });
 		this.LoadFilter();
-		// this.myworkSer.MyWork().subscribe(res => {
-		// 	if (res && res.status == 1) {
-		// 		this.item = res.data;
-		// 		this.count = res.data.Count;
-		// 		this.giaoquahan = res.data.GiaoQuaHan;
-		// 		this.moigiao = res.data.MoiDuocGiao;
-		// 		this.note = res.data.LuuY;
-		// 	}
-		// });
+		this.myworkSer.MyWork().subscribe(res => {
+			if (res && res.status == 1) {
+				this.item = res.data;
+				this.count = res.data.Count;
+				this.giaoquahan = res.data.GiaoQuaHan;
+				this.moigiao = res.data.MoiDuocGiao;
+				this.note = res.data.LuuY;
+			}
+		});
 
 		// this._service.myStaff().subscribe(res => {
 		// 	if (res && res.status === 1) {
