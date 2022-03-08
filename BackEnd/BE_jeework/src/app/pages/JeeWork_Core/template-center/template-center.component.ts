@@ -260,7 +260,6 @@ export class TemplateCenterComponent implements OnInit {
     if (this.TemplateDetail.img_temp)
       TCinsert.img_temp = this.TemplateDetail.img_temp;
     TCinsert.id_row = this.TemplateDetail.id_row;
-    debugger
     if (this.TemplateDetail.templateid)
       TCinsert.templateid = this.TemplateDetail.templateid;
     TCinsert.levels = this.TemplateDetail.levels;

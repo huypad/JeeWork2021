@@ -103,9 +103,9 @@ export class ReportTabDashboardComponent implements OnInit {
             id_row: ''
         };
         const today = new Date();
-        let set_thang = today.getMonth();
-        if (today.getDate() < 10)
-            set_thang = today.getMonth() - 1;
+        let set_thang = today.getMonth() - 10;
+        // if (today.getDate() < 10)
+        //     set_thang = today.getMonth() - 10;
         this.selectedDate = {
             startDate: new Date(today.getFullYear(), set_thang, 1),
             endDate: new Date(today.setMonth(today.getMonth())),

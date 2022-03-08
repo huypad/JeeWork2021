@@ -331,7 +331,9 @@ namespace JeeWork_Core2021.Controllers.Wework
                     {
                         //strW = " and (w.createdby=@iduser";
                         if (query.filter["filter"] == "1")//được giao
-                            strW = " and ((w.createdby=@iduser and w.id_nv=@iduser) or (w.createdby=@iduser and w.id_nv is null)) (parent)";
+                            strW = " and (w.createdby=@iduser or w.id_nv=@iduser (parent))";
+                        //strW = " and (w.createdby=@iduser or w.id_nv=@iduser (parent)) ";
+                        //strW = " and ((w.createdby=@iduser and w.id_nv=@iduser) or (w.createdby=@iduser and w.id_nv is null)) (parent)";
                         if (query.filter["filter"] == "2")//giao đi
                             strW = " and (w.createdby=@iduser or w.nguoigiao=@iduser (parent))";
                         if (query.filter["filter"] == "3")// theo dõi
@@ -6504,10 +6506,10 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
                             , Iif(fa.id_row is null ,0,1) as favourite 
                             ,coalesce( f.count,0) as num_file, coalesce( com.count,0) as num_com
                             ,'' as NguoiTao
-                            ,iIf((select count(*) from we_status where id_row = w.status and IsDefault = 1 and isTodo = 0 and IsFinal = 0)>0,1,0) as New
+                            ,iIf((select count(*) from we_status where id_row = w.status and isdefault = 1 and isTodo = 0 and IsFinal = 0)>0,1,0) as New
                             ,iIf(w.deadline < GETUTCDATE() and w.deadline is not null and w.end_date is null ,1,0) as TreHan
-                            ,iIf((select count(*) from we_status where id_row = w.status and IsDefault = 1 and IsFinal = 1)>0,1,0) as Done 
-                            ,iIf((select count(*) from we_status where id_row = w.status and IsDefault = 1 and isTodo = 1)>0,1,0) as Doing
+                            ,iIf((select count(*) from we_status where id_row = w.status and isdefault = 1 and IsFinal = 1)>0,1,0) as Done 
+                            ,iIf((select count(*) from we_status where id_row = w.status and isdefault = 1 and isTodo = 1)>0,1,0) as Doing
                             from v_wework_new w 
                             left join (select count(*) as count,object_id 
                             from we_attachment where object_type=1 group by object_id) f on f.object_id=w.id_row

@@ -55,20 +55,22 @@
 				</div>
 				<div *ngIf="show_option_2" class="col-md-4 kt--margin-bottom-10-mobile">
 					<mat-form-field class="mat-form-field-fluid">
-						<input matInput (input)="showColumn = false" placeholder="Title" formControlName="title_input" class="require" required>
+						<input matInput (input)="showColumn = false" placeholder="Title" formControlName="title_input"
+							class="require" required>
 					</mat-form-field>
 				</div>
 				<div *ngIf="show_option_3" class="col-md-4 kt--margin-bottom-10-mobile">
 					<mat-form-field class="mat-form-field-fluid">
-						<input matInput (dateChange)="showColumn = false" readonly [matDatepicker]="dttg" placeholder="Chọn thời gian"
-							formControlName="time" class="require" id="thoigian" required>
+						<input matInput (dateChange)="showColumn = false" readonly [matDatepicker]="dttg"
+							placeholder="Chọn thời gian" formControlName="time" class="require" id="thoigian" required>
 						<mat-datepicker-toggle matSuffix [for]="dttg"></mat-datepicker-toggle>
 						<mat-datepicker #dttg></mat-datepicker>
 					</mat-form-field>
 				</div>
 				<div class="col-md-2 kt--margin-bottom-10-mobile">
 					<button type="button" [disabled]="showColumn" mat-raised-button color="primary" (click)="addcot()">
-						<i style="color: #FFFFFF;" class="fa fa-plus"></i>&nbsp;<span translate="filter.add"></span>
+						<i style="color: #FFFFFF;" class="fa fa-plus"></i>&nbsp;<span
+							translate="GeneralKey.them"></span>
 					</button>
 				</div>
 			</div>
@@ -114,7 +116,7 @@
 					</button>&nbsp;
 					<button type="button" mat-raised-button class="jee_btn-addclose" (click)="onSubmit(true)"
 						[disabled]="disabledBtn" matTooltip="{{ 'filter.save' | translate }}">
-						<span translate="filter.save"></span>&nbsp;&nbsp;<div *ngIf="disabledBtn"
+						<span translate="GeneralKey.luu"></span>&nbsp;&nbsp;<div *ngIf="disabledBtn"
 							class="spinner-button-pad"></div>
 					</button>
 					&nbsp;

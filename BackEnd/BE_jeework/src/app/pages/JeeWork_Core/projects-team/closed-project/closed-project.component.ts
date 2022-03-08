@@ -48,8 +48,8 @@ export class ClosedProjectComponent implements OnInit {
 	colorCtr: AbstractControl = new FormControl(null);
 	tendapb: string = '';
 	mota: string = '';
-	trangthai:string ='';
-	status:any;
+	trangthai: string = '';
+	status: any;
 	constructor(public dialogRef: MatDialogRef<ClosedProjectComponent>,
 		@Inject(MAT_DIALOG_DATA) public data: any,
 		private fb: FormBuilder,
@@ -61,7 +61,7 @@ export class ClosedProjectComponent implements OnInit {
 		private router: Router,) { }
 	/** LOAD DATA */
 	ngOnInit() {
-		
+
 		this.title = this.translate.instant("GeneralKey.choncocautochuc") + '';
 		this.item1 = this.data._item;
 		this.LoadStatus(this.item1['locked'])
@@ -84,44 +84,41 @@ export class ClosedProjectComponent implements OnInit {
 		}
 		this.createForm();
 	}
-
-	
-
-	LoadStatus(value){
+	LoadStatus(value) {
 		// true = đóng -- false mở
 		const translate = locale.data;
-		if(!value){
+		if (!value) {
 			this.trangthai = translate.projects.close_status,
-			this.status = [
-				{
-					title:	translate.projects.duanthanhcong,
-					value:'1',
-				},
-				{
-					title:	translate.projects.duanthatbai,
-					value:'2',
-				},
-				{
-					title:	translate.projects.duanhuy,
-					value:'3',
-				},
-			]
-		}else{
+				this.status = [
+					{
+						title: translate.projects.duanthanhcong,
+						value: '4',
+					},
+					{
+						title: translate.projects.duanthatbai,
+						value: '5',
+					},
+					{
+						title: translate.projects.duanhuy,
+						value: '6',
+					},
+				]
+		} else {
 			this.trangthai = translate.projects.open_status,
-			this.status = [
-				{
-					title:	translate.filter.dungtiendo,
-					value:'1',
-				},
-				{
-					title:	translate.filter.chamtiendo,
-					value:'2',
-				},
-				{
-					title:	translate.filter.ruirocao,
-					value:'3',
-				},
-			]
+				this.status = [
+					{
+						title: translate.filter.dungtiendo,
+						value: '1',
+					},
+					{
+						title: translate.filter.chamtiendo,
+						value: '2',
+					},
+					{
+						title: translate.filter.ruirocao,
+						value: '3',
+					},
+				]
 		}
 	}
 
@@ -194,7 +191,7 @@ export class ClosedProjectComponent implements OnInit {
 			this.viewLoading = false;
 			if (res && res.status === 1) {
 				if (withBack == true) {
-					if(this.data.isReset){
+					if (this.data.isReset) {
 						window.location.reload();
 					}
 					this.dialogRef.close({

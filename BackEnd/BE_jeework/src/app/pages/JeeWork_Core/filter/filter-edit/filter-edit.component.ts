@@ -80,7 +80,7 @@ export class filterEditComponent implements OnInit {
 									// this.listColumn[index].StrTitle = title.title + ' ' + item.operator + ' ' + item.value;
 									this.listColumn.push({
 										StrTitle: title.title + ' ' + item.operator + ' ' + item.value,
-										getTitleCol: title.title + ' ' + this.codeReplace(item.operator) + ' ' + this.getNamevalue(title.options,item.value),
+										getTitleCol: title.title + ' ' + this.codeReplace(item.operator) + ' ' + this.getNamevalue(title.options, item.value),
 										title: title.title,
 										operator: item.operator,
 										value: item.value,
@@ -108,11 +108,11 @@ export class filterEditComponent implements OnInit {
 		}
 		this.createForm();
 	}
- 
-	getNamevalue(item,id){
-		if(item){
+
+	getNamevalue(item, id) {
+		if (item) {
 			var x = item.find(x => x.id == id);
-			if(x){
+			if (x) {
 				return x.title;
 			}
 		}
@@ -127,12 +127,12 @@ export class filterEditComponent implements OnInit {
 			title_input: ['', Validators.required],
 			time: ['', Validators.required],
 		});
-		// this.itemForm.controls["title"].markAsTouched();
-		// this.itemForm.controls["loai"].markAsTouched();
-		// this.itemForm.controls["operators"].markAsTouched();
-		// this.itemForm.controls["options"].markAsTouched();
-		// this.itemForm.controls["title_input"].markAsTouched();
-		// this.itemForm.controls["time"].markAsTouched();
+		this.itemForm.controls["title"].markAsTouched();
+		this.itemForm.controls["loai"].markAsTouched();
+		this.itemForm.controls["operators"].markAsTouched();
+		this.itemForm.controls["options"].markAsTouched();
+		this.itemForm.controls["title_input"].markAsTouched();
+		this.itemForm.controls["time"].markAsTouched();
 	}
 	getTitle(): string {
 		let result = this.translate.instant('filter.customfilter');
@@ -148,7 +148,7 @@ export class filterEditComponent implements OnInit {
 		const item = new FilterModel();
 		item.id_row = this.data._item.id_row;
 		item.title = controls['title'].value;
-		
+
 		if (this.listColumn.length > 0) {
 			this.listColumn.map((item, index) => {
 				let _true = this.list_data_old.find(x => x.id_row === item.id_row);
@@ -157,7 +157,7 @@ export class filterEditComponent implements OnInit {
 					ct.id_row = item.id_row;
 					ct.id_key = item.id_key;
 					ct.operator = item.operator;
-					
+
 					ct.value = item.value;
 					this.listChiTiet.push(ct);
 				}
@@ -167,7 +167,7 @@ export class filterEditComponent implements OnInit {
 						ct.id_row = 0;
 					ct.id_key = item.id_key;
 					ct.operator = item.operator;
-					
+
 					ct.value = item.value;
 					this.listChiTiet.push(ct);
 				}
@@ -181,7 +181,7 @@ export class filterEditComponent implements OnInit {
 		if (filter_key == null || filter_key == undefined) {
 			return '';
 		};
-		
+
 		this.show_operators = true;
 		this.list_operators = filter_key.operators;
 		this.list_options = filter_key.options;
@@ -210,7 +210,7 @@ export class filterEditComponent implements OnInit {
 		return filter_key.loai;
 	}
 	Filter_Options(e: any) {
-		
+
 		let filter_option = this.list_options.find(x => x.id == e);
 		if (filter_option == null || filter_option == undefined) {
 			return '';
@@ -244,10 +244,10 @@ export class filterEditComponent implements OnInit {
 		// 	this.hasFormErrors = true;
 		// 	return;
 		// }
-		if(this.listColumn.length == 0){
+		if (this.listColumn.length == 0) {
 			var text = 'Trường dữ liệu không thể trống';
 			this.layoutUtilsService.showActionNotification(text, MessageType.Read, 3000, true, false, 3000, 'top', 0);
-			return ;
+			return;
 		}
 
 		const updatedegree = this.prepare();
@@ -350,7 +350,7 @@ export class filterEditComponent implements OnInit {
 	}
 	addcot() {
 		let key = this.list_filter_key.find(x => x.id_row == this.filter_key);
-		
+
 		if (key) {
 			let _filter = new FilterDetailModel;
 			_filter.id_key = key.id_row;
@@ -359,14 +359,14 @@ export class filterEditComponent implements OnInit {
 			if (operators || operators != undefined) {
 				_filter.operator = operators.id;
 			}
-			else{
+			else {
 				this.layoutUtilsService.showError('Chưa chọn điều kiện');
 				return;
 			}
 			if (key.loai == 1) {
 				let options = this.list_options.find(x => x.id == this.filter_options);
 				if (options || operators != undefined) {
-					_filter.value = options.id; 
+					_filter.value = options.id;
 				}
 			}
 			else {
@@ -376,19 +376,19 @@ export class filterEditComponent implements OnInit {
 				}
 				else {
 					const controls = this.itemForm.controls;
- 					_filter.value = this.datepipe.transform(controls['time'].value, 'yyyy-MM-dd');
+					_filter.value = this.datepipe.transform(controls['time'].value, 'yyyy-MM-dd');
 				}
 			}
-			if(!_filter.value){
+			if (!_filter.value) {
 				this.layoutUtilsService.showError('Chưa chọn giá trị');
 				return;
 			}
 			_filter.StrTitle = key.title + ' ' + _filter.operator + ' ' + _filter.value;
-			_filter.getTitleCol = key.title + ' ' + this.codeReplace(_filter.operator) + ' ' + this.getNamevalue(key.options,_filter.value);
-			var check = this.listColumn.find(x=>x.StrTitle == _filter.StrTitle);
-			if(check){
+			_filter.getTitleCol = key.title + ' ' + this.codeReplace(_filter.operator) + ' ' + this.getNamevalue(key.options, _filter.value);
+			var check = this.listColumn.find(x => x.StrTitle == _filter.StrTitle);
+			if (check) {
 				this.layoutUtilsService.showActionNotification('Dữ liệu bị trùng');
-				return ;  
+				return;
 			}
 			this.listColumn.push(_filter);
 		}
@@ -400,8 +400,8 @@ export class filterEditComponent implements OnInit {
 		this.onChange(this.listColumn);
 	}
 
-	codeReplace(code){
-		if(code){
+	codeReplace(code) {
+		if (code) {
 			var txt = code.replace("like", ":");
 			return txt;
 		}
