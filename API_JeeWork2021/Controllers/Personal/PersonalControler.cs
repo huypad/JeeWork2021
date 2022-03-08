@@ -53,13 +53,17 @@ namespace JeeWork_Core2021.Controllers.Wework
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
-                    string sqlq = @"select w.*, IIF(w.Status = 1 and GETUTCDATE() > w.deadline,1,0) as is_quahan,
-IIF(convert(varchar, w.NgayGiao,103) like convert(varchar, GETUTCDATE(),103),1,0) as is_moigiao
-from v_wework_new w where w.disabled=0 and (id_nv = @userID or CreatedBy = @userID ) ";
+                    string sqlq = "";
+                    //                    sqlq = @"select w.*, IIF(w.Status = 1 and GETUTCDATE() > w.deadline,1,0) as is_quahan,
+                    //IIF(convert(varchar, w.NgayGiao,103) like convert(varchar, GETUTCDATE(),103),1,0) as is_moigiao
+                    //from v_wework_new w where w.disabled=0 and (id_nv = @userID or CreatedBy = @userID ) ";
+                    sqlq = @"select w.*, IIF(GETUTCDATE() > w.deadline,1,0) as is_quahan,
+                    IIF(convert(varchar, w.NgayGiao,103) like convert(varchar, GETUTCDATE(),103),1,0) as is_moigiao
+                    from v_wework_new w where w.disabled=0 and (id_nv = @userID or CreatedBy = @userID)";
                     DataSet ds = cnn.CreateDataSet(sqlq, new SqlConditions() { { "userID", loginData.UserID } });
                     if (cnn.LastError != null || ds == null)
                     {
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     if (ds.Tables[0] == null || ds.Tables[0].Rows.Count == 0)
                         return JsonResultCommon.KhongTonTai();
@@ -108,7 +112,7 @@ from v_wework_new w where w.disabled=0 and (id_nv = @userID or CreatedBy = @user
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
         [Route("my-milestone")]
@@ -127,7 +131,7 @@ from v_wework_new w where w.disabled=0 and (id_nv = @userID or CreatedBy = @user
                     #region danh sách department, list status hoàn thành, trễ,đang làm
                     string listDept = JeeWorkLiteController.getListDepartment_GetData(loginData, cnn, HttpContext.Request.Headers, _configuration, ConnectionString);
                     string list_Complete = "";
-                    list_Complete = ReportController.GetListStatusDynamic(listDept, cnn,"IsFinal"); 
+                    list_Complete = ReportController.GetListStatusDynamic(listDept, cnn, "IsFinal");
                     string list_Todo = "";
                     list_Todo = ReportController.GetListStatusDynamic(listDept, cnn, "IsTodo");
                     #endregion
@@ -150,7 +154,7 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
  where m.person_in_charge=@iduser and disabled=0";
                     DataTable dt = cnn.CreateDataTable(sqlq, new SqlConditions() { { "iduser", loginData.UserID } });
                     if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     if (dt.Rows.Count == 0)
                         return JsonResultCommon.ThanhCong(new List<string>());
 
@@ -202,7 +206,7 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
         [Route("favourite-work")]
@@ -223,7 +227,7 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
                     sqlq = "select * from we_work_favourite where CreatedBy=" + loginData.UserID + " and id_work=" + id;
                     DataTable dt = cnn.CreateDataTable(sqlq);
                     if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     bool value = true;
                     int re = 0;
                     Hashtable val = new Hashtable();
@@ -243,13 +247,13 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
                         re = cnn.Update(val, new SqlConditions() { { "id_row", dt.Rows[0]["id_row"] } }, "we_work_favourite");
                     }
                     if (re <= 0)
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     return JsonResultCommon.ThanhCong(value);
                 }
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -271,7 +275,7 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
                     sqlq = "select * from we_project_team_user where disabled=0 and id_user=" + loginData.UserID + " and id_project_team=" + id;
                     DataTable dt = cnn.CreateDataTable(sqlq);
                     if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     cnn.BeginTransaction();
                     bool value = true;
                     int re = 0;
@@ -290,12 +294,12 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
                     if (re <= 0)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     if (!JeeWorkLiteController.log(_logger, loginData.Username, cnn, 39, id, loginData.UserID, null, loginData.UserID))
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong(value);
@@ -303,7 +307,7 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
 
@@ -325,7 +329,7 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
                     sqlq = "select * from we_topic_user where disabled=0 and id_user=" + loginData.UserID + " and id_topic=" + id;
                     DataTable dt = cnn.CreateDataTable(sqlq);
                     if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     cnn.BeginTransaction();
                     bool value = true;
                     int re = 0;
@@ -346,12 +350,12 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
                     if (re <= 0)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     if (!JeeWorkLiteController.log(_logger, loginData.Username, cnn, 29, id, loginData.UserID, null, loginData.UserID))
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong(value);
@@ -359,7 +363,7 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
         [Route("follow-topic")]
@@ -380,7 +384,7 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
                     sqlq = "select * from we_topic_user where id_user=" + loginData.UserID + " and id_topic=" + id;
                     DataTable dt = cnn.CreateDataTable(sqlq);
                     if (cnn.LastError != null || dt == null)
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     bool value = true;
                     int re = 0;
                     cnn.BeginTransaction();
@@ -403,12 +407,12 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
                     if (re <= 0)
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     if (!JeeWorkLiteController.log(_logger, loginData.Username, cnn, value ? 28 : 27, id, loginData.UserID, null, loginData.UserID))
                     {
                         cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger,cnn.LastError, _config, loginData,ControllerContext);
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
                     cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong(value);
@@ -416,7 +420,7 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
         [Route("my-staff-overview")]
@@ -468,7 +472,7 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
                             return JsonResultCommon.Custom("Thời gian bắt đầu không hợp lệ");
                         strW += " and w." + collect_by + ">=@from";
                         strWP += " and end_date>=@from";
-                        cond.Add("from", JeeWorkLiteController.GetUTCTime(Request.Headers, from.ToString()));                        
+                        cond.Add("from", JeeWorkLiteController.GetUTCTime(Request.Headers, from.ToString()));
                     }
                     if (!string.IsNullOrEmpty(query.filter["DenNgay"]))
                     {
@@ -477,7 +481,7 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
                             return JsonResultCommon.Custom("Thời gian kết thúc không hợp lệ");
                         strW += " and w." + collect_by + "<@to";
                         strWP += " and end_date<@to";
-                        cond.Add("to", JeeWorkLiteController.GetUTCTime(Request.Headers, to.ToString()));                        
+                        cond.Add("to", JeeWorkLiteController.GetUTCTime(Request.Headers, to.ToString()));
                     }
                     if (!string.IsNullOrEmpty(query.filter["id_project_team"]))
                     {
@@ -500,7 +504,7 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
                     string sql = @"select count(distinct p.id_row) as dem,id_user from we_project_team p 
                                 join we_project_team_user u on p.id_row=u.id_project_team 
                                 where p.disabled=0 and u.disabled=0 and u.id_user in (" + ids + ")" + strWP + " group by u.id_user";
-                                sql += @";select id_row, id_nv, status,iIf(w.Status=2 and w.end_date>w.deadline,1,0) as is_htquahan,
+                    sql += @";select id_row, id_nv, status,iIf(w.Status=2 and w.end_date>w.deadline,1,0) as is_htquahan,
                                 iIf(w.Status = 1 and GETUTCDATE() > w.deadline, 1, 0) as is_quahan from v_wework_new w where id_nv in (" + ids + ")" + strW;
                     DataSet ds = cnn.CreateDataSet(sql, cond);
                     var asP = ds.Tables[0].AsEnumerable();
@@ -534,7 +538,7 @@ coalesce(w.tong,0) as tong,coalesce( w.ht,0) as ht from we_milestone m
             }
             catch (Exception ex)
             {
-                return JsonResultCommon.Exception(_logger,ex, _config, loginData);
+                return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
     }

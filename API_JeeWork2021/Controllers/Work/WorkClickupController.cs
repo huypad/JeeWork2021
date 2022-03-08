@@ -331,7 +331,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     {
                         //strW = " and (w.createdby=@iduser";
                         if (query.filter["filter"] == "1")//được giao
-                            strW = " and (w.createdby=@iduser or w.id_nv=@iduser (parent)) ";
+                            strW = " and ((w.createdby=@iduser and w.id_nv=@iduser) or (w.createdby=@iduser and w.id_nv is null)) (parent)";
                         if (query.filter["filter"] == "2")//giao đi
                             strW = " and (w.createdby=@iduser or w.nguoigiao=@iduser (parent))";
                         if (query.filter["filter"] == "3")// theo dõi
@@ -4856,18 +4856,20 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
                     #endregion
-                    DataTable dt_infowork = cnn.CreateDataTable("select title, id_project_team, clickup_prioritize, start_date, deadline, status " +
+                    DataTable dt_infowork = cnn.CreateDataTable("select id_row, title, id_project_team, clickup_prioritize, start_date, deadline, status " +
                        "from we_work " +
                        "where id_row = @id_row", new SqlConditions() { { "id_row", data.id } });
                     string workname = "";
                     long id_project_team = 0;
                     long prioritize = 0;
+                    long workID = 0;
                     string sql = "";
                     string project_name_old = "", project_name_new = "";
                     if (dt_infowork.Rows.Count > 0)
                     {
                         workname = dt_infowork.Rows[0]["title"].ToString();
                         id_project_team = long.Parse(dt_infowork.Rows[0]["id_project_team"].ToString());
+                        workID = long.Parse(dt_infowork.Rows[0]["id_row"].ToString());
                         prioritize = long.Parse(dt_infowork.Rows[0]["clickup_prioritize"].ToString());
                         sql = "select title from we_project_team where Locked = 0 and Disabled = 0 and id_row = " + id_project_team;
                         project_name_old = cnn.ExecuteScalar(sql).ToString();
@@ -4910,13 +4912,29 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     if (!string.IsNullOrEmpty(data.description))
                         val.Add("description", data.description);
                     if (data.deadline)
-                        val.Add("deadline", dt_infowork.Rows[0]["deadline"].ToString());
+                    {
+                        if (!string.IsNullOrEmpty(dt_infowork.Rows[0]["deadline"].ToString()))
+                        {
+                            val.Add("deadline", dt_infowork.Rows[0]["deadline"].ToString());
+                        }
+                        else
+                            val.Add("deadline", DBNull.Value);
+                    }
                     else
                         val.Add("deadline", DBNull.Value);
                     if (data.assign > 0)
+                    {
                         val.Add("assign", data.assign);
+                    }
                     if (data.start_date)
-                        val.Add("start_date", dt_infowork.Rows[0]["deadline"].ToString());
+                    {
+                        if (!string.IsNullOrEmpty(dt_infowork.Rows[0]["start_date"].ToString()))
+                        {
+                            val.Add("start_date", dt_infowork.Rows[0]["start_date"].ToString());
+                        }
+                        else
+                            val.Add("start_date", DBNull.Value);
+                    }
                     else
                         val.Add("start_date", DBNull.Value);
                     //if (data.followers != null && data.followers.Count > 0)
@@ -4940,7 +4958,6 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     }
                     // update lại tình trạng cho công việc mới khởi tạo
                     long workID_New = long.Parse(cnn.ExecuteScalar("select max(id_row) from we_work where disabled = 0").ToString());
-
                     //Insert người follow cho từng tình trạng của công việc
                     DataTable dt_status = JeeWorkLiteController.StatusDynamic(data.id_project_team, new List<AccUsernameModel>(), cnn);
                     foreach (DataRow dr in dt.Rows)
@@ -5024,7 +5041,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                         #region Lấy thông tin để thông báo
                         SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(10, ConnectionString);
                         #endregion
-                        var users_loai1 = JeeWorkLiteController.GetUserSendNotify(loginData, idc, 1, 1, ConnectionString, DataAccount, cnn);
+                        var users_loai1 = JeeWorkLiteController.GetUserSendNotify(loginData, workID_New, 1, 1, ConnectionString, DataAccount, cnn);
                         JeeWorkLiteController.SendEmail(idc, users_loai1, 10, loginData, ConnectionString, _notifier, _configuration);
                         #region Notify thêm mới công việc
                         Hashtable has_replace = new Hashtable();
@@ -5041,7 +5058,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                             notify_model.To_IDNV = users_loai1[i].ToString();
                             if (data.type == 2)
                             {
-                                du_an = " từ dự án " + project_name_old + " sang dự án "+ project_name_new;
+                                du_an = " từ dự án " + project_name_old + " sang dự án " + project_name_new;
                             }
                             else
                                 du_an = " trong dự án " + project_name_new;
@@ -6478,10 +6495,10 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
             if (!string.IsNullOrEmpty(query.sortField) && sortableFields.ContainsKey(query.sortField))
                 dieukienSort = sortableFields[query.sortField] + ("desc".Equals(query.sortOrder) ? " desc" : " asc");
             #region Return data to backend to display on the interface
-            string sqlq = @$"select  distinct w.id_row,w.title, w.id_project_team, w.estimates
+            string sqlq = @$"select distinct w.id_row, w.title, w.id_project_team, w.estimates
                             ,w.deadline,
-                            w.id_parent,w.start_date,w.end_date
-                            ,w.status,w.result,w.createddate,w.createdby,
+                            w.id_parent,w.start_date, w.end_date
+                            ,w.status, w.createddate, w.createdby,
                             w.project_team, w.id_department
                             , w.clickup_prioritize , w.nguoigiao,'' as hoten_nguoigiao, Id_NV,''as hoten
                             , Iif(fa.id_row is null ,0,1) as favourite 
@@ -6536,16 +6553,16 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
             {
                 var infoNguoiTao = DataAccount.Where(x => item["CreatedBy"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                 //var infoNguoiSua = DataAccount.Where(x => item["UpdatedBy"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-                var infonguoigiao = DataAccount.Where(x => item["nguoigiao"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
+                //var infonguoigiao = DataAccount.Where(x => item["nguoigiao"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                 var infoId_NV = DataAccount.Where(x => item["Id_NV"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
                 if (infoNguoiTao != null)
                 {
                     item["NguoiTao"] = infoNguoiTao.Username;
                 }
-                if (infonguoigiao != null)
-                {
-                    item["hoten_nguoigiao"] = infonguoigiao.FullName;
-                }
+                //if (infonguoigiao != null)
+                //{
+                //    item["hoten_nguoigiao"] = infonguoigiao.FullName;
+                //}
                 if (infoId_NV != null)
                 {
                     item["hoten"] = infoId_NV.FullName;
@@ -7813,10 +7830,10 @@ where u.disabled = 0 and u.loai = 2";
                 return new DataTable();
             if ((!"".Equals(dt_duplicate.Rows[0]["assign"].ToString())) && int.TryParse(dt_duplicate.Rows[0]["assign"].ToString(), out Assign))
             {
-                sql_insert = "insert into we_work_user (id_work, id_user, CreatedDate, CreatedBy) " +
+                string sql_user = "insert into we_work_user (id_work, id_user, CreatedDate, CreatedBy) " +
                "select id_row, " + Assign + ", CreatedDate, CreatedBy " +
                "from we_work where id_row =" + id_task;
-                cnn.ExecuteNonQuery(sql_insert);
+                int rs = cnn.ExecuteNonQuery(sql_user);
                 if (cnn.LastError != null)
                     return new DataTable();
             }
@@ -7844,28 +7861,32 @@ where u.disabled = 0 and u.loai = 2";
             #endregion
             if ((bool)dt_duplicate.Rows[0]["duplicate_child"])
             {
-                #region Nhân bản công việc con
-                sql_execute = $@"insert into we_work (title, description, id_project_team, id_group, deadline, clickup_prioritize, status, id_parent, CreatedDate, CreatedBy) " +
-               "select title, description, id_project_team, id_group, deadline, prioritize, status, id_row, CreatedDate, CreatedBy " +
-               "from we_work where disabled=0 and id_parent = @id_row";
-                cnn.ExecuteNonQuery(sql_insert);
-                if (cnn.LastError != null)
-                    return new DataTable();
-                conds = new SqlConditions();
-                conds.Add("id_row", id_task);
-                if (cnn.ExecuteNonQuery(sql_execute, conds) < 0)
-                {
-                    return new DataTable();
-                }
-                sql_insert = "insert into we_log(object_id, id_action, CreatedDate, CreatedBy) " +
-                "select id_row, 1, CreatedDate, CreatedBy " +
-                "from we_work where id_parent =" + id_task;
-                cnn.ExecuteNonQuery(sql_insert);
-                if (cnn.LastError != null)
-                    return new DataTable();
-                #endregion
+                //DataTable dt_child = cnn.CreateDataTable("select * from we_work " +
+                //    "where Disabled = 0 and id_parent = " + dt_duplicate.Rows[0]["id"].ToString());
+                //if (dt_child.Rows.Count > 0)
+                //{
+                    #region Nhân bản công việc con
+                    string sql_child = $@"insert into we_work (title, description, id_project_team, id_group, deadline, clickup_prioritize, status, id_parent, CreatedDate, CreatedBy) " +
+                   "select title, description, id_project_team, id_group, deadline, prioritize, status, "+id_task+", CreatedDate, CreatedBy " +
+                   "from we_work where disabled=0 and id_parent = @id_row";
+                    conds = new SqlConditions();
+                    conds.Add("id_row", dt_duplicate.Rows[0]["id"].ToString());
+                    int rs = cnn.ExecuteNonQuery(sql_child, conds);
+                    if (rs < 0)
+                    {
+                        return new DataTable();
+                    }
+                    sql_insert = "";
+                    sql_insert = "insert into we_log (object_id, id_action, CreatedDate, CreatedBy) " +
+                    "select id_row, 1, CreatedDate, CreatedBy " +
+                    "from we_work where id_parent =" + id_task;
+                    cnn.ExecuteNonQuery(sql_insert);
+                    if (cnn.LastError != null)
+                        return new DataTable();
+                    #endregion
+                //}
             }
-            string sqlq = "SELECT * from we_work where disabled=0 and (id_row=@id_row or id_parent = @id_row)";
+            string sqlq = "select * from we_work where disabled=0 and (id_row=@id_row or id_parent = @id_row)";
             conds = new SqlConditions();
             conds.Add("id_row", id_task);
             dt = cnn.CreateDataTable(sqlq, conds);

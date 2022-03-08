@@ -45,7 +45,7 @@ namespace JeeWork_Core2021.Controllers.Wework
         /// </summary>
         /// <param name="query"></param>
         /// <returns></returns>
-        [CusAuthorize(Roles = "3610")]
+        //[CusAuthorize(Roles = "3610")]
         [Route("List")]
         [HttpGet]
         public object List([FromQuery] QueryParams query)
@@ -73,7 +73,8 @@ namespace JeeWork_Core2021.Controllers.Wework
                 
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
-                    bool Visible = Common.CheckRoleByUserID(loginData, 3610, cnn);
+                    //bool Visible = Common.CheckRoleByUserID(loginData, 3610, cnn);
+                    bool Visible = true;
                     SqlConditions Conds = new SqlConditions();
                     string dieukienSort = "title", dieukien_where = " ";
                     if (!string.IsNullOrEmpty(query.filter["id_project_team"]))

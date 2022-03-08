@@ -1603,7 +1603,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                     "from we_project_team pr join we_department de " +
                     "on de.id_row = pr.id_department " +
                     "where de.disabled = 0 and pr.disabled = 0 " +
-                    "and IdKH = "+loginData.CustomerID+";" +
+                    "and IdKH = " + loginData.CustomerID + ";" +
                     "select id_row, StatusName, description, id_project_team, type" +
                     ", IsDefault, color, Position, IsFinal, Follower, IsDeadline, IsToDo " +
                     "from we_status where Disabled = 0";
@@ -3024,7 +3024,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                     if (dt.Rows.Count > 0)
                     {
                         string characters = "00000";
-                        string vitri= "0";
+                        string vitri = "0";
                         characters = dt.Rows[0]["projectmgr"].ToString();
                         vitri = characters[position_notify - 1].ToString();
                         if ("1".Equals(vitri.ToString()))
@@ -3069,7 +3069,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
                             {
                                 listUser.AddRange(dt_othermember.AsEnumerable().Select(x => string.IsNullOrEmpty(x["id_user"].ToString()) ? 0 : long.Parse(x["id_user"].ToString())).Distinct().ToList());
                             }
-                        }    
+                        }
                         else
                         {
                             if ("1".Equals(vitri.ToString()))
@@ -4220,9 +4220,14 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
             string sqlq_update = "";
             DataTable dt = new DataTable();
             // Lấy ID template mặc định
+            long template_default = 0;
             string sql_template = "select id_row from we_template_customer " +
                 "where customerid = " + loginData.CustomerID + " and IsDefault = 1";
-            long template_default = long.Parse(cnn.ExecuteScalar(sql_template).ToString());
+            DataTable dt_template_default = cnn.CreateDataTable(sql_template);
+            if (dt_template_default.Rows.Count > 0)
+            {
+                template_default = long.Parse(dt_template_default.Rows[0]["id_row"].ToString());
+            }
             if ("id_department".Equals(column_name))
             {
                 if (!CheckCustomerID(id, "we_department", loginData, cnn))
@@ -4817,7 +4822,7 @@ p.id_department = d.id_row where d.IdKH = { loginData.CustomerID } and w.id_row 
                     sql_pm = @"select pu.id_project_team, pu.id_user from we_project_team_user pu
                                 join we_project_team p on p.id_row = pu.id_project_team
                                 join we_department de on de.id_row = p.id_department
-                                where de.disabled = 0 and p.Disabled = 0 and p.Locked = 0
+                                where de.disabled = 0 and p.Disabled = 0 
                                 and de.IdKH = " + loginData.CustomerID + " " +
                                 "and admin = 1 and pu.disabled = 0 " +
                                 "and pu.id_user =" + loginData.UserID;

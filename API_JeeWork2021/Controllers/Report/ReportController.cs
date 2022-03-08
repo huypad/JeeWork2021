@@ -302,9 +302,9 @@ namespace JeeWork_Core2021.Controllers.Wework
                         strW += " and id_department in (" + listDept + ") ";
                     }
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
-                    string sqlq = @"select status, count(*) as value 
+                    string sqlq = @"select status, Locked, count(*) as value 
                                     from we_project_team p
-                                    where Disabled=0 and is_project=1" + strW + " group by status ";
+                                    where Disabled=0 and is_project=1" + strW + " group by status, Locked";
                     DataSet ds = cnn.CreateDataSet(sqlq, cond);
                     if (cnn.LastError != null || ds == null)
                     {
@@ -316,9 +316,9 @@ namespace JeeWork_Core2021.Controllers.Wework
                     data.Add(dtW.Where(x => x["status"].ToString() == "1").Select(x => x["value"] == DBNull.Value ? 0 : (int)x["value"]).FirstOrDefault());
                     data.Add(dtW.Where(x => x["status"].ToString() == "2").Select(x => x["value"] == DBNull.Value ? 0 : (int)x["value"]).FirstOrDefault());
                     data.Add(dtW.Where(x => x["status"].ToString() == "3").Select(x => x["value"] == DBNull.Value ? 0 : (int)x["value"]).FirstOrDefault());
-                    data.Add(dtW.Where(x => x["status"].ToString() == "4").Select(x => x["value"] == DBNull.Value ? 0 : (int)x["value"]).FirstOrDefault());
-                    data.Add(dtW.Where(x => x["status"].ToString() == "5").Select(x => x["value"] == DBNull.Value ? 0 : (int)x["value"]).FirstOrDefault());
-                    data.Add(dtW.Where(x => x["status"].ToString() == "6").Select(x => x["value"] == DBNull.Value ? 0 : (int)x["value"]).FirstOrDefault());
+                    data.Add(dtW.Where(x => x["status"].ToString() == "4" && (bool)x["Locked"]).Select(x => x["value"] == DBNull.Value ? 0 : (int)x["value"]).FirstOrDefault());
+                    data.Add(dtW.Where(x => x["status"].ToString() == "5" && (bool)x["Locked"]).Select(x => x["value"] == DBNull.Value ? 0 : (int)x["value"]).FirstOrDefault());
+                    data.Add(dtW.Where(x => x["status"].ToString() == "6" && (bool)x["Locked"]).Select(x => x["value"] == DBNull.Value ? 0 : (int)x["value"]).FirstOrDefault());
                     return JsonResultCommon.ThanhCong(new { label = label, datasets = data });
                 }
                 #endregion
@@ -3080,8 +3080,8 @@ where tag.Disabled=0 and p.Disabled=0 " + strW1;
                                 row_K.Append(
                                 excelHelper.ConstructCell("STT", CellValues.String, 2),
                                   excelHelper.ConstructCell("PHÒNG BAN", CellValues.String, 2),
+                                  excelHelper.ConstructCell("CÔNG VIỆC", CellValues.String, 2),
                                   excelHelper.ConstructCell("HOÀN THÀNH", CellValues.String, 2),
-                                  excelHelper.ConstructCell("HOÀN THÀNH MUỘN", CellValues.String, 2),
                                   excelHelper.ConstructCell("QUÁ HẠN", CellValues.String, 2),
                                   excelHelper.ConstructCell("ĐANG THỰC HIỆN", CellValues.String, 2)
                                  //excelHelper.ConstructCell("ĐANG ĐÁNH GIÁ", CellValues.String, 2)

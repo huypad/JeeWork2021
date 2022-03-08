@@ -278,9 +278,9 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                 using (DpsConnection cnn = new DpsConnection(ConnectionString))
                 {
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
-                    string sqlq = @"select status, count(*) as value 
+                    string sqlq = @"select status, Locked, count(*) as value 
                                     from we_project_team p
-                                    where Disabled=0 and is_project=1" + strW + " group by status ";
+                                    where Disabled=0 and is_project=1" + strW + " group by status, Locked";
                     DataSet ds = cnn.CreateDataSet(sqlq, cond);
                     if (cnn.LastError != null || ds == null)
                     {
@@ -292,9 +292,9 @@ where pu.Disabled=0 and p.Disabled=0 and id_project_team= @id_projectteam  ";
                     data.Add(dtW.Where(x => x["status"].ToString() == "1").Select(x => x["value"] == DBNull.Value ? 0 : (int)x["value"]).FirstOrDefault());
                     data.Add(dtW.Where(x => x["status"].ToString() == "2").Select(x => x["value"] == DBNull.Value ? 0 : (int)x["value"]).FirstOrDefault());
                     data.Add(dtW.Where(x => x["status"].ToString() == "3").Select(x => x["value"] == DBNull.Value ? 0 : (int)x["value"]).FirstOrDefault());
-                    data.Add(dtW.Where(x => x["status"].ToString() == "4").Select(x => x["value"] == DBNull.Value ? 0 : (int)x["value"]).FirstOrDefault());
-                    data.Add(dtW.Where(x => x["status"].ToString() == "5").Select(x => x["value"] == DBNull.Value ? 0 : (int)x["value"]).FirstOrDefault());
-                    data.Add(dtW.Where(x => x["status"].ToString() == "6").Select(x => x["value"] == DBNull.Value ? 0 : (int)x["value"]).FirstOrDefault());
+                    data.Add(dtW.Where(x => x["status"].ToString() == "4" && (bool)x["Locked"]).Select(x => x["value"] == DBNull.Value ? 0 : (int)x["value"]).FirstOrDefault());
+                    data.Add(dtW.Where(x => x["status"].ToString() == "5" && (bool)x["Locked"]).Select(x => x["value"] == DBNull.Value ? 0 : (int)x["value"]).FirstOrDefault());
+                    data.Add(dtW.Where(x => x["status"].ToString() == "6" && (bool)x["Locked"]).Select(x => x["value"] == DBNull.Value ? 0 : (int)x["value"]).FirstOrDefault());
                     return JsonResultCommon.ThanhCong(new { label = label, datasets = data });
                     #endregion
                 }

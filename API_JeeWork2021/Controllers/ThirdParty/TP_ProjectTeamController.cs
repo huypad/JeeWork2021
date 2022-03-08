@@ -442,7 +442,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                         Conds.Add("locked", query.filter["locked"]);
                     }
                     #region Trả dữ liệu về backend để hiển thị lên giao diện
-                    DataSet ds = JeeWorkLiteController.GetListProjects(cnn, query, DataAccount, Visible, loginData, dieukien_where);
+                    DataSet ds = TP_LiteController.GetListProjects(cnn, query, DataAccount, Visible, loginData, dieukien_where);
                     if (cnn.LastError != null || ds == null)
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     DataTable dt = ds.Tables[0];
