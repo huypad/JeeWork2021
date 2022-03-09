@@ -331,7 +331,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     {
                         //strW = " and (w.createdby=@iduser";
                         if (query.filter["filter"] == "1")//được giao
-                            strW = " and (w.createdby=@iduser or w.id_nv=@iduser (parent))";
+                            strW = " and ((w.id_nv=@iduser or (w.createdby=@iduser and w.id_nv is null)) (parent))";
                         //strW = " and (w.createdby=@iduser or w.id_nv=@iduser (parent)) ";
                         //strW = " and ((w.createdby=@iduser and w.id_nv=@iduser) or (w.createdby=@iduser and w.id_nv is null)) (parent)";
                         if (query.filter["filter"] == "2")//giao đi

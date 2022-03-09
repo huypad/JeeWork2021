@@ -3776,7 +3776,7 @@ from we_department de where de.Disabled = 0  and de.CreatedBy in ({listID}) and 
             string str_where = "";
             if (!string.IsNullOrEmpty(keyword))
             {
-                str_where = " and (p.title like '%@keyword%' or d.title like '%@keyword%')";
+                str_where = " and (p.title like '%"+ keyword + "%' or d.title like '%"+ keyword + "%')";
             }
             string sql = @"select distinct p.id_row, p.title, is_project, start_date, end_date
                                     , color, status, locked, d.title as spacename, p.CreatedBy

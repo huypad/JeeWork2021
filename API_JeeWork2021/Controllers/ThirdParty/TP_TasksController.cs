@@ -49,14 +49,14 @@ namespace JeeWork_Core2021.Controllers.Wework
         private INotifier _notifier;
         private IProducer _producer;
         private readonly ILogger<TaskController> _logger;
-        static string sql_isquahan = " w.deadline < GETUTCDATE() and w.deadline is not null and w.end_date is null ";
-        static string sql_dangthuchien = "((w.deadline >= GETUTCDATE() and deadline is not null) or deadline is null ) and w.end_date is null";
-        static string sqlhoanthanhdunghan = " w.end_date is not null and (w.deadline >= w.end_date or w.deadline is null) ";
-        static string sqlhoanthanhquahan = " w.end_date is not null and w.deadline < w.end_date";
-        static string sqlhoanthanh = " w.end_date is not null ";
+        //static string sql_isquahan = " w.deadline < GETUTCDATE() and w.deadline is not null and w.end_date is null ";
+        //static string sql_dangthuchien = "((w.deadline >= GETUTCDATE() and deadline is not null) or deadline is null ) and w.end_date is null";
+        //static string sqlhoanthanhdunghan = " w.end_date is not null and (w.deadline >= w.end_date or w.deadline is null) ";
+        //static string sqlhoanthanhquahan = " w.end_date is not null and w.deadline < w.end_date";
+        //static string sqlhoanthanh = " w.end_date is not null ";
         // kiểm tra điều kiện hoàn thành
-        string queryhoanthanh = " and w.end_date is not null ";
-        string querydangthuchien = " and w.end_date is null ";
+        //string queryhoanthanh = " and w.end_date is not null ";
+        //string querydangthuchien = " and w.end_date is null ";
         public TaskController(IOptions<JeeWorkConfig> config, IHostingEnvironment hostingEnvironment, IConnectionCache _cache, IConfiguration configuration, INotifier notifier, ILogger<TaskController> logger, IProducer producer)
         {
             _hostingEnvironment = hostingEnvironment;
@@ -367,7 +367,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                             strW_parent = $"or w.id_row in (select id_parent from we_work ww join we_work_user wu on ww.id_row = wu.id_work where ww.disabled = 0 and wu.disabled = 0 and id_parent is not null and wu.loai = 2 and id_user = @iduser {querysub})";
                         strW = strW.Replace("(parent)", strW_parent);
                     }
-                   
+
                     #endregion
                     //string columnName = "id_project_team";
                     DataSet ds = GetWorkByEmployee_Mobile(Request.Headers, cnn, query, IDNV, DataAccount, strW, order_by);
@@ -2352,6 +2352,10 @@ where Disabled=0 and object_type in (1,11) and object_id=" + id;
                     {
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
+                    DataTable dt_tag_child = new DataTable();
+                    dt_tag_child = cnn.CreateDataTable(@"select a.title, a.id_row, a.color, b.id_work
+                    from we_tag a join we_work_tag b on a.id_row = b.id_tag
+                    where a.disabled = 0 and b.disabled = 0 and id_work in (select id_row from we_work where id_parent = " + id+")");
                     if (ds.Tables[0] == null || ds.Tables[0].Rows.Count == 0)
                         return JsonResultCommon.KhongTonTai("Công việc");
                     id_project_team = long.Parse(ds.Tables[0].Rows[0]["id_project_team"].ToString());
@@ -2604,7 +2608,8 @@ where Disabled=0 and object_type in (1,11) and object_id=" + id;
                                                                  updatedby = rr["UpdatedBy"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(rr["UpdatedBy"].ToString(), DataAccount),
                                                                  createdby = rr["CreatedBy"].Equals(DBNull.Value) ? new { } : JeeWorkLiteController.Get_InfoUsers(rr["CreatedBy"].ToString(), DataAccount),
                                                              },
-                                                 Tags = from t in ds.Tables[1].AsEnumerable()
+                                                 Tags = from t in dt_tag_child.AsEnumerable()
+                                                        where t["id_work"].Equals(rr["id_row"])
                                                         select new
                                                         {
                                                             id_row = t["id_row"],
@@ -3211,60 +3216,17 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                             }
                         }
                     }
-                    if (!JeeWorkLiteController.log(_logger, loginData.Username, cnn, 1, idc, iduser, data.title))
-                    {
-                        cnn.RollbackTransaction();
-                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
-                    }
-                    cnn.EndTransaction();
-                    #region Ghi log trong project
-                    string LogContent = "", LogEditContent = "";
-                    LogContent = LogEditContent = "Thêm mới dữ liệu công việc: title=" + data.title + ", id_project_team=" + data.id_project_team;
-                    Common.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.Username, ControllerContext);
-                    #endregion
-                    #region Ghi log lên CDN
-                    var d2 = new ActivityLog()
-                    {
-                        username = loginData.Username,
-                        category = LogContent,
-                        action = loginData.customdata.personalInfo.Fullname + " thao tác",
-                        data = JsonConvert.SerializeObject(data)
-                    };
-                    _logger.LogInformation(JsonConvert.SerializeObject(d2));
-                    #endregion
-                    // thông báo nhắc nhở
-                    foreach (var user in data.Users)
-                    {
-                        if (user.loai == 1)
-                        {
-                            NhacNho.UpdateQuantityTask_Users(user.id_user, loginData.CustomerID, "+", _configuration, _producer);
-                        }
-                    }
-                    #region gửi event insert công việc mới
                     DataTable dtwork = cnn.CreateDataTable("select * from v_wework_new where Disabled = 0 and id_row = " + idc);
-                    if (dtwork.Rows.Count > 0)
-                    {
-                        Post_Automation_Model postauto = new Post_Automation_Model();
-                        postauto.taskid = idc; // id task mới tạo
-                        postauto.userid = loginData.UserID;
-                        postauto.listid = data.id_project_team; // id project team
-                        postauto.customerid = loginData.CustomerID;
-                        postauto.eventid = 7;
-                        postauto.departmentid = long.Parse(dtwork.Rows[0]["id_department"].ToString()); // id_department
-                        Automation.SendAutomation(postauto, _configuration, _producer);
-                    }
-                    #endregion
+                    #region Notifications
                     data.id_row = idc;
                     var users_loai1 = JeeWorkLiteController.GetUserSendNotify(loginData, idc, 1, 1, ConnectionString, DataAccount, cnn);
                     var users_loai2 = JeeWorkLiteController.GetUserSendNotify(loginData, idc, 1, 2, ConnectionString, DataAccount, cnn);
-                    #region Lấy thông tin để thông báo
                     int templateguimail = 10;
                     SendNotifyModel noti = new SendNotifyModel();
                     noti = JeeWorkLiteController.GetInfoNotify(templateguimail, ConnectionString);
                     string workname = "";
                     workname = $"\"{data.title}\"";
                     string TitleLanguageKey = "ww_themmoicongviec";
-                    #endregion
                     SqlConditions cond_user = new SqlConditions();
                     cond_user.Add("id_work", data.id_row);
                     cond_user.Add("disabled", 0);
@@ -3293,10 +3255,6 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                         {
                             notify_model.To_IDNV = users_loai1[i].ToString();
                             var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-                            //if (!_user.ToString().Equals(notify_model.To_IDNV))
-                            //{
-                            //    user_assign = info.FullName;
-                            //}
                             user_assign = dtwork.Rows[0]["project_team"].ToString() + " (Phòng ban: " + dtwork.Rows[0]["department"].ToString() + ")";
                             notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$forme$", " trong dự án: " + user_assign + "");
                             if (info is not null)
@@ -3306,34 +3264,55 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                         }
                     }
                     JeeWorkLiteController.SendEmail(data.id_row, users_loai2, templateguimail, loginData, ConnectionString, _notifier, _configuration);
-                    //#region Lấy thông tin để thông báo
-                    //SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(10, ConnectionString);
-                    //#endregion
-                    //JeeWorkLiteController.SendEmail(idc, data.Users.Select(x => x.id_user).ToList(), 10, loginData, ConnectionString, _notifier, _configuration);
-                    //#region Notify thêm mới công việc
-                    //Hashtable has_replace = new Hashtable();
-                    //for (int i = 0; i < data.Users.Count; i++)
-                    //{
-                    //    NotifyModel notify_model = new NotifyModel();
-                    //    has_replace = new Hashtable();
-                    //    has_replace.Add("nguoigui", loginData.Username);
-                    //    has_replace.Add("tencongviec", data.title);
-                    //    notify_model.AppCode = "WORK";
-                    //    notify_model.From_IDNV = loginData.UserID.ToString();
-                    //    notify_model.To_IDNV = data.Users[i].id_user.ToString();
-                    //    notify_model.TitleLanguageKey = LocalizationUtility.GetBackendMessage("ww_themmoicongviec", "", "vi");
-                    //    notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$nguoigui$", loginData.customdata.personalInfo.Fullname);
-                    //    notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$tencongviec$", data.title);
-                    //    notify_model.ReplaceData = has_replace;
-                    //    notify_model.To_Link_MobileApp = noti.link_mobileapp.Replace("$id$", data.id_row.ToString());
-                    //    notify_model.To_Link_WebApp = noti.link.Replace("$id$", data.id_row.ToString());
-                    //    var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-                    //    if (info is not null)
-                    //    {
-                    //        bool kq_noti = JeeWorkLiteController.SendNotify(loginData, info.Username, notify_model, _notifier, _configuration);
-                    //    }
-                    //}
-                    //#endregion
+                    #endregion
+                    #region Ghi log trong Databases
+                    if (!JeeWorkLiteController.log(_logger, loginData.Username, cnn, 1, idc, iduser, data.title))
+                    {
+                        cnn.RollbackTransaction();
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                    }
+                    #endregion
+                    #region Thông báo nhắc nhở
+                    foreach (var user in data.Users)
+                    {
+                        if (user.loai == 1)
+                        {
+                            NhacNho.UpdateQuantityTask_Users(user.id_user, loginData.CustomerID, "+", _configuration, _producer);
+                        }
+                    }
+                    #endregion
+                    #region Gửi event insert công việc mới
+                    if (dtwork.Rows.Count > 0)
+                    {
+                        Post_Automation_Model postauto = new Post_Automation_Model();
+                        postauto.taskid = idc; // id task mới tạo
+                        postauto.userid = loginData.UserID;
+                        postauto.listid = data.id_project_team; // id project team
+                        postauto.customerid = loginData.CustomerID;
+                        postauto.eventid = 7;
+                        postauto.departmentid = long.Parse(dtwork.Rows[0]["id_department"].ToString()); // id_department
+                        Automation.SendAutomation(postauto, _configuration, _producer);
+                    }
+                    #endregion
+                    if (data.Attachments == null)
+                    {
+                        #region Ghi log File
+                        string LogContent = "", LogEditContent = "";
+                        LogContent = LogEditContent = "Thêm mới dữ liệu công việc: title=" + data.title + ", id_project_team=" + data.id_project_team;
+                        Common.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.Username, ControllerContext);
+                        #endregion
+                        #region Ghi log lên CDN
+                        var d2 = new ActivityLog()
+                        {
+                            username = loginData.Username,
+                            category = LogContent,
+                            action = loginData.customdata.personalInfo.Fullname + " thao tác",
+                            data = JsonConvert.SerializeObject(data)
+                        };
+                        _logger.LogDebug(JsonConvert.SerializeObject(d2));
+                        #endregion
+                    }
+                    cnn.EndTransaction();
                     return JsonResultCommon.ThanhCong(data);
                 }
             }
@@ -4947,11 +4926,11 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                     if (!string.IsNullOrEmpty(data.description))
                         val.Add("description", data.description);
                     //if (data.deadline > DateTime.MinValue)
-                        val.Add("deadline", data.deadline);
+                    val.Add("deadline", data.deadline);
                     if (data.assign > 0)
                         val.Add("assign", data.assign);
                     //if (data.start_date > DateTime.MinValue)
-                        val.Add("start_date", data.start_date);
+                    val.Add("start_date", data.start_date);
                     if (data.followers != null && data.followers.Count > 0)
                         val.Add("followers", string.Join(",", data.followers));
                     val.Add("CreatedDate", Common.GetDateTime());
@@ -5265,7 +5244,6 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                 return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
-
         [Route("update-work-process")]
         [HttpPost]
         public async Task<BaseModel<object>> UpdateWorkProcess(WorkProcessModel data)
@@ -5962,7 +5940,6 @@ where u.disabled=0 and p.Disabled=0 and d.Disabled = 0 and id_user = { query.fil
                 return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
-
         /// <summary>
         /// Danh sách công việc cá nhân (Tôi làm/ Tôi đang theo dõi)
         /// </summary>
@@ -7891,7 +7868,6 @@ where u.disabled = 0 and u.loai = 2";
                 return result;
             }
         }
-
         /// <summary>
         /// lấy thông tin người để gửi thông báo : Người được giao việc, người giao việc, người theo dõi
         /// </summary>
