@@ -238,7 +238,7 @@ namespace JeeWork_Core2021.Controllers.Wework
                     if (dt_file.Rows.Count != 1)
                         return JsonResultCommon.KhongTonTai("Tệp đính kèm");
                     string signedPath = dt_file.Rows[0]["path"].ToString();
-                    sqlq = "update we_attachment set Disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + iduser + " where id_row = " + id;
+                    sqlq = "update we_attachment set disabled=1, UpdatedDate=GETUTCDATE(), UpdatedBy=" + iduser + " where id_row = " + id;
                     cnn.BeginTransaction();
                     if (cnn.ExecuteNonQuery(sqlq) != 1)
                     {
@@ -263,6 +263,24 @@ namespace JeeWork_Core2021.Controllers.Wework
                     };
                     _logger.LogInformation(JsonConvert.SerializeObject(d2));
                     #endregion
+                    int id_log_action = 0;
+                    switch (int.Parse(dt_file.Rows[0]["object_type"].ToString()))
+                    {
+                        case 1: id_log_action = 63; 
+                            break ;
+                        case 2: return JsonResultCommon.KhongTonTai("Topic");
+                        case 3: return JsonResultCommon.KhongTonTai("comment");
+                        case 11: return JsonResultCommon.KhongTonTai("work");
+                        case 4:
+                            return JsonResultCommon.KhongTonTai("project");
+                        default: break;
+                    }
+                    bool re = JeeWorkLiteController.log(_logger, loginData.Username, cnn, id_log_action, int.Parse(dt_file.Rows[0]["object_id"].ToString()), iduser, dt_file.Rows[0]["filename"].ToString(), null, "");
+                    if (!re)
+                    {
+                        cnn.RollbackTransaction();
+                        return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
+                    }
                     return JsonResultCommon.ThanhCong();
                 }
             }

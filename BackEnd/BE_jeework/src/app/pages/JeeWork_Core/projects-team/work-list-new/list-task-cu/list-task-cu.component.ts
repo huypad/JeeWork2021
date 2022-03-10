@@ -170,6 +170,7 @@ export class ListTaskCUComponent implements OnInit, OnDestroy {
             startDate: new Date(today.getFullYear(), today.getMonth() - 6, 1),
         };
         this.filter_groupby = this.getMystaff ? this.listFilter_Groupby[1] : this.listFilter_Groupby[0];
+        debugger
         this.column_sort = this.sortField[0];
         this.route.params.subscribe(res => {
             if (this.selectedTab === 2) {
@@ -246,7 +247,9 @@ export class ListTaskCUComponent implements OnInit, OnDestroy {
                 api_service = this._service.ListByUserCU(queryParams);
             }
             else
+            {
                 api_service = this._service.ListByManageCU(queryParams);
+            }
         }
         this.loadingSubject.next(true);
         this.DanhSachCongViec = [];
@@ -494,13 +497,10 @@ export class ListTaskCUComponent implements OnInit, OnDestroy {
         // this.LoadWork();
         this.LoadTask();
     }
-    filterConfiguration2(): any {
-        const filter: any = {};
-
-        return filter;
-    }
     filterConfiguration(): any {
         const filter: any = {};
+        // debugger
+        this.filter_groupby = this.getMystaff ? this.listFilter_Groupby[1] : this.listFilter_Groupby[0];
         filter.groupby = this.filter_groupby.value;
         filter.keyword = this.keyword;
         filter.id_nv = this.ID_NV;

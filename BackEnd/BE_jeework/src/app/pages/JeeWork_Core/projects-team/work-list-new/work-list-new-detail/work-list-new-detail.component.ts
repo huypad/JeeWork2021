@@ -1194,12 +1194,16 @@ export class WorkListNewDetailComponent implements OnInit {
         if (task.Users.length > 0 && task.Users[0].id_nv > 0) {
             item.IsStaff = true;
         }
+        debugger
         if (key == "description") {
             this.layoutUtilsService.showWaitingDiv();
             this.projectsTeamService._UpdateByKey(item).subscribe(res => {
                 this.layoutUtilsService.OffWaitingDiv();
                 if (res && res.status == 1) {
+                    // this.LoadData();
+                    this.LoadLog();
                     this.SendMessage(true);
+
                     // this.LoadDataWorkDetail(item.id_row);
                     this.is_confirm = false;
                 }
@@ -1215,6 +1219,9 @@ export class WorkListNewDetailComponent implements OnInit {
             this.projectsTeamService._UpdateByKey(item).subscribe(res => {
                 if (res && res.status == 1) {
                     this.SendMessage(true);
+                    // this.LoadData();
+                    this.LoadLog();
+                    debugger
                     this.LoadDataWorkDetail(item.id_row);
                 }
                 else {

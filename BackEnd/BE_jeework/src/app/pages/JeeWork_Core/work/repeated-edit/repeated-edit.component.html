@@ -18,7 +18,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-12 m--margin-bottom-10-mobile">
+                    <div class="col-md-6 m--margin-bottom-10-mobile">
                         <mat-form-field class="mat-form-field-fluid">
                             <mat-select formControlName="frequency" [disabled]="this.item.id_row > 0" class="require"
                                 required placeholder="{{ 'repeated.tansuatlaplai' | translate }}"
@@ -32,34 +32,52 @@
                             </mat-select>
                         </mat-form-field>
                     </div>
-                </div>
-                
-                <div class="row">
-                    <div class="col-md-12 kt--margin-bottom-10-mobile">
+                    <div class="col-md-6 kt--margin-bottom-10-mobile">
                         <mat-form-field class="mat-form-field-fluid">
                             <mat-select formControlName="id_project_team" class="require"
-                                (selectionChange)="LoadUser($event.value)" required [disabled]="isUpdate || id_project > 0"
-                                (selectionChange)="BindList($event.value)"
+                                (selectionChange)="LoadUser($event.value)" required
+                                [disabled]="isUpdate || id_project > 0" (selectionChange)="BindList($event.value)"
                                 placeholder="{{ 'topic.projectteam' | translate}}">
                                 <mat-option>
                                     <ngx-mat-select-search [formControl]="projectFilterCtrl" [placeholderLabel]="''"
                                         [noEntriesFoundLabel]="''">
                                     </ngx-mat-select-search>
                                 </mat-option>
-                                <mat-option value="{{user.id_row}}" *ngFor="let user of filtereproject | async">
-                                    <span style="color: black;">{{ user.title }}</span>
+                                <mat-option value="{{pr.id_row}}" *ngFor="let pr of filtereproject | async">
+                                    <span style="color: black;">{{ pr.title_full }}</span>
                                 </mat-option>
                             </mat-select>
                         </mat-form-field>
                     </div>
                 </div>
-<!-- update old -->
+
+                <div class="row">
+                    <div class="col-md-6 m--margin-bottom-10-mobile">
+                        <mat-form-field class="mat-form-field-fluid">
+                            <input matInput [matDatepicker]="dp1" type="text" class="require" required
+                                [max]="itemForm.value.end_date" placeholder="{{ 'GeneralKey.ngaybatdau' | translate}}"
+                                formControlName="start_date">
+                            <mat-datepicker-toggle matSuffix [for]="dp1"></mat-datepicker-toggle>
+                            <mat-datepicker #dp1></mat-datepicker>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-6 m--margin-bottom-10-mobile">
+                        <mat-form-field class="mat-form-field-fluid">
+                            <input matInput [matDatepicker]="dp2" type="text" class="require" required
+                                [min]="itemForm.value.start_date"
+                                placeholder="{{ 'GeneralKey.ngayketthuc' | translate}}" formControlName="end_date">
+                            <mat-datepicker-toggle matSuffix [for]="dp2"></mat-datepicker-toggle>
+                            <mat-datepicker #dp2></mat-datepicker>
+                        </mat-form-field>
+                    </div>
+                </div>
+                <!-- update old -->
                 <div class="row align-items-center">
                     <span style="color: black; font-weight: 500;font-size: 14px; margin-left: 10px; line-height: 30px;"
                         translate="repeated.cacngaylaplai"></span>
                 </div>
                 <div *ngIf="!show_frequency" class="row align-items-center">
-                    <div class="col-lg-6 m--margin-bottom-20-mobile" *ngFor="let day of check_weekdays">
+                    <div class="col-lg-4 m--margin-bottom-20-mobile" *ngFor="let day of check_weekdays">
                         <mat-checkbox [checked]="day.Checked" (change)="Checked(day.Code, $event.checked)"
                             value="{{day.Code}}" style="margin-left: 20px"> {{day.Title}}</mat-checkbox>
                     </div>
@@ -138,42 +156,13 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-12 kt--margin-bottom-10-mobile">
+                    <div class="col-md-9 kt--margin-bottom-10-mobile">
                         <mat-form-field class="mat-form-field-fluid ">
                             <input matInput class="require" placeholder="{{ 'repeated.deadline' | translate }}"
                                 formControlName="deadline" />
                         </mat-form-field>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12 kt--margin-bottom-10-mobile">
-                        <editor apiKey="dxj8xq3tlcj4xkiimxtt4xuvknt75ctmgxn06bdgdmhxdtft" formControlName="description" [init]="tinyMCE"
-                            style="margin-bottom: 15px;">
-                        </editor>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 m--margin-bottom-10-mobile">
-                        <mat-form-field class="mat-form-field-fluid">
-                            <input matInput [matDatepicker]="dp1" type="text" class="require" required
-                                [max]="itemForm.value.end_date" placeholder="{{ 'GeneralKey.ngaybatdau' | translate}}"
-                                formControlName="start_date">
-                            <mat-datepicker-toggle matSuffix [for]="dp1"></mat-datepicker-toggle>
-                            <mat-datepicker #dp1></mat-datepicker>
-                        </mat-form-field>
-                    </div>
-                    <div class="col-md-6 m--margin-bottom-10-mobile">
-                        <mat-form-field class="mat-form-field-fluid">
-                            <input matInput [matDatepicker]="dp2" type="text" class="require" required
-                                [min]="itemForm.value.start_date"
-                                placeholder="{{ 'GeneralKey.ngayketthuc' | translate}}" formControlName="end_date">
-                            <mat-datepicker-toggle matSuffix [for]="dp2"></mat-datepicker-toggle>
-                            <mat-datepicker #dp2></mat-datepicker>
-                        </mat-form-field>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12 m--margin-bottom-10-mobile">
+                    <div class="col-md-3 m--margin-bottom-10-mobile">
                         <mat-form-field class="mat-form-field-fluid">
                             <mat-select formControlName="Locked" placeholder="{{ 'filter.trangthai' | translate }}">
                                 <mat-option [value]="false">
@@ -184,6 +173,13 @@
                                 </mat-option>
                             </mat-select>
                         </mat-form-field>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 kt--margin-bottom-10-mobile">
+                        <editor apiKey="dxj8xq3tlcj4xkiimxtt4xuvknt75ctmgxn06bdgdmhxdtft" formControlName="description"
+                            [init]="tinyMCE" style="margin-bottom: 15px;">
+                        </editor>
                     </div>
                 </div>
             </div>

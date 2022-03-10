@@ -146,7 +146,9 @@ export class RepeatedEditComponent implements OnInit, OnChanges {
     if (this.id_project_team > 0) {
       this.isUpdate = true;
       this.LoadUser(this.id_project_team);
-    } else if (this.id_project > 0) {
+    } 
+    else 
+    if (this.id_project > 0) {
       this.id_project_team = this.id_project;
       this.LoadUser(this.id_project_team);
     }
@@ -156,9 +158,7 @@ export class RepeatedEditComponent implements OnInit, OnChanges {
     var newArr = this.item.repeated_day.split(",");
     this.itemForm.controls.repeated_day.setValue(newArr);
     if (this.item.id_row > 0) {
-      this._service
-        .Detail_repeated(this._data._item.id_row)
-        .subscribe((res) => {
+      this._service.Detail_repeated(this._data._item.id_row).subscribe((res) => {
           if (res && res.status == 1) {
             this.item = res.data;
             // this.itemForm.controls["id_group"].setValue('' + this.item.id_group);
@@ -172,18 +172,10 @@ export class RepeatedEditComponent implements OnInit, OnChanges {
             this.changeDetectorRefs.detectChanges();
           }
         });
-
       for (var i = 0; i < this.list_weekdays.length; i++) {
         var bool = false;
-        for (
-          var j = 0;
-          j < this.item.repeated_day.substring(0).split(",").length;
-          j++
-        ) {
-          if (
-            this.list_weekdays[i].Code ==
-            this.item.repeated_day.substring(0).split(",")[j]
-          ) {
+        for (var j = 0;j < this.item.repeated_day.substring(0).split(",").length; j++) {
+          if (this.list_weekdays[i].Code == this.item.repeated_day.substring(0).split(",")[j]) {
             bool = true;
           }
         }
@@ -193,7 +185,6 @@ export class RepeatedEditComponent implements OnInit, OnChanges {
           Checked: bool,
         });
       }
-
       if (this.item.Tasks) {
         this.listColumn = this.item.Tasks.filter((x) => x.IsTodo == false);
         this.listCol_Todo = this.item.Tasks.filter((x) => x.IsTodo == true);
@@ -229,7 +220,6 @@ export class RepeatedEditComponent implements OnInit, OnChanges {
         this.isUpdatetodolist = true;
       }
     }
-
     this.LoadTask();
   }
   LoadTask() {
@@ -317,51 +307,28 @@ export class RepeatedEditComponent implements OnInit, OnChanges {
     });
   }
   createForm() {
+    debugger
     this.itemForm = this.fb.group({
-      title: [
-        this.item.title == null ? "" : this.item.title,
-        Validators.required,
-      ],
+      title: [this.item.title == null ? "" : this.item.title,Validators.required],
       description: [this.item.description == null ? "" : this.item.description],
-      id_project_team: [
-        this.id_project_team == null ? "" : "" + this.id_project_team,
-        Validators.required,
-      ],
-      frequency: [
-        this.item.frequency == null ? "" : "" + this.item.frequency,
-        Validators.required,
-      ],
+      id_project_team: [this.id_project_team == 0 ? "" : "" + this.id_project_team,Validators.required],
+      frequency: [this.item.frequency == '0' ? "" : "" + this.item.frequency,Validators.required],
       // id_group: [this.item.id_group == null ? '' : '' + this.item.id_group, Validators.required],
-      repeated_day: [
-        this.item.repeated_day == null ? "" : "" + this.item.repeated_day,
-        Validators.required,
-      ],
-      start_date: [
-        this.item.start_date == null
-          ? ""
-          : this.f_convertDateTime(this.item.start_date),
-        Validators.required,
-      ],
-      end_date: [
-        this.item.end_date == null
-          ? ""
-          : this.f_convertDateTime(this.item.end_date),
-        Validators.required,
-      ],
+      repeated_day: [this.item.repeated_day == null ? "" : "" + this.item.repeated_day,Validators.required],
+      start_date: [this.item.start_date == null? "": this.f_convertDateTime(this.item.start_date),Validators.required],
+      end_date: [this.item.end_date == null? "": this.f_convertDateTime(this.item.end_date),Validators.required],
       // assign: [this.item.Assign == null ? '' : '' + this.item.Assign.id_nv, Validators.required],
       Locked: [this.item.Locked == null ? "" : this.item.Locked],
-      deadline: [
-        this.item.deadline == null ? "" : this.item.deadline,
-      ],
+      deadline: [this.item.deadline == null ? "" : this.item.deadline],
     });
-    // this.itemForm.controls["id_project_team"].markAsTouched();
+    this.itemForm.controls["id_project_team"].markAsTouched();
     // this.itemForm.controls["id_group"].markAsTouched();
-    // this.itemForm.controls["frequency"].markAsTouched();
-    // this.itemForm.controls["title"].markAsTouched();
-    // this.itemForm.controls["repeated_day"].markAsTouched();
-    // this.itemForm.controls["start_date"].markAsTouched();
+    this.itemForm.controls["frequency"].markAsTouched();
+    this.itemForm.controls["title"].markAsTouched();
+    this.itemForm.controls["repeated_day"].markAsTouched();
+    this.itemForm.controls["start_date"].markAsTouched();
     // this.itemForm.controls["assign"].markAsTouched();
-    // this.itemForm.controls["end_date"].markAsTouched();
+    this.itemForm.controls["end_date"].markAsTouched();
     // this.itemForm.controls["deadline"].markAsTouched();
   }
   setUpDropSearchNhanVien() {

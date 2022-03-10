@@ -1483,7 +1483,7 @@ export const locale = {
             thu5: 'Thứ 5',
             thu6: 'Thứ 6',
             thu7: 'Thứ 7',
-            chunhat: 'Chủ Nhật',
+            chunhat: 'Chủ nhật',
             thuhai: 'Thứ Hai',
             thuba: 'Thứ Ba',
             thutu: 'Thứ Tư',

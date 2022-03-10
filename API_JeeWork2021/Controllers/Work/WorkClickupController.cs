@@ -640,7 +640,6 @@ namespace JeeWork_Core2021.Controllers.Wework
         [HttpGet]
         public object ListWorkUserByManager([FromQuery] QueryParams query)
         {
-
             UserJWT loginData = Ulities.GetUserByHeader(HttpContext.Request.Headers);
             if (loginData == null)
                 return JsonResultCommon.DangNhap();
@@ -658,7 +657,6 @@ namespace JeeWork_Core2021.Controllers.Wework
                     DataAccount = JeeWorkLiteController.GetAccountFromJeeAccount(HttpContext.Request.Headers, _configuration);
                     if (DataAccount == null)
                         return JsonResultCommon.Custom("Lỗi lấy danh sách nhân viên từ hệ thống quản lý tài khoản");
-
                     List<AccUsernameModel> DataStaff = JeeWorkLiteController.GetMyStaff(HttpContext.Request.Headers, _configuration, loginData);
                     if (DataStaff == null)
                         return JsonResultCommon.ThanhCong(new List<string>());
@@ -1590,6 +1588,8 @@ where disabled = 0 and u.id_user in ({listID}) and id_project_team = @id";
                                 item["ColorStatus_Old"] = temp.AsEnumerable().Where(x => x[0].ToString() == item["oldvalue"].ToString()).Select(x => x[2]).FirstOrDefault();
                                 item["ColorStatus_New"] = temp.AsEnumerable().Where(x => x[0].ToString() == item["newvalue"].ToString()).Select(x => x[2]).FirstOrDefault();
                             }
+                            item["oldvalue"] = temp.AsEnumerable().Where(x => x[0].ToString() == item["oldvalue"].ToString()).Select(x => x[1]).FirstOrDefault();
+                            item["newvalue"] = temp.AsEnumerable().Where(x => x[0].ToString() == item["newvalue"].ToString()).Select(x => x[1]).FirstOrDefault();
                             if (int.Parse(item["id_action"].ToString()) == 9 || int.Parse(item["id_action"].ToString()) == 5 || int.Parse(item["id_action"].ToString()) == 6) // Đối với tag gắn title
                             {
                                 if (temp.Rows.Count > 0)
@@ -1597,8 +1597,10 @@ where disabled = 0 and u.id_user in ({listID}) and id_project_team = @id";
                                 else
                                     item["action"] = item["action"].ToString().Replace("{0}", "");
                             }
-                            item["oldvalue"] = temp.AsEnumerable().Where(x => x[0].ToString() == item["oldvalue"].ToString()).Select(x => x[1]).FirstOrDefault();
-                            item["newvalue"] = temp.AsEnumerable().Where(x => x[0].ToString() == item["newvalue"].ToString()).Select(x => x[1]).FirstOrDefault();
+                        }
+                        if (item["id_action"].ToString() == "10" || item["id_action"].ToString() == "63") // Đối với file
+                        {
+                            item["action"] = item["action"].ToString().Replace("{0}", item["log_content"].ToString());
                         }
                         if (item["format"] != DBNull.Value)
                         {
@@ -7866,25 +7868,25 @@ where u.disabled = 0 and u.loai = 2";
                 //    "where Disabled = 0 and id_parent = " + dt_duplicate.Rows[0]["id"].ToString());
                 //if (dt_child.Rows.Count > 0)
                 //{
-                    #region Nhân bản công việc con
-                    string sql_child = $@"insert into we_work (title, description, id_project_team, id_group, deadline, clickup_prioritize, status, id_parent, CreatedDate, CreatedBy) " +
-                   "select title, description, id_project_team, id_group, deadline, prioritize, status, "+id_task+", CreatedDate, CreatedBy " +
-                   "from we_work where disabled=0 and id_parent = @id_row";
-                    conds = new SqlConditions();
-                    conds.Add("id_row", dt_duplicate.Rows[0]["id"].ToString());
-                    int rs = cnn.ExecuteNonQuery(sql_child, conds);
-                    if (rs < 0)
-                    {
-                        return new DataTable();
-                    }
-                    sql_insert = "";
-                    sql_insert = "insert into we_log (object_id, id_action, CreatedDate, CreatedBy) " +
-                    "select id_row, 1, CreatedDate, CreatedBy " +
-                    "from we_work where id_parent =" + id_task;
-                    cnn.ExecuteNonQuery(sql_insert);
-                    if (cnn.LastError != null)
-                        return new DataTable();
-                    #endregion
+                #region Nhân bản công việc con
+                string sql_child = $@"insert into we_work (title, description, id_project_team, id_group, deadline, clickup_prioritize, status, id_parent, CreatedDate, CreatedBy) " +
+               "select title, description, id_project_team, id_group, deadline, prioritize, status, " + id_task + ", CreatedDate, CreatedBy " +
+               "from we_work where disabled=0 and id_parent = @id_row";
+                conds = new SqlConditions();
+                conds.Add("id_row", dt_duplicate.Rows[0]["id"].ToString());
+                int rs = cnn.ExecuteNonQuery(sql_child, conds);
+                if (rs < 0)
+                {
+                    return new DataTable();
+                }
+                sql_insert = "";
+                sql_insert = "insert into we_log (object_id, id_action, CreatedDate, CreatedBy) " +
+                "select id_row, 1, CreatedDate, CreatedBy " +
+                "from we_work where id_parent =" + id_task;
+                cnn.ExecuteNonQuery(sql_insert);
+                if (cnn.LastError != null)
+                    return new DataTable();
+                #endregion
                 //}
             }
             string sqlq = "select * from we_work where disabled=0 and (id_row=@id_row or id_parent = @id_row)";
