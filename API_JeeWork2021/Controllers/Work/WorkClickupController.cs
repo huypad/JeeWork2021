@@ -3130,28 +3130,30 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                             }
                         }
                     }
+                    #region Ghi log trong project
                     if (!JeeWorkLiteController.log(_logger, loginData.Username, cnn, 1, idc, iduser, data.title))
                     {
                         cnn.RollbackTransaction();
                         return JsonResultCommon.Exception(_logger, cnn.LastError, _config, loginData, ControllerContext);
                     }
+                    #endregion
                     cnn.EndTransaction();
-                    #region Ghi log trong project
-                    string LogContent = "", LogEditContent = "";
-                    LogContent = LogEditContent = "Thêm mới dữ liệu công việc: title=" + data.title + ", id_project_team=" + data.id_project_team;
-                    Common.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.Username, ControllerContext);
-                    #endregion
-                    #region Ghi log lên CDN
-                    var d2 = new ActivityLog()
-                    {
-                        username = loginData.Username,
-                        category = LogContent,
-                        action = loginData.customdata.personalInfo.Fullname + " thao tác",
-                        data = JsonConvert.SerializeObject(data)
-                    };
-                    _logger.LogInformation(JsonConvert.SerializeObject(d2));
-                    #endregion
-                    // thông báo nhắc nhở
+                    //#region Ghi log File
+                    //string LogContent = "", LogEditContent = "";
+                    //LogContent = LogEditContent = "Thêm mới dữ liệu công việc: title=" + data.title + ", id_project_team=" + data.id_project_team;
+                    //Common.Ghilogfile(loginData.CustomerID.ToString(), LogEditContent, LogContent, loginData.Username, ControllerContext);
+                    //#endregion
+                    //#region Ghi log lên CDN
+                    //var d2 = new ActivityLog()
+                    //{
+                    //    username = loginData.Username,
+                    //    category = LogContent,
+                    //    action = loginData.customdata.personalInfo.Fullname + " thao tác",
+                    //    data = JsonConvert.SerializeObject(data)
+                    //};
+                    //_logger.LogInformation(JsonConvert.SerializeObject(d2));
+                    //#endregion
+                    #region Thông báo nhắc nhở
                     foreach (var user in data.Users)
                     {
                         if (user.loai == 1)
@@ -3159,7 +3161,8 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                             NhacNho.UpdateQuantityTask_Users(user.id_user, loginData.CustomerID, "+", _configuration, _producer);
                         }
                     }
-                    #region gửi event insert công việc mới
+                    #endregion
+                    #region Gửi event insert công việc mới
                     DataTable dtwork = cnn.CreateDataTable("select * from v_wework_new where Disabled = 0 and id_row = " + idc);
                     if (dtwork.Rows.Count > 0)
                     {
@@ -3173,17 +3176,16 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                         Automation.SendAutomation(postauto, _configuration, _producer);
                     }
                     #endregion
+                    #region Notifications
                     data.id_row = idc;
                     var users_loai1 = JeeWorkLiteController.GetUserSendNotify(loginData, idc, 1, 1, ConnectionString, DataAccount, cnn);
                     var users_loai2 = JeeWorkLiteController.GetUserSendNotify(loginData, idc, 1, 2, ConnectionString, DataAccount, cnn);
-                    #region Lấy thông tin để thông báo
                     int templateguimail = 10;
                     SendNotifyModel noti = new SendNotifyModel();
                     noti = JeeWorkLiteController.GetInfoNotify(templateguimail, ConnectionString);
                     string workname = "";
                     workname = $"\"{data.title}\"";
                     string TitleLanguageKey = "ww_themmoicongviec";
-                    #endregion
                     SqlConditions cond_user = new SqlConditions();
                     cond_user.Add("id_work", data.id_row);
                     cond_user.Add("disabled", 0);
@@ -3212,10 +3214,6 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                         {
                             notify_model.To_IDNV = users_loai1[i].ToString();
                             var info = DataAccount.Where(x => notify_model.To_IDNV.ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-                            //if (!_user.ToString().Equals(notify_model.To_IDNV))
-                            //{
-                            //    user_assign = info.FullName;
-                            //}
                             user_assign = dtwork.Rows[0]["project_team"].ToString() + " (Phòng ban: " + dtwork.Rows[0]["department"].ToString() + ")";
                             notify_model.TitleLanguageKey = notify_model.TitleLanguageKey.Replace("$forme$", " trong dự án: " + user_assign + "");
                             if (info is not null)
@@ -3225,6 +3223,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                         }
                     }
                     JeeWorkLiteController.SendEmail(data.id_row, users_loai2, templateguimail, loginData, ConnectionString, _notifier, _configuration);
+                    #endregion
                     //#region Lấy thông tin để thông báo
                     //SendNotifyModel noti = JeeWorkLiteController.GetInfoNotify(10, ConnectionString);
                     //#endregion
