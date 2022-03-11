@@ -1194,7 +1194,6 @@ export class WorkListNewDetailComponent implements OnInit {
         if (task.Users.length > 0 && task.Users[0].id_nv > 0) {
             item.IsStaff = true;
         }
-        debugger
         if (key == "description") {
             this.layoutUtilsService.showWaitingDiv();
             this.projectsTeamService._UpdateByKey(item).subscribe(res => {
@@ -1216,21 +1215,24 @@ export class WorkListNewDetailComponent implements OnInit {
             });
         }
         else {
-            this.projectsTeamService._UpdateByKey(item).subscribe(res => {
-                if (res && res.status == 1) {
-                    this.SendMessage(true);
-                    // this.LoadData();
-                    this.LoadLog();
-                    debugger
-                    this.LoadDataWorkDetail(item.id_row);
-                }
-                else {
-                    this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
-                }
-                this.showsuccess = false;
-                this.disabledBtn = false;
-                this.changeDetectorRefs.detectChanges();
-            });
+            setTimeout((x) => {
+                this.layoutUtilsService.showWaitingDiv();
+                this.projectsTeamService._UpdateByKey(item).subscribe(res => {
+                    this.layoutUtilsService.OffWaitingDiv();
+                    if (res && res.status == 1) {
+                        this.SendMessage(true);
+                        // this.LoadData();
+                        this.LoadLog();
+                        this.LoadDataWorkDetail(item.id_row);
+                    }
+                    else {
+                        this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
+                    }
+                    this.showsuccess = false;
+                    this.disabledBtn = false;
+                    this.changeDetectorRefs.detectChanges();
+                });
+            }, 1000)
         }
     }
     UpdateKey(_item: UpdateByKeyModel) {
@@ -1601,9 +1603,29 @@ export class WorkListNewDetailComponent implements OnInit {
 
     Updateestimates(event) {
         this.item.estimates = event;
-        this.UpdateByKeyNew(this.item, 'estimates', event);
+        // this.UpdateByKeyNew(this.item, 'estimates', event);
+        const item = new UpdateWorkModel();
+        item.id_row = this.item.id_row;
+        item.key = 'estimates';
+        item.value = this.item.estimates;
+        this.layoutUtilsService.showWaitingDiv();
+        debugger
+        this.projectsTeamService._UpdateByKey(item).subscribe(res => {
+            debugger
+            this.layoutUtilsService.OffWaitingDiv();
+            if (res && res.status == 1) {
+                this.LoadLog();
+                this.SendMessage(true);
+                // this.LoadDataWorkDetail(item.id_row);
+            }
+            else {
+                this.layoutUtilsService.showActionNotification(res.error.message, MessageType.Update, 9999999999, true, false, 3000, 'top', 0);
+            }
+            this.showsuccess = false;
+            this.disabledBtn = false;
+            this.changeDetectorRefs.detectChanges();
+        });
     }
-
     stopPropagation(event) {
         event.stopPropagation();
     }
@@ -1688,6 +1710,7 @@ export class WorkListNewDetailComponent implements OnInit {
         this.workService.UpdateByKey(model).subscribe((res) => {
             if (res && res.status == 1) {
                 this.LoadData();
+                this.LoadLog();
                 this.SendMessage(true);
                 this.changeDetectorRefs.detectChanges();
             } else {

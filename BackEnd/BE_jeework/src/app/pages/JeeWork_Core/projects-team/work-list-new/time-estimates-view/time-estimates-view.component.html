@@ -45,8 +45,8 @@
             font: 500 15px/1 Gotham Pro,Proxima Nova,arial,serif;
             color: #292d34;"> {{'filter.timeestimates' | translate}}</div>
             <div class="col-7">
-                <input type="number" [value]="time" #times (keyup.enter)="submitOut();menuTrigger.closeMenu()"
-                    (focusout)="submitOut();" class="form-control" [min]="0">
+                <input type="number" [value]="time" #times
+                    (focusout)="submitOut();menuTrigger.closeMenu()" class="form-control" [min]="0">
             </div>
         </div>
     </div>
