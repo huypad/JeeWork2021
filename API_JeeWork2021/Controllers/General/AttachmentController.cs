@@ -268,11 +268,15 @@ namespace JeeWork_Core2021.Controllers.Wework
                     {
                         case 1: id_log_action = 63; 
                             break ;
-                        case 2: return JsonResultCommon.KhongTonTai("Topic");
-                        case 3: return JsonResultCommon.KhongTonTai("comment");
-                        case 11: return JsonResultCommon.KhongTonTai("work");
+                        case 2:
+                        case 3:
                         case 4:
-                            return JsonResultCommon.KhongTonTai("project");
+                            id_log_action = 0;
+                            break;
+                        case 11:
+                            id_log_action = 19;
+                            break;
+                       
                         default: break;
                     }
                     bool re = JeeWorkLiteController.log(_logger, loginData.Username, cnn, id_log_action, int.Parse(dt_file.Rows[0]["object_id"].ToString()), iduser, dt_file.Rows[0]["filename"].ToString(), null, "");

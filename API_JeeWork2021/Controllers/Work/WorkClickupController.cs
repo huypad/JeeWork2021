@@ -1598,9 +1598,16 @@ where disabled = 0 and u.id_user in ({listID}) and id_project_team = @id";
                                     item["action"] = item["action"].ToString().Replace("{0}", "");
                             }
                         }
-                        if (item["id_action"].ToString() == "10" || item["id_action"].ToString() == "63") // Đối với file
+                        if (item["id_action"].ToString() == "10" || item["id_action"].ToString() == "63" || item["id_action"].ToString() == "13" || item["id_action"].ToString() == "19") // Đối với file
                         {
                             item["action"] = item["action"].ToString().Replace("{0}", item["log_content"].ToString());
+                        }
+                        if (item["id_action"].ToString() == "9") // Đối với Tag
+                        {
+                            if (item["log_content"].ToString().Equals("1"))
+                            item["action"] = item["action"].ToString().Replace("REPLACE", "Thêm");
+                            else
+                                item["action"] = item["action"].ToString().Replace("REPLACE", "Xóa");
                         }
                         if (item["format"] != DBNull.Value)
                         {
@@ -4256,7 +4263,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                 TitleLanguageKey = "ww_chinhsuamota";
                                 break;
                             #endregion
-                            #region Mô tả
+                            #region Nhóm công việc
                             case "id_group":
                                 templateguimail = 0;
                                 TitleLanguageKey = "work_dichuyendennhom";
@@ -4333,7 +4340,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                 loai = 2;
                                 templateguimail = 24;
                                 TitleLanguageKey = "ww_xoafollower";
-                                id_log_action = 57;
+                                id_log_action = 56;
                             }
                             if ("assign".Equals(data.key))
                             {
@@ -4341,6 +4348,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                 templateguimail = 22;
                                 TitleLanguageKey = "ww_xoaassign";
                                 postauto.eventid = 5;
+                                id_log_action = 55;
                             }
                             if (data.value != null)
                             {
@@ -4430,12 +4438,14 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                                     #endregion
                                     if ("assign".Equals(data.key))
                                     {
+                                        id_log_action = 15;
                                         templateguimail = 10;
                                         TitleLanguageKey = "ww_assign";
                                         Automation.SendAutomation(postauto, _configuration, _producer);
                                     }
                                     else
                                     {
+                                        id_log_action = 57;
                                         templateguimail = 23;
                                         TitleLanguageKey = "ww_follower";
                                     }
@@ -4448,6 +4458,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                             Hashtable val2 = new Hashtable();
                             if (int.Parse(f.ToString()) > 0) // Tag đã có => Delete
                             {
+                                log_content = "0"; // Xóa
                                 val2 = new Hashtable();
                                 val2["UpdatedDate"] = Common.GetDateTime();
                                 val2["UpdatedBy"] = iduser;
@@ -4463,6 +4474,7 @@ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                             }
                             else
                             {
+                                log_content = "1"; // Thêm tag
                                 val2 = new Hashtable();
                                 val2["id_work"] = data.id_row;
                                 val2["CreatedDate"] = Common.GetDateTime();
@@ -6503,21 +6515,16 @@ where u.disabled = 0 and u.id_user in ({ListID}) and u.loai = 2";
                             w.id_parent,w.start_date, w.end_date
                             ,w.status, w.createddate, w.createdby,
                             w.project_team, w.id_department
-                            , w.clickup_prioritize , w.nguoigiao,'' as hoten_nguoigiao, Id_NV,''as hoten
-                            , Iif(fa.id_row is null ,0,1) as favourite 
-                            ,coalesce( f.count,0) as num_file, coalesce( com.count,0) as num_com
+                            , w.clickup_prioritize, Id_NV,''as hoten
+                            , coalesce( com.count,0) as num_com
                             ,'' as NguoiTao
                             ,iIf((select count(*) from we_status where id_row = w.status and isdefault = 1 and isTodo = 0 and IsFinal = 0)>0,1,0) as New
                             ,iIf(w.deadline < GETUTCDATE() and w.deadline is not null and w.end_date is null ,1,0) as TreHan
                             ,iIf((select count(*) from we_status where id_row = w.status and isdefault = 1 and IsFinal = 1)>0,1,0) as Done 
                             ,iIf((select count(*) from we_status where id_row = w.status and isdefault = 1 and isTodo = 1)>0,1,0) as Doing
                             from v_wework_new w 
-                            left join (select count(*) as count,object_id 
-                            from we_attachment where object_type=1 group by object_id) f on f.object_id=w.id_row
                             left join (select count(*) as count,object_id
                             from we_comment where object_type=1 group by object_id) com on com.object_id=w.id_row
-                            left join we_work_favourite fa 
-                            on fa.id_work=w.id_row and fa.createdby=@iduser and fa.disabled=0
                             where 1=1 " + dieukien_where + " order by " + dieukienSort;
             sqlq += ";select id_work, id_tag,color, title " +
                 "from we_work_tag wt join we_tag t " +

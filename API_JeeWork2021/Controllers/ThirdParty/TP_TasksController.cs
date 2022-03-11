@@ -1621,11 +1621,6 @@ where disabled = 0 and u.id_user in ({listID}) and id_project_team = @id";
                 return JsonResultCommon.Exception(_logger, ex, _config, loginData);
             }
         }
-        /// <summary>
-        /// Lịch sử chi tiết thao tác công việc
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
         [Route("log-detail-by-work")]
         [HttpGet]
         public object LogDetailByWork(long id)
@@ -1671,6 +1666,8 @@ where disabled = 0 and u.id_user in ({listID}) and id_project_team = @id";
                                 item["ColorStatus_Old"] = temp.AsEnumerable().Where(x => x[0].ToString() == item["oldvalue"].ToString()).Select(x => x[2]).FirstOrDefault();
                                 item["ColorStatus_New"] = temp.AsEnumerable().Where(x => x[0].ToString() == item["newvalue"].ToString()).Select(x => x[2]).FirstOrDefault();
                             }
+                            item["oldvalue"] = temp.AsEnumerable().Where(x => x[0].ToString() == item["oldvalue"].ToString()).Select(x => x[1]).FirstOrDefault();
+                            item["newvalue"] = temp.AsEnumerable().Where(x => x[0].ToString() == item["newvalue"].ToString()).Select(x => x[1]).FirstOrDefault();
                             if (int.Parse(item["id_action"].ToString()) == 9 || int.Parse(item["id_action"].ToString()) == 5 || int.Parse(item["id_action"].ToString()) == 6) // Đối với tag gắn title
                             {
                                 if (temp.Rows.Count > 0)
@@ -1678,21 +1675,28 @@ where disabled = 0 and u.id_user in ({listID}) and id_project_team = @id";
                                 else
                                     item["action"] = item["action"].ToString().Replace("{0}", "");
                             }
-                            item["oldvalue"] = temp.AsEnumerable().Where(x => x[0].ToString() == item["oldvalue"].ToString()).Select(x => x[1]).FirstOrDefault();
-                            item["newvalue"] = temp.AsEnumerable().Where(x => x[0].ToString() == item["newvalue"].ToString()).Select(x => x[1]).FirstOrDefault();
+                        }
+                        if (item["id_action"].ToString() == "10" || item["id_action"].ToString() == "63") // Đối với file
+                        {
+                            item["action"] = item["action"].ToString().Replace("{0}", item["log_content"].ToString());
+                        }
+                        if (item["id_action"].ToString() == "9") // Đối với Tag
+                        {
+                            if (item["log_content"].ToString().Equals("1"))
+                                item["action"] = item["action"].ToString().Replace("REPLACE", "Thêm");
+                            else
+                                item["action"] = item["action"].ToString().Replace("REPLACE", "Xóa");
                         }
                         if (item["format"] != DBNull.Value)
                         {
                             string f = "{0:" + item["format"].ToString() + "}";
-                            if (item["oldvalue"] != DBNull.Value)
+                            if (!string.IsNullOrEmpty(item["oldvalue"].ToString()))
                                 item["oldvalue"] = string.Format(f, DateTime.Parse(item["oldvalue"].ToString()));
-                            if (item["newvalue"] != DBNull.Value)
+                            if (!string.IsNullOrEmpty(item["newvalue"].ToString()))
                                 item["newvalue"] = string.Format(f, DateTime.Parse(item["newvalue"].ToString()));
                         }
-
                         #region Map info account từ JeeAccount 
                         var info = DataAccount.Where(x => item["id_nv"].ToString().Contains(x.UserId.ToString())).FirstOrDefault();
-
                         if (info != null)
                         {
                             item["hoten"] = info.FullName;
